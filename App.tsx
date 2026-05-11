@@ -1,6 +1,7 @@
-import Login from "./src/screens/Login"
+import Routes from "./src/navigation/index"
 
 export default function App() {
   return (
-  <Login />
-)}
+    <Routes />
+  );
+}

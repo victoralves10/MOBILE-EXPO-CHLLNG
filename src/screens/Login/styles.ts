@@ -1,92 +1,110 @@
 import { StyleSheet } from "react-native";
+import { colors } from "../../global/colors";
 
 export const styles = StyleSheet.create({
-	// Container principal da tela
-	containerTela: {
-		flex: 1,
-	},
 
-	// Parte de cima (imagem)
-	containerTopo: {
-		flex: 3,
-	},
+    // Container principal
+    containerTela: {
+        flex: 1,
+        backgroundColor: colors.white,
+    },
 
-	// Parte de baixo (formulário)
-	containerFormulario: {
-		flex: 7,
-		justifyContent: "flex-start",
-		alignItems: "center",
-		paddingHorizontal: 24,
-		paddingTop: 20,
-	},
+    // TOPO
+    containerTopo: {
+        flex: 3,
+    },
 
-	// Imagem de topo
-	imagemLogo: {
-		width: "100%",
-		height: "100%",
-		resizeMode: "cover",
-	},
+    // Imagem
+    imagemLogo: {
+        width: "100%",
+        height: "100%",
+        resizeMode: "cover",
+    },
 
-	// Título "Login"
-	textoTitulo: {
-		fontSize: 28,
-		fontWeight: "bold",
-		color: "#3E60DD",
-		marginBottom: 24,
-	},
+    // FORMULÁRIO
+    containerFormulario: {
+        flex: 7,
+        paddingHorizontal: 24,
+        paddingTop: 20,
+        paddingBottom: 30,
+        backgroundColor: colors.white,
 
-	// Container de cada input (label + campo)
-	containerInput: {
-		width: "100%",
-        marginBottom: 20,
-	},
+        justifyContent: "space-evenly",
+    },
 
-	// Texto acima do input
-	textoLabel: {
-		fontSize: 14,
-		color: "#3E60DD",
-		marginBottom: 6,
-		fontWeight: "600",
-	},
+    // BLOCO DOS CAMPOS
+    containerCampos: {
+        gap: 20,
+    },
 
-	// Campo de digitação
-	campoInput: {
-		width: "100%",
-		borderWidth: 1.5,
-		borderColor: "#B9C4CA",
-		borderRadius: 8,
-		padding: 14,
-		fontSize: 16,
-		color: "#333",
-	},
+    // BLOCO DOS BOTÕES/LINKS
+    containerAcoes: {
+        gap: 16,
+    },
 
-	// Botão de login
-	botaoEntrar: {
-		width: "100%",
-		backgroundColor: "#3E60DD",
-		padding: 16,
-		borderRadius: 8,
-		alignItems: "center",
-		marginTop: 100,
-	},
+    // Título
+    textoTitulo: {
+        width: "100%",
+        fontSize: 28,
+        fontWeight: "bold",
+        color: colors.blueDark,
+        textAlign: "center",
+    },
 
-	// Texto dentro do botão
-	textoBotao: {
-		color: "white",
-		fontSize: 16,
-		fontWeight: "bold",
-	},
+    // Container input
+    containerInput: {
+        width: "100%",
+    },
 
-	// Texto de links (ex: esqueci senha)
-	textoLink: {
-		fontSize: 14,
-		color: "#888",
-		textAlign: "right",
-	},
+    // Label
+    textoLabel: {
+        fontSize: 16,
+        color: colors.blueDark,
+        marginBottom: 6,
+        fontWeight: "600",
+    },
 
-	// Parte destacada do link (ex: cadastre-se)
-	textoLinkDestaque: {
-		color: "#3E60DD",
-		fontWeight: "bold",
-	},
+    // Input
+    campoInput: {
+        width: "100%",
+        borderWidth: 1.5,
+        borderColor: colors.grayLight,
+        borderRadius: 8,
+        padding: 18,
+        fontSize: 16,
+        color: colors.dark,
+        backgroundColor: colors.white,
+    },
+
+    // Esqueci senha
+    containerEsqueciSenha: {
+        alignSelf: "flex-end",
+        marginTop: -8,
+    },
+
+    // Botão login
+    botaoEntrar: {
+        width: "100%",
+        backgroundColor: colors.bluePrimary,
+        padding: 18,
+        borderRadius: 8,
+        alignItems: "center",
+        marginTop: 20
+    },
+
+    // Texto botão
+    textoBotao: {
+        color: colors.white,
+        fontSize: 16,
+        fontWeight: "bold",
+    },
+
+    // Texto links
+    textoLink: {
+        fontSize: 14,
+        color: colors.gray,
+        textAlign: "center",
+    },
+
+
 });
