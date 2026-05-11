@@ -15,6 +15,7 @@ import { styles } from "./styles";
 import { useState } from "react";
 import { colors } from "../../global/colors";
 import { useNavigation } from "@react-navigation/native";
+import CustomTextInput from "../../components/CustomTextInput/Index";
 
 export default function Login() {
 
@@ -84,42 +85,28 @@ export default function Login() {
                             </Text>
 
                             {/* INPUT EMAIL */}
-                            <View style={styles.containerInput}>
-
-
-                                <Text style={styles.textoLabel}>
-                                    E-mail
-                                </Text>
-
-                                {/* Campo de digitação do email */}
-                                <TextInput
-                                    style={styles.campoInput}
-                                    value={email}
-                                    onChangeText={setEmail}
-                                    keyboardType="email-address"
-                                    autoCapitalize="none"
-                                    placeholder="exemplo@email.com"
-                                />
-
-                            </View>
+                            <CustomTextInput
+                                title="E-mail"
+                                placeholder="exemplo@email.com"
+                                rightIconName="mail"
+                                keyboardType="email-address"
+                                autoCapitalize="none"
+                                value={email}
+                                onChangeText={setEmail}
+                                titleStyle={{ color: colors.blueDark }}
+                                
+                            />
 
                             {/* INPUT SENHA */}
-                            <View style={styles.containerInput}>
-
-                                <Text style={styles.textoLabel}>
-                                    Senha
-                                </Text>
-
-                                {/* Campo de digitação da senha - secureTextEntry esconde o texto de deixa uma bolinha */}
-                                <TextInput
-                                    style={styles.campoInput}
-                                    value={senha}
-                                    onChangeText={setSenha}
-                                    secureTextEntry
-                                    placeholder="Digite sua senha"
-                                />
-
-                            </View>
+                            <CustomTextInput
+                                title="Senha"
+                                placeholder="Digite sua senha"
+                                rightIconName="lock-closed"
+                                secureTextEntry
+                                value={senha}
+                                onChangeText={setSenha}
+                                titleStyle={{ color: colors.blueDark }}
+                            />
 
                             {/* ESQUECI SENHA */}
                             <TouchableOpacity

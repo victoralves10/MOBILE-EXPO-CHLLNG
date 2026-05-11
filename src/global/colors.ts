@@ -14,6 +14,9 @@ export const colors = {
     dark: "#2F2F2F",
     black: "black",
 
+    // Texto secundário
+    textSecondary: "#9CA3AF",
+
     // Azuis
     blueLight: "#6F8BFF",
     blueDark: "#2C47A0",
@@ -23,5 +26,11 @@ export const colors = {
     danger: "#EF4444",
     success: "#22C55E",
 
+    // Laranja
+    orange: "#F97316",
+
+    // Roxo
+    purple: "#8B5CF6",
+    
 
 };
