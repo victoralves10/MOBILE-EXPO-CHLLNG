@@ -1,106 +1,89 @@
+import React, { useState } from "react";
 import {
     View,
     Text,
     Image,
-    TextInput,
     KeyboardAvoidingView,
     Platform,
     TouchableWithoutFeedback,
     Keyboard,
     TouchableOpacity,
-    StatusBar
+    StatusBar,
+    Alert
 } from "react-native";
 
-import { styles } from "./styles";
-import { useState } from "react";
-import { colors } from "../../global/colors";
 import { useNavigation } from "@react-navigation/native";
+import { styles } from "./styles";
+import { colors } from "../../global/colors";
 import CustomTextInput from "../../components/CustomTextInput/Index";
 
 export default function Login() {
-
-    // Esses estados guardam o que o usuário digita nos inputs (dps mudar para outra pagina)
+    // Estados para armazenar os dados dos inputs
     const [email, setEmail] = useState("teste@email.com");
     const [senha, setSenha] = useState("123456");
 
-    // Simulação de uma autenticação sem um backend
-    const USUARIO = {
+    const navigation = useNavigation<any>();
+
+    // Objeto de usuário simulado para validação
+    const USUARIO_MOCK = {
         email: "teste@email.com",
         senha: "123456",
     };
 
-    // Funçãozinha basica para vildar oq foi digitado e realizar o login
+    // Função que valida o login
     function handleLogin() {
-
-        if (email === USUARIO.email && senha === USUARIO.senha) {
-
+        if (email === USUARIO_MOCK.email && senha === USUARIO_MOCK.senha) {
             navigation.navigate("App");
-
         } else {
-
-            alert("E-mail ou senha incorretos!");
-            
+            Alert.alert("Erro de Acesso", "E-mail ou senha incorretos!");
         }
     }
 
-    const navigation = useNavigation<any>();
-
     return (
-
-        // O KeyboardAvoidingView empurra a tela pra cima quando o teclado abre
-        // behavior muda conforme o sistema operacional
         <KeyboardAvoidingView
             style={styles.containerTela}
-            behavior={Platform.OS === "ios" ? "padding" : "height"}>
-
-            {/* Controla a barra de status do celular (wi-fi, hora, bateria e etc...) */}
+            behavior={Platform.OS === "ios" ? "padding" : undefined}
+        >
             <StatusBar
-                backgroundColor={colors.black}
-                barStyle="light-content"/>
+                backgroundColor="transparent"
+                translucent
+                barStyle="light-content"
+            />
 
-            {/* Fecha o teclado quando tocar no resto da tela */}
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-
-                <View style={{ flex: 1 }}>
-
-                    {/* TOPO - parte da image do caozinho */}
-                    <View style={styles.containerTopo}>
-
+                <View style={styles.containerConteudo}>
+                    
+                    {/* Seção da Imagem de Fundo */}
+                    <View style={styles.containerBanner}>
                         <Image
                             source={require("../../../assets/img-login.png")}
-                            style={styles.imagemLogo}
+                            style={styles.imagemBanner}
                         />
-
                     </View>
 
-                    {/* FORMULÁRIO - parte do e-mail, senha, login e etc... */}
+                    {/* Formulário de Entrada */}
                     <View style={styles.containerFormulario}>
+                        
+                        <View style={styles.containerTextos}>
+                            <Text style={styles.textoTitulo}>Bem-vindo</Text>
+                            <Text style={styles.textoSubtitulo}>Faça login para continuar</Text>
+                        </View>
 
-                        {/* BLOCO SUPERIOR - titulo e inputs*/}
-                        <View style={styles.containerCampos}>
-                            
-                            {/* Titulo da tela (Login) */}
-                            <Text style={styles.textoTitulo}>
-                                Login
-                            </Text>
-
-                            {/* INPUT EMAIL */}
+                        <View style={styles.containerInputs}>
                             <CustomTextInput
                                 title="E-mail"
-                                placeholder="exemplo@email.com"
+                                placeholder="Seu e-mail cadastrado"
                                 rightIconName="mail"
                                 keyboardType="email-address"
                                 autoCapitalize="none"
                                 value={email}
                                 onChangeText={setEmail}
                                 titleStyle={{ color: colors.blueDark }}
-                                
                             />
 
-                            {/* INPUT SENHA */}
                             <CustomTextInput
                                 title="Senha"
-                                placeholder="Digite sua senha"
+                                placeholder="Sua senha secreta"
                                 rightIconName="lock-closed"
                                 secureTextEntry
                                 value={senha}
@@ -108,42 +91,36 @@ export default function Login() {
                                 titleStyle={{ color: colors.blueDark }}
                             />
 
-                            {/* ESQUECI SENHA */}
-                            <TouchableOpacity
-                                style={styles.containerEsqueciSenha}
-                                onPress={() => console.log("esqueci senha")}
+                            <TouchableOpacity 
+                                style={styles.botaoEsqueceuSenha}
+                                onPress={() => console.log("Recuperar senha")}
                             >
-
-                                <Text style={styles.textoLink}>
-                                    Esqueci minha senha
-                                </Text>
-
+                                <Text style={styles.textoEsqueceuSenha}>Esqueceu sua senha?</Text>
                             </TouchableOpacity>
-
                         </View>
 
-                        {/* BLOCO INFERIOR - botão principal de login*/}
                         <View style={styles.containerAcoes}>
-
-                            {/* BOTÃO LOGIN */}
                             <TouchableOpacity
                                 style={styles.botaoEntrar}
                                 onPress={handleLogin}
+                                activeOpacity={0.8}
                             >
+                                <Text style={styles.textoBotaoEntrar}>Entrar</Text>
+                            </TouchableOpacity>
 
-                                <Text style={styles.textoBotao}>
-                                    Entrar
+                            <TouchableOpacity 
+                                style={styles.botaoCadastro}
+                                onPress={() => console.log("Ir para Cadastro")}
+                            >
+                                <Text style={styles.textoCadastro}>
+                                    Não tem uma conta? <Text style={styles.textoCadastroDestaque}>Cadastre-se</Text>
                                 </Text>
-
                             </TouchableOpacity>
                         </View>
 
                     </View>
-
                 </View>
-
             </TouchableWithoutFeedback>
-
         </KeyboardAvoidingView>
     );
 }

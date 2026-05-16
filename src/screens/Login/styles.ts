@@ -1,110 +1,129 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, Dimensions } from "react-native";
 import { colors } from "../../global/colors";
 
-export const styles = StyleSheet.create({
+const { height } = Dimensions.get("window");
 
-    // Container principal
+export const styles = StyleSheet.create({
+    // Container principal - tela inteira
     containerTela: {
         flex: 1,
         backgroundColor: colors.white,
     },
 
-    // TOPO
-    containerTopo: {
-        flex: 3,
+    // View para garantir q o conteúdo ocupe 100% da are disponivel para dividir (4 e 6) sem bugs
+    containerConteudo: {
+        flex: 1,
     },
 
-    // Imagem
-    imagemLogo: {
+    // Container de cima - onde fica a imagem
+    containerBanner: {
+        flex: 4,
+        width: "100%",
+    },
+
+    // Estilização da imagem no container de cima
+    imagemBanner: {
         width: "100%",
         height: "100%",
         resizeMode: "cover",
     },
 
-    // FORMULÁRIO
+    // Container q fica por cima da imagem, arredondado nos cantos
     containerFormulario: {
-        flex: 7,
-        paddingHorizontal: 24,
-        paddingTop: 20,
-        paddingBottom: 30,
+        flex: 6,
         backgroundColor: colors.white,
+        marginTop: -50,
+        borderTopLeftRadius: 40,
+        borderTopRightRadius: 40,
+        paddingHorizontal: 30,
+        paddingTop: 40,
+        paddingBottom: 20,
+        justifyContent: "space-between",
 
-        justifyContent: "space-evenly",
+        // Subindo e Sombra
+        elevation: 15,
+        shadowColor: colors.black,
+        shadowOffset: { width: 0, height: -5 },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
     },
 
-    // BLOCO DOS CAMPOS
-    containerCampos: {
-        gap: 20,
-    },
-
-    // BLOCO DOS BOTÕES/LINKS
-    containerAcoes: {
-        gap: 16,
-    },
-
-    // Título
-    textoTitulo: {
-        width: "100%",
-        fontSize: 28,
-        fontWeight: "bold",
-        color: colors.blueDark,
-        textAlign: "center",
-    },
-
-    // Container input
-    containerInput: {
-        width: "100%",
-    },
-
-    // Label
-    textoLabel: {
-        fontSize: 16,
-        color: colors.blueDark,
-        marginBottom: 6,
-        fontWeight: "600",
-    },
-
-    // Input
-    campoInput: {
-        width: "100%",
-        borderWidth: 1.5,
-        borderColor: colors.grayLight,
-        borderRadius: 8,
-        padding: 18,
-        fontSize: 16,
-        color: colors.dark,
-        backgroundColor: colors.white,
-    },
-
-    // Esqueci senha
-    containerEsqueciSenha: {
-        alignSelf: "flex-end",
-        marginTop: -8,
-    },
-
-    // Botão login
-    botaoEntrar: {
-        width: "100%",
-        backgroundColor: colors.bluePrimary,
-        padding: 18,
-        borderRadius: 8,
+    // Centralizando o texto (Bem-vindo) e o subtitulo (Faça login para continuar)
+    // e da espaço pra os inputs
+    containerTextos: {
         alignItems: "center",
-        marginTop: 20
+        marginBottom: 10,
     },
 
-    // Texto botão
-    textoBotao: {
-        color: colors.white,
+    // Titulo (Bem-vindo)
+    textoTitulo: {
+        fontSize: 32,
+        fontWeight: "bold",
+        color: colors.blueDark,
+    },
+
+    // Subtitulo (faça login para continuar)
+    textoSubtitulo: {
         fontSize: 16,
+        color: colors.gray,
+        marginTop: 5,
+    },
+
+    // Espaços entre os inputs
+    containerInputs: {
+        gap: 15,
+    },
+
+    // Alinhamento do "Esqueceu sua senha?"
+    botaoEsqueceuSenha: {
+        alignSelf: "center", // ou flex-end
+    },
+
+    // Estilização do "Esqueceu sua senha?"
+    textoEsqueceuSenha: {
+        color: colors.gray,
+        fontSize: 14,
+    },
+
+    // Agrupando botão de cadastro e botão entrar
+    containerAcoes: {
+        width: "100%",
+        gap: 20,
+        marginBottom: 10,
+    },
+
+    // Botão de login
+    botaoEntrar: {
+        backgroundColor: colors.bluePrimary,
+        paddingVertical: 16,
+        borderRadius: 15,
+        alignItems: "center",
+        justifyContent: "center",
+        elevation: 3,
+    },
+
+    // Texto do botão de login
+    textoBotaoEntrar: {
+        color: colors.white,
+        fontSize: 18,
         fontWeight: "bold",
     },
 
-    // Texto links
-    textoLink: {
-        fontSize: 14,
-        color: colors.gray,
-        textAlign: "center",
+    // Botão de cadastro
+    botaoCadastro: {
+        alignItems: "center",
+        paddingVertical: 10,
     },
 
+    // Texto do botão de cadastro
+    textoCadastro: {
+        fontSize: 15,
+        color: colors.gray,
+    },
 
+    // Texto colorido do cadastro
+    textoCadastroDestaque: {
+        color: colors.bluePrimary,
+        fontWeight: "bold",
+    },
 });
