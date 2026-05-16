@@ -6,31 +6,25 @@ export const colors = {
     white: "#FFFFFF",
 
     // Cinzas
-    grayLight: "#E5E7EB",
-    gray: "#6B7280",
-    grayMedium: "#b4bbca",
+    grayLight: "#F0F2F5",
+    gray: "#65676B",
+    grayMedium: "#BCC0C4",
 
-    // Texto principal
-    dark: "#2F2F2F",
-    black: "black",
+    // Texto
+    dark: "#1C1E21",
+    black: "#000000",
+    textSecondary: "#8A8D91",
 
-    // Texto secundário
-    textSecondary: "#9CA3AF",
-
-    // Azuis
-    blueLight: "#6F8BFF",
-    blueDark: "#2C47A0",
-    bluePrimary: "#3E60DC",
+    // Azul
+    bluePrimary: "#1877F2",
+    blueDark: "#166FE5",
+    blueLight: "#4B9CFF",
 
     // Status
-    danger: "#EF4444",
-    success: "#22C55E",
+    danger: "#E41E3F",
+    success: "#31A24C",
 
-    // Laranja
-    orange: "#F97316",
-
-    // Roxo
+    // Extras
+    orange: "#F7B928",
     purple: "#8B5CF6",
-    
-
 };

@@ -3,6 +3,7 @@ import { View, TextInput, Text, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import styles from './styles';
 import type { CustomTextInputProps } from './types';
+import { colors } from '../../global/colors'; 
 
 const CustomTextInput: React.FC<CustomTextInputProps> = ({
 
