@@ -1,20 +1,23 @@
-import { StyleSheet, ViewStyle, TextStyle } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { colors } from '../../global/colors';
 
 export default StyleSheet.create({
-    
+
+    // espaço externo do input com largura total
     container: {
         marginBottom: 16,
         width: '100%',
-    } as ViewStyle,
+    },
 
+    // título acima do campo
     title: {
         fontSize: 14,
         fontWeight: '600',
         color: colors.dark,
         marginBottom: 8,
-    } as TextStyle,
+    },
 
+    // linha branca com borda que envolve ícone + input + ícone
     inputContainer: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -24,28 +27,33 @@ export default StyleSheet.create({
         borderColor: colors.grayLight,
         paddingHorizontal: 16,
         height: 52,
-    } as ViewStyle,
+    },
 
+    // campo de texto ocupa todo o espaço disponível
     input: {
         flex: 1,
         fontSize: 16,
         color: colors.dark,
         paddingVertical: 0,
-    } as ViewStyle,
+    },
 
+    // margem extra quando tem ícone à esquerda
     inputWithLeftIcon: {
         marginLeft: 8,
-    } as ViewStyle,
+    },
 
+    // ícone da esquerda com espaço à direita
     leftIcon: {
         marginRight: 8,
-    } as ViewStyle,
+    },
 
+    // container do ícone direito
     rightIconContainer: {
         marginLeft: 8,
-    } as ViewStyle,
+    },
 
+    // padding extra quando o ícone direito é um botão clicável
     rightIconButton: {
         padding: 4,
-    } as ViewStyle,
+    },
 });

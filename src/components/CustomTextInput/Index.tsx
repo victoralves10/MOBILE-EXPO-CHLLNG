@@ -3,10 +3,9 @@ import { View, TextInput, Text, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import styles from './styles';
 import type { CustomTextInputProps } from './types';
-import { colors } from '../../global/colors'; 
+import { colors } from '../../global/colors';
 
 const CustomTextInput: React.FC<CustomTextInputProps> = ({
-
     title,
     placeholder = '',
     leftIconName,
@@ -18,17 +17,21 @@ const CustomTextInput: React.FC<CustomTextInputProps> = ({
     onRightIconPress,
     rightIconType = 'decoration',
     style,
-    ...inputProps
-
+    ...inputProps // pega todas as outras props do TextInput (value, onChangeText, etc)
 }) => {
 
     return (
 
+        // container externo,aceita estilo customizado por fora
         <View style={[styles.container, containerStyle]}>
 
+            {/* título acima do input — só aparece se for passado */}
             {title && (<Text style={[styles.title, titleStyle]}>{title}</Text>)}
 
+            {/* linha do input com ícone esquerdo, campo de texto e ícone direito */}
             <View style={styles.inputContainer}>
+
+                {/* ícone esquerdo, só aparece se for passado */}
                 {leftIconName && (
                     <Ionicons
                         name={leftIconName as any}
@@ -41,7 +44,7 @@ const CustomTextInput: React.FC<CustomTextInputProps> = ({
                 <TextInput
                     style={[
                         styles.input,
-                        leftIconName && styles.inputWithLeftIcon,
+                        leftIconName && styles.inputWithLeftIcon, // adiciona margem se tiver ícone esquerdo
                         style
                     ]}
                     placeholder={placeholder}
@@ -49,6 +52,7 @@ const CustomTextInput: React.FC<CustomTextInputProps> = ({
                     {...inputProps}
                 />
 
+                {/* ícone direito, pode ser decorativo ou botão clicável */}
                 {rightIconName && (
                     <TouchableOpacity
                         onPress={rightIconType === 'button' ? onRightIconPress : undefined}

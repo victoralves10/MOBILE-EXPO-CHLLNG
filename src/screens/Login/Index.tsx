@@ -38,7 +38,7 @@ export default function Login() {
             const sucesso = await authController.fazerLogin(email.trim(), senha.trim());
 
             if (sucesso) {
-                // login ok — vai pro app e limpa o histórico (não volta pro login com o botão voltar)
+                // login ok, vai pro app e limpa o histórico (não volta pro login com o botão voltar)
                 navigation.reset({
                     index: 0,
                     routes: [{ name: "App" }],
@@ -69,7 +69,7 @@ export default function Login() {
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                 <View style={styles.containerConteudo}>
 
-                    {/* parte de cima — imagem de banner */}
+                    {/* parte de cima, imagem de do naimal */}
                     <View style={styles.containerBanner}>
                         <Image
                             source={require("../../../assets/img-login.png")}
@@ -77,7 +77,7 @@ export default function Login() {
                         />
                     </View>
 
-                    {/* parte de baixo — formulário de login */}
+                    {/* parte de baixo, formulário de login */}
                     <View style={styles.containerFormulario}>
 
                         <View style={styles.containerTextos}>
@@ -117,7 +117,7 @@ export default function Login() {
 
                         <View style={styles.containerAcoes}>
 
-                            {/* botão de entrar — fica desabilitado enquanto carrega */}
+                            {/* botão de entrar, fica desabilitado enquanto carrega */}
                             <TouchableOpacity
                                 style={[styles.botaoEntrar, carregando && { opacity: 0.7 }]}
                                 onPress={handleLogin}
