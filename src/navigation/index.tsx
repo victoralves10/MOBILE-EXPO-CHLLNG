@@ -10,7 +10,9 @@ import { authController } from "../controllers/authController";
 import Login from "../screens/Login/Index";
 import Home from "../screens/Home/Index";
 import Consulta from "../screens/Consulta/Index";
+import DetalheConsulta from "../screens/Consulta/DetalhesConsulta";
 import Paciente from "../screens/Paciente/Index";
+import DetalhePaciente from "../screens/Paciente/DetalhesPaciente";
 import Conta from "../screens/Conta/Index";
 
 // navegador de pilha (telas que aparecem uma na frente da outra)
@@ -73,8 +75,6 @@ export default function Routes() {
     // roda 1 vez quando o app abre
     useEffect(() => {
         async function verificarSessao() {
-
-            // verifica se tem sessão salva no asyncstorage
             const sessaoAtiva = await authController.verificarSessao();
             setLogado(sessaoAtiva);
             setCarregando(false);
@@ -99,6 +99,30 @@ export default function Routes() {
             >
                 <Stack.Screen name="Login" component={Login} />
                 <Stack.Screen name="App" component={TabRoutes} />
+
+                {/* tela de detalhe da consulta, aparece por cima das abas com o seu proprio header */}
+                <Stack.Screen
+                    name="DetalheConsulta"
+                    component={DetalheConsulta}
+                    options={{
+                        headerShown: true,
+                        headerTitle: "Detalhes da Consulta",
+                        headerTintColor: colors.bluePrimary,
+                        headerStyle: { backgroundColor: colors.white },
+                    }}
+                />
+
+                {/* tela de ficha do paciente, aparece por cima das abas com o seu proprio header */}
+                <Stack.Screen
+                    name="DetalhePaciente"
+                    component={DetalhePaciente}
+                    options={{
+                        headerShown: true,
+                        headerTitle: "Ficha do Paciente",
+                        headerTintColor: colors.bluePrimary,
+                        headerStyle: { backgroundColor: colors.white },
+                    }}
+                />
             </Stack.Navigator>
         </NavigationContainer>
     );
