@@ -1,149 +1,105 @@
+import { useEffect, useState } from "react";
+import { ActivityIndicator, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
 import { colors } from "../global/colors";
+import { authController } from "../controllers/authController";
+
 import Login from "../screens/Login/Index";
 import Home from "../screens/Home/Index";
 import Consulta from "../screens/Consulta/Index";
 import Paciente from "../screens/Paciente/Index";
 import Conta from "../screens/Conta/Index";
 
-// Stack
+// navegador de pilha (telas que aparecem uma na frente da outra)
 const Stack = createNativeStackNavigator();
 
-// Tabs
+// navegador de abas (barra de navegação lá embaixo)
 const Tab = createBottomTabNavigator();
 
-// Tabs do app
+// função que monta as 4 abas principais do app
 function TabRoutes() {
-
-  return (
-
-    <Tab.Navigator
-      screenOptions={({ route }) => ({
-
-        headerShown: true,
-        headerTitleAlign: "left",
-        tabBarShowLabel: false,
-
-        headerStyle: {
-          backgroundColor: colors.white,
-          elevation: 0,
-          shadowOpacity: 0,
-        },
-
-        headerTitleStyle: {
-          color: colors.bluePrimary,
-          fontWeight: "700",
-          fontSize: 26,
-        },
-
-        tabBarActiveTintColor: colors.bluePrimary,
-
-        tabBarInactiveTintColor: colors.grayMedium,
-
-        tabBarStyle: {
-          height: 60,
-          paddingBottom: 5,
-          paddingTop: 5,
-          borderTopWidth: 1,
-          borderTopColor: colors.grayLight,
-          backgroundColor: colors.white,
-        },
-
-        tabBarIcon: ({ color, size }) => {
-
-          let iconName: any;
-
-          if (route.name === "Home") {
-            iconName = "home";
-          }
-
-          else if (route.name === "Consultas") {
-            iconName = "calendar-outline";
-          }
-
-          else if (route.name === "Pacientes") {
-            iconName = "people-outline";
-          }
-
-          else if (route.name === "Conta") {
-            iconName = "person-circle-outline";
-          }
-
-          return (
-            <Ionicons
-              name={iconName}
-              size={28}
-              color={color}
-            />
-          );
-        },
-      })}
-    >
-
-      <Tab.Screen
-        name="Home"
-        component={Home}
-        options={{
-          title: "Clínica Veterinária",
-        }}
-      />
-
-      <Tab.Screen
-        name="Consultas"
-        component={Consulta}
-        options={{
-          title: "Consultas",
-        }}
-      />
-
-      <Tab.Screen
-        name="Pacientes"
-        component={Paciente}
-        options={{
-          title: "Pacientes",
-        }}
-      />
-
-      <Tab.Screen
-        name="Conta"
-        component={Conta}
-        options={{
-          title: "Conta",
-        }}
-      />
-
-    </Tab.Navigator>
-  );
+    return (
+        <Tab.Navigator
+            screenOptions={({ route }) => ({
+                headerShown: true,
+                headerTitleAlign: "left",
+                tabBarShowLabel: false,
+                headerStyle: {
+                    backgroundColor: colors.white,
+                    elevation: 0,
+                    shadowOpacity: 0,
+                },
+                headerTitleStyle: {
+                    color: colors.bluePrimary,
+                    fontWeight: "700",
+                    fontSize: 26,
+                },
+                tabBarActiveTintColor: colors.bluePrimary,
+                tabBarInactiveTintColor: colors.grayMedium,
+                tabBarStyle: {
+                    height: 60,
+                    paddingBottom: 5,
+                    paddingTop: 5,
+                    borderTopWidth: 1,
+                    borderTopColor: colors.grayLight,
+                    backgroundColor: colors.white,
+                },
+                tabBarIcon: ({ color }) => {
+                    let iconName: any;
+                    if (route.name === "Home") iconName = "home";
+                    else if (route.name === "Consultas") iconName = "calendar-outline";
+                    else if (route.name === "Pacientes") iconName = "people-outline";
+                    else if (route.name === "Conta") iconName = "person-circle-outline";
+                    return <Ionicons name={iconName} size={28} color={color} />;
+                },
+            })}
+        >
+            <Tab.Screen name="Home" component={Home} options={{ title: "Clínica Veterinária" }} />
+            <Tab.Screen name="Consultas" component={Consulta} options={{ title: "Consultas" }} />
+            <Tab.Screen name="Pacientes" component={Paciente} options={{ title: "Pacientes" }} />
+            <Tab.Screen name="Conta" component={Conta} options={{ title: "Conta" }} />
+        </Tab.Navigator>
+    );
 }
 
-// Rotas principais
+// componente principal que controla toda a navegação do app
 export default function Routes() {
+    const [carregando, setCarregando] = useState(true);
+    const [logado, setLogado] = useState(false);
 
-  return (
+    // roda 1 vez quando o app abre
+    useEffect(() => {
+        async function verificarSessao() {
 
-    <NavigationContainer>
+            // verifica se tem sessão salva no asyncstorage
+            const sessaoAtiva = await authController.verificarSessao();
+            setLogado(sessaoAtiva);
+            setCarregando(false);
+        }
+        verificarSessao();
+    }, []);
 
-      <Stack.Navigator
-        screenOptions={{
-          headerShown: false,
-        }}
-      >
+    // enquanto verifica a sessão mostra o círculo girando
+    if (carregando) {
+        return (
+            <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+                <ActivityIndicator size="large" color={colors.bluePrimary} />
+            </View>
+        );
+    }
 
-        <Stack.Screen
-          name="Login"
-          component={Login}
-        />
-
-        <Stack.Screen
-          name="App"
-          component={TabRoutes}
-        />
-
-      </Stack.Navigator>
-
-    </NavigationContainer>
-  );
+    return (
+        <NavigationContainer>
+            <Stack.Navigator
+                initialRouteName={logado ? "App" : "Login"}
+                screenOptions={{ headerShown: false }}
+            >
+                <Stack.Screen name="Login" component={Login} />
+                <Stack.Screen name="App" component={TabRoutes} />
+            </Stack.Navigator>
+        </NavigationContainer>
+    );
 }

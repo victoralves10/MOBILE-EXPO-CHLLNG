@@ -9,33 +9,48 @@ import {
     Keyboard,
     TouchableOpacity,
     StatusBar,
-    Alert
+    Alert,
+    ActivityIndicator,
 } from "react-native";
-
 import { useNavigation } from "@react-navigation/native";
 import { styles } from "./styles";
 import { colors } from "../../global/colors";
 import CustomTextInput from "../../components/CustomTextInput/Index";
+import { authController } from "../../controllers/authController";
 
 export default function Login() {
-    // Estados para armazenar os dados dos inputs
     const [email, setEmail] = useState("teste@email.com");
     const [senha, setSenha] = useState("123456");
+    const [carregando, setCarregando] = useState(false);
 
     const navigation = useNavigation<any>();
 
-    // Objeto de usuário simulado para validação
-    const USUARIO_MOCK = {
-        email: "teste@email.com",
-        senha: "123456",
-    };
+    async function handleLogin() {
 
-    // Função que valida o login
-    function handleLogin() {
-        if (email === USUARIO_MOCK.email && senha === USUARIO_MOCK.senha) {
-            navigation.navigate("App");
-        } else {
-            Alert.alert("Erro de Acesso", "E-mail ou senha incorretos!");
+        if (!email.trim() || !senha.trim()) {
+            Alert.alert("Atenção", "Preencha o e-mail e a senha.");
+            return;
+        }
+
+        setCarregando(true);
+
+        try {
+            const sucesso = await authController.fazerLogin(email.trim(), senha.trim());
+
+            if (sucesso) {
+                // login ok — vai pro app e limpa o histórico (não volta pro login com o botão voltar)
+                navigation.reset({
+                    index: 0,
+                    routes: [{ name: "App" }],
+                });
+            } else {
+                Alert.alert("Erro de Acesso", "E-mail ou senha incorretos!");
+            }
+        } catch (error) {
+            Alert.alert("Erro", "Algo deu errado. Tente novamente.");
+        } finally {
+            // para o carregando independente do resultado
+            setCarregando(false);
         }
     }
 
@@ -50,10 +65,11 @@ export default function Login() {
                 barStyle="light-content"
             />
 
+            {/* clicando fora dos inputs fecha o teclado */}
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                 <View style={styles.containerConteudo}>
-                    
-                    {/* Seção da Imagem de Fundo */}
+
+                    {/* parte de cima — imagem de banner */}
                     <View style={styles.containerBanner}>
                         <Image
                             source={require("../../../assets/img-login.png")}
@@ -61,9 +77,9 @@ export default function Login() {
                         />
                     </View>
 
-                    {/* Formulário de Entrada */}
+                    {/* parte de baixo — formulário de login */}
                     <View style={styles.containerFormulario}>
-                        
+
                         <View style={styles.containerTextos}>
                             <Text style={styles.textoTitulo}>Bem-vindo</Text>
                             <Text style={styles.textoSubtitulo}>Faça login para continuar</Text>
@@ -83,7 +99,7 @@ export default function Login() {
 
                             <CustomTextInput
                                 title="Senha"
-                                placeholder="Sua senha secreta"
+                                placeholder="Sua senha cadastrada"
                                 rightIconName="lock-closed"
                                 secureTextEntry
                                 value={senha}
@@ -91,29 +107,38 @@ export default function Login() {
                                 titleStyle={{ color: colors.blueDark }}
                             />
 
-                            <TouchableOpacity 
+                            <TouchableOpacity
                                 style={styles.botaoEsqueceuSenha}
-                                onPress={() => console.log("Recuperar senha")}
+                                onPress={() => Alert.alert("Recuperar senha", "Entre em contato com o administrador.")}
                             >
                                 <Text style={styles.textoEsqueceuSenha}>Esqueceu sua senha?</Text>
                             </TouchableOpacity>
                         </View>
 
                         <View style={styles.containerAcoes}>
+
+                            {/* botão de entrar — fica desabilitado enquanto carrega */}
                             <TouchableOpacity
-                                style={styles.botaoEntrar}
+                                style={[styles.botaoEntrar, carregando && { opacity: 0.7 }]}
                                 onPress={handleLogin}
                                 activeOpacity={0.8}
+                                disabled={carregando}
                             >
-                                <Text style={styles.textoBotaoEntrar}>Entrar</Text>
+                                {/* se estiver carregando mostra o círculo, senão mostra o texto */}
+                                {carregando ? (
+                                    <ActivityIndicator color={colors.white} />
+                                ) : (
+                                    <Text style={styles.textoBotaoEntrar}>Entrar</Text>
+                                )}
                             </TouchableOpacity>
 
-                            <TouchableOpacity 
+                            <TouchableOpacity
                                 style={styles.botaoCadastro}
-                                onPress={() => console.log("Ir para Cadastro")}
+                                onPress={() => Alert.alert("Cadastro", "Entre em contato com o administrador.")}
                             >
                                 <Text style={styles.textoCadastro}>
-                                    Não tem uma conta? <Text style={styles.textoCadastroDestaque}>Cadastre-se</Text>
+                                    Não tem uma conta?{" "}
+                                    <Text style={styles.textoCadastroDestaque}>Cadastre-se</Text>
                                 </Text>
                             </TouchableOpacity>
                         </View>
