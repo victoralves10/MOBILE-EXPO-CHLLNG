@@ -1,64 +1,110 @@
-import React from "react";
-import { View, Text, ScrollView, Alert } from "react-native";
+import React, { useState, useCallback } from "react";
+import {
+    View,
+    Text,
+    FlatList,
+    Alert,
+    Image,
+} from "react-native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { styles } from "./style";
 import ConsultaCard from "../../components/ConsultaCard/Index";
-import PacienteCard from "../../components/PacienteCard/Index";
+import { Consulta } from "../../models/Consulta";
+import { Animal } from "../../models/Animal";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-// dados mockados só pra testar os cards na home
-const consultaMock = {
-    id_consulta: "1",
-    historico_consulta: "Vacinação anual V10",
-    st_consulta: "Agendado" as const,
-    dt_consulta: "20/05/2025",
-    hr_consulta: "09:00",
-    id_animal: "a1",
-    id_responsavel: "r1",
-};
-
-const animalMock = {
-    id_animal: "a1",
-    rg_animal: "RG001",
-    nr_microchip_animal: "985100001",
-    nm_animal: "Thor",
-    dt_nascimento_animal: "10/03/2019",
-    peso_animal: "28",
-    especie_animal: "Cão",
-    raca_animal: "Labrador",
-    id_responsavel: "r1",
-};
-
-const responsavelMock = {
-    id_responsavel: "r1",
-    cpf_responsavel: "111.111.111-11",
-    nm_responsavel: "Carlos Oliveira",
-    nr_telefone_responsavel: "(11) 99999-1111",
-};
+// tipagem que junta a consulta com os dados do animal dela
+interface ConsultaComDados {
+    consulta: Consulta;
+    animal: Animal;
+}
 
 export default function Home() {
+    const navigation = useNavigation<any>();
+
+    // lista de consultas que vai aparecer no carrossel
+    const [consultas, setConsultas] = useState<ConsultaComDados[]>([]);
+
+    // toda vez que o usuário voltar pra essa tela, recarrega as consultas
+    useFocusEffect(
+        useCallback(() => {
+            carregarConsultas();
+        }, [])
+    );
+
+    async function carregarConsultas() {
+
+        // lê as consultas e animais direto do asyncstorage
+        const dataConsultas = await AsyncStorage.getItem("@clyvovet:consultas");
+        const dataAnimais = await AsyncStorage.getItem("@clyvovet:animais");
+
+        const todasConsultas: Consulta[] = dataConsultas ? JSON.parse(dataConsultas) : [];
+        const todosAnimais: Animal[] = dataAnimais ? JSON.parse(dataAnimais) : [];
+
+        const comDados: ConsultaComDados[] = [];
+
+        // para cada consulta busca o animal vinculado
+        for (const consulta of todasConsultas) {
+            const animal = todosAnimais.find(a => a.id_animal === consulta.id_animal);
+            if (animal) {
+                comDados.push({ consulta, animal });
+            }
+        }
+
+        // pega só as 10 mais recentes e inverte a ordem (mais nova primeiro)
+        setConsultas(comDados.slice(-10).reverse());
+    }
+
     return (
-        <ScrollView style={{ flex: 1, padding: 16 }}>
+        <View style={styles.container}>
 
-            {/* teste do ConsultaCard */}
-            <Text style={{ fontSize: 16, fontWeight: "700", marginBottom: 8 }}>
-                Teste ConsultaCard
-            </Text>
-            <ConsultaCard
-                consulta={consultaMock}
-                animal={animalMock}
-                onPress={() => Alert.alert("Card clicado", "Navegaria para o detalhe da consulta")}
-                onPressIcone={() => Alert.alert("Ícone clicado", "Abriria a consulta online")}
-            />
+            {/* bloco de cima — carrossel horizontal com as consultas recentes */}
+            <View style={styles.containerCarrossel}>
+                <Text style={styles.tituloSecao}>Consultas Recentes</Text>
 
-            {/* teste do PacienteCard */}
-            <Text style={{ fontSize: 16, fontWeight: "700", marginBottom: 8, marginTop: 16 }}>
-                Teste PacienteCard
-            </Text>
-            <PacienteCard
-                animal={animalMock}
-                responsavel={responsavelMock}
-                onPress={() => Alert.alert("Card clicado", "Navegaria para a ficha do paciente")}
-                onPressIcone={() => Alert.alert("Ícone clicado", "Abriria o WhatsApp")}
-            />
+                {/* se não tiver consultas mostra mensagem, se tiver mostra o carrossel */}
+                {consultas.length === 0 ? (
+                    <Text style={styles.textoVazioCarrossel}>
+                        Nenhuma consulta registrada ainda.
+                    </Text>
+                ) : (
+                    <FlatList
+                        data={consultas}
+                        keyExtractor={({ consulta }) => consulta.id_consulta}
+                        horizontal
+                        showsHorizontalScrollIndicator={false}
+                        contentContainerStyle={styles.flatListCarrossel}
+                        renderItem={({ item }) => (
+                            <View style={styles.cardCarrossel}>
+                                <ConsultaCard
+                                    consulta={item.consulta}
+                                    animal={item.animal}
+                                    // clicou no card, por enquanto só avisa que vai navegar
+                                    onPress={() =>
+                                        Alert.alert("Em breve", "Detalhes da consulta em desenvolvimento.")
+                                    }
+                                    // clicou no ícone de câmera, simula consulta online
+                                    onPressIcone={() =>
+                                        Alert.alert("Consulta Online", "Levando você para a consulta online.")
+                                    }
+                                />
+                            </View>
+                        )}
+                    />
+                )}
+            </View>
 
-        </ScrollView>
+            {/* bloco de baixo, imagem de destaque */}
+            <View style={styles.containerDestaque}>
+                <Text style={styles.tituloDestaque}>Destaque</Text>
+
+                <Image
+                    source={require("../../../assets/controle-sanitario.png")}
+                    style={styles.imagemDestaque}
+                    resizeMode="cover"
+                />
+            </View>
+
+        </View>
     );
 }
