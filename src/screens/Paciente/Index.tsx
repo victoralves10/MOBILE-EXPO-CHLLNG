@@ -5,7 +5,7 @@ import {
     FlatList,
     Alert,
 } from "react-native";
-import { useFocusEffect } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { styles } from "./styles";
 import CustomTextInput from "../../components/CustomTextInput/Index";
 import PacienteCard from "../../components/PacienteCard/Index";
@@ -20,6 +20,7 @@ interface PacienteComDados {
 }
 
 export default function Paciente() {
+    const navigation = useNavigation<any>();
 
     // lista de pacientes que aparece na tela
     const [pacientes, setPacientes] = useState<PacienteComDados[]>([]);
@@ -80,10 +81,13 @@ export default function Paciente() {
                         <PacienteCard
                             animal={item.animal}
                             responsavel={item.responsavel}
-                            // por enquanto só avisa
+                            // clicou no card — vai pra ficha completa do paciente
                             onPress={() =>
-                                Alert.alert("Em breve", "Ficha do paciente em desenvolvimento.")
+                                navigation.navigate("DetalhePaciente", {
+                                    id_animal: item.animal.id_animal,
+                                })
                             }
+                            // clicou no ícone do whatsapp — simula abertura da conversa
                             onPressIcone={() =>
                                 Alert.alert(
                                     "WhatsApp",
@@ -94,7 +98,7 @@ export default function Paciente() {
                     )}
                     ListEmptyComponent={
                         <Text style={styles.textoVazio}>
-                            Nenhum paciente encontrado.
+                            Nenhum paciente encontrado.{"\n"}Crie uma consulta para cadastrar um paciente.
                         </Text>
                     }
                     showsVerticalScrollIndicator={false}

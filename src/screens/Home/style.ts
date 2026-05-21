@@ -1,18 +1,18 @@
 import { StyleSheet, Dimensions } from "react-native";
 import { colors } from "../../global/colors";
 
-// pega a largura total da tela — usada para calcular o tamanho do card do carrossel
+// pega a largura total da tela usada para calcular o tamanho do card do carrossel
 const { width } = Dimensions.get("window");
 
 export const styles = StyleSheet.create({
 
-    // tela inteira — fundo cinza claro
+    // tela inteira, fundo cinza claro
     container: {
         flex: 1,
         backgroundColor: colors.grayLight,
     },
 
-    // bloco de cima — fundo branco com borda embaixo separando do destaque
+    // parte de cima, fundo branco com borda embaixo separando do destaque
     containerCarrossel: {
         backgroundColor: colors.white,
         paddingVertical: 16,
@@ -20,7 +20,7 @@ export const styles = StyleSheet.create({
         borderBottomColor: colors.grayLight,
     },
 
-    // título "Consultas Recentes" e "Destaque"
+    // titulo "Consultas Recentes" e "Destaque"
     tituloSecao: {
         fontSize: 16,
         fontWeight: "700",
@@ -29,18 +29,18 @@ export const styles = StyleSheet.create({
         marginBottom: 12,
     },
 
-    // espaçamento interno do carrossel
+    // espaçamento de dentro do carrossel
     flatListCarrossel: {
         paddingHorizontal: 16,
     },
 
-    // cada card ocupa 75% da largura — dá o efeito de "tem mais pra rolar"
+    // cada card do carrossel ocupa 75% da largura da tela, isso faz sentir q tem coisa pra rolar
     cardCarrossel: {
         width: width * 0.75,
         marginRight: 12,
     },
 
-    // mensagem quando não tem consultas ainda
+    // mensagem quando c tem consultas cadastradas ainda
     textoVazioCarrossel: {
         color: colors.gray,
         fontSize: 14,
@@ -48,13 +48,13 @@ export const styles = StyleSheet.create({
         paddingVertical: 8,
     },
 
-    // bloco de baixo — ocupa o restante da tela
+    // part de baixo, ocupa o resto da tela com padding
     containerDestaque: {
         flex: 1,
         padding: 16,
     },
 
-    // título "Destaque"
+    // titulo "Destaque"
     tituloDestaque: {
         fontSize: 16,
         fontWeight: "700",
@@ -62,7 +62,7 @@ export const styles = StyleSheet.create({
         marginBottom: 12,
     },
 
-    // imagem de destaque com bordas arredondadas
+    // imagem de destaque, ocupa todo o espaço reto com bordas arredondadas
     imagemDestaque: {
         flex: 1,
         width: "100%",
