@@ -51,6 +51,82 @@ export const styles = StyleSheet.create({
         marginTop: 4,
     },
 
+    // card branco do gráfico de desempenho
+    containerGrafico: {
+        backgroundColor: colors.white,
+        marginTop: 24,
+        marginHorizontal: 16,
+        borderRadius: 16,
+        padding: 16,
+        elevation: 2,
+        shadowColor: colors.black,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.08,
+        shadowRadius: 4,
+    },
+
+    // título do card do gráfico
+    tituloGrafico: {
+        fontSize: 16,
+        fontWeight: "700",
+        color: colors.dark,
+        marginBottom: 16,
+    },
+
+    // centraliza o número grande de total de consultas
+    containerTotalConsultas: {
+        alignItems: "center",
+        marginBottom: 8,
+    },
+
+    // número grande azul do total de consultas
+    textoTotalNumero: {
+        fontSize: 40,
+        fontWeight: "800",
+        color: colors.bluePrimary,
+    },
+
+    // "consultas no total" abaixo do número
+    textoTotalLabel: {
+        fontSize: 13,
+        color: colors.gray,
+        marginTop: 2,
+    },
+
+    // mensagem quando ainda não tem consultas cadastradas
+    textoSemDados: {
+        textAlign: "center",
+        color: colors.gray,
+        fontSize: 14,
+        paddingVertical: 20,
+    },
+
+    // legenda manual abaixo do gráfico
+    containerResumo: {
+        marginTop: 8,
+        gap: 8,
+    },
+
+    // linha da legenda com bolinha + texto
+    itemResumo: {
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 8,
+    },
+
+    // bolinha colorida da legenda
+    bolinha: {
+        width: 12,
+        height: 12,
+        borderRadius: 6,
+    },
+
+    // texto ao lado da bolinha
+    textoItemResumo: {
+        fontSize: 13,
+        color: colors.dark,
+    },
+
     // seção de menu (fundo branco com borda em cima e embaixo)
     containerSecao: {
         marginTop: 24,
