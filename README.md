@@ -56,7 +56,7 @@ O ClyvoVet resolve isso centralizando o histórico clínico de cada paciente, au
 
 ```bash
 # Clone o repositório
-git clone [url do repositório]
+git clone https://github.com/AntonioCarvalhoFIAP/challenge-1-victoralves10.git
 
 # Instale as dependências
 npm install
