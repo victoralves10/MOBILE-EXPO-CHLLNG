@@ -68,6 +68,12 @@ npx expo install
 npx expo start
 ```
 
+Para visualizar o app no celular, instale o **Expo Go**:
+- [Android — Google Play](https://play.google.com/store/apps/details?id=host.exp.exponent)
+- [iOS — App Store](https://apps.apple.com/app/expo-go/id982107779)
+
+Com o Expo Go instalado, conecte o celular na **mesma rede Wi-Fi** do computador e escaneie o QR Code exibido no terminal.
+
 **Credenciais de acesso:**
 - Email: `teste@email.com`
 - Senha: `123456`
