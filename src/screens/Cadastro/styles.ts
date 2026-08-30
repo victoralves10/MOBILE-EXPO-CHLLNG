@@ -2,13 +2,13 @@ import { StyleSheet } from "react-native";
 import { colors } from "../../global/colors";
 
 export const styles = StyleSheet.create({
-  // Fundo da tela toda
+  // Fundo da tela
   containerTela: {
     flex: 1,
     backgroundColor: colors.white,
   },
 
-  // Área que pode rolar quando o teclado aparece
+  // Área que rola quando o teclado aparece
   containerScroll: {
     flexGrow: 1,
     justifyContent: "center",
@@ -16,7 +16,7 @@ export const styles = StyleSheet.create({
     paddingVertical: 24,
   },
 
-  // Card onde fica o formulário de login
+  // Card onde fica o formulário
   containerFormulario: {
     backgroundColor: colors.white,
     borderRadius: 24,
@@ -30,13 +30,13 @@ export const styles = StyleSheet.create({
     shadowRadius: 12,
   },
 
-  // Junta o título e o subtítulo
+  // Título e subtítulo do formulário
   containerTextos: {
     alignItems: "center",
     marginBottom: 24,
   },
 
-  // Título de boas-vindas
+  // Título principal
   textoTitulo: {
     fontSize: 24,
     fontWeight: "800",
@@ -50,25 +50,25 @@ export const styles = StyleSheet.create({
     marginTop: 4,
   },
 
-  // Espaço entre os campos de texto
+  // Espaço entre os campos
   containerInputs: {
     gap: 4,
   },
 
-  // Posição do botão de esquecer senha
+  // Botão de esquecer senha
   botaoEsqueceuSenha: {
     alignSelf: "center",
     marginTop: 4,
     marginBottom: 8,
   },
 
-  // Texto do botão de esquecer senha
+  // Texto de esquecer senha
   textoEsqueceuSenha: {
     color: colors.gray,
     fontSize: 13,
   },
 
-  // Botão que faz o login
+  // Botão para entrar
   botaoEntrar: {
     backgroundColor: colors.bluePrimary,
     paddingVertical: 16,
@@ -85,7 +85,7 @@ export const styles = StyleSheet.create({
     shadowRadius: 8,
   },
 
-  // Texto dentro do botão de entrar
+  // Texto do botão de entrar
   textoBotaoEntrar: {
     color: colors.white,
     fontSize: 16,
@@ -93,7 +93,7 @@ export const styles = StyleSheet.create({
     letterSpacing: 0.3,
   },
 
-  // Área para ir até a tela de cadastro
+  // Área para ir até o cadastro
   botaoCadastro: {
     alignItems: "center",
     marginTop: 20,
@@ -102,7 +102,7 @@ export const styles = StyleSheet.create({
     borderTopColor: colors.grayLight,
   },
 
-  // Texto normal da mensagem de cadastro
+  // Texto da mensagem de cadastro
   textoCadastro: {
     fontSize: 14,
     color: colors.gray,

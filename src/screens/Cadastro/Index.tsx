@@ -9,7 +9,6 @@ import {
     TouchableWithoutFeedback,
     TouchableOpacity,
     StatusBar,
-    Alert,
     ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -18,19 +17,24 @@ import { styles } from "./styles";
 import { colors } from "../../global/colors";
 import CustomTextInput from "../../components/CustomTextInput/Index";
 import LogoMarca from "../../components/LogoMarca/Index";
-import { useLogin } from "../../hooks/useLogin";
+import { useCadastro } from "../../hooks/useCadastro";
 
-export default function Login() {
+export default function Cadastro() {
     const {
+        nome,
+        setNome,
         email,
         setEmail,
         senha,
         setSenha,
+        confirmarSenha,
+        setConfirmarSenha,
         senhaVisivel,
+        confirmarSenhaVisivel,
         carregando,
-        fazerLogin,
-        irParaCadastro,
-    } = useLogin();
+        fazerCadastro,
+        voltarParaLogin,
+    } = useCadastro();
 
     return (
         <SafeAreaView style={styles.containerTela}>
@@ -53,14 +57,24 @@ export default function Login() {
                             {/* card do formulário */}
                             <View style={styles.containerFormulario}>
                                 <View style={styles.containerTextos}>
-                                    <Text style={styles.textoTitulo}>Bem-vindo</Text>
-                                    <Text style={styles.textoSubtitulo}>Faça login para continuar</Text>
+                                    <Text style={styles.textoTitulo}>Criar conta</Text>
+                                    <Text style={styles.textoSubtitulo}>Preencha os dados para começar</Text>
                                 </View>
 
                                 <View style={styles.containerInputs}>
                                     <CustomTextInput
+                                        title="Nome"
+                                        placeholder="Seu nome completo"
+                                        rightIconName="person"
+                                        autoCapitalize="words"
+                                        value={nome}
+                                        onChangeText={setNome}
+                                        titleStyle={{ color: colors.blueDark }}
+                                    />
+
+                                    <CustomTextInput
                                         title="E-mail"
-                                        placeholder="Seu e-mail cadastrado"
+                                        placeholder="Seu melhor e-mail"
                                         rightIconName="mail"
                                         keyboardType="email-address"
                                         autoCapitalize="none"
@@ -71,7 +85,7 @@ export default function Login() {
 
                                     <CustomTextInput
                                         title="Senha"
-                                        placeholder="Sua senha cadastrada"
+                                        placeholder="Sua senha"
                                         rightIconName={senhaVisivel.iconeNome}
                                         rightIconType="button"
                                         onRightIconPress={senhaVisivel.alternar}
@@ -81,17 +95,22 @@ export default function Login() {
                                         titleStyle={{ color: colors.blueDark }}
                                     />
 
-                                    <TouchableOpacity
-                                        style={styles.botaoEsqueceuSenha}
-                                        onPress={() => Alert.alert("Recuperar senha", "Entre em contato com o administrador.")}
-                                    >
-                                        <Text style={styles.textoEsqueceuSenha}>Esqueceu sua senha?</Text>
-                                    </TouchableOpacity>
+                                    <CustomTextInput
+                                        title="Confirmar senha"
+                                        placeholder="Digite a senha novamente"
+                                        rightIconName={confirmarSenhaVisivel.iconeNome}
+                                        rightIconType="button"
+                                        onRightIconPress={confirmarSenhaVisivel.alternar}
+                                        secureTextEntry={confirmarSenhaVisivel.escondida}
+                                        value={confirmarSenha}
+                                        onChangeText={setConfirmarSenha}
+                                        titleStyle={{ color: colors.blueDark }}
+                                    />
                                 </View>
 
                                 <TouchableOpacity
                                     style={[styles.botaoEntrar, carregando && { opacity: 0.7 }]}
-                                    onPress={fazerLogin}
+                                    onPress={fazerCadastro}
                                     activeOpacity={0.8}
                                     disabled={carregando}
                                 >
@@ -99,19 +118,19 @@ export default function Login() {
                                         <ActivityIndicator color={colors.white} />
                                     ) : (
                                         <>
-                                            <Ionicons name="log-in-outline" size={20} color={colors.white} />
-                                            <Text style={styles.textoBotaoEntrar}>Entrar</Text>
+                                            <Ionicons name="person-add-outline" size={20} color={colors.white} />
+                                            <Text style={styles.textoBotaoEntrar}>Criar conta</Text>
                                         </>
                                     )}
                                 </TouchableOpacity>
 
                                 <TouchableOpacity
                                     style={styles.botaoCadastro}
-                                    onPress={irParaCadastro}
+                                    onPress={voltarParaLogin}
                                 >
                                     <Text style={styles.textoCadastro}>
-                                        Não tem uma conta?{" "}
-                                        <Text style={styles.textoCadastroDestaque}>Cadastre-se</Text>
+                                        Já tem uma conta?{" "}
+                                        <Text style={styles.textoCadastroDestaque}>Fazer login</Text>
                                     </Text>
                                 </TouchableOpacity>
                             </View>

@@ -8,6 +8,7 @@ import { colors } from "../global/colors";
 import { authController } from "../controllers/authController";
 
 import Login from "../screens/Login/Index";
+import Cadastro from "../screens/Cadastro/Index";
 import Home from "../screens/Home/Index";
 import Consulta from "../screens/Consulta/Index";
 import DetalheConsulta from "../screens/Consulta/DetalhesConsulta";
@@ -98,6 +99,7 @@ export default function Routes() {
                 screenOptions={{ headerShown: false }}
             >
                 <Stack.Screen name="Login" component={Login} />
+                <Stack.Screen name="Cadastro" component={Cadastro} />
                 <Stack.Screen name="App" component={TabRoutes} />
 
                 {/* tela de detalhe da consulta, aparece por cima das abas com o seu proprio header */}
