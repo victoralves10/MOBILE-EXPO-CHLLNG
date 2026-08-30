@@ -14,7 +14,7 @@ import Consulta from "../screens/Consulta/Index";
 import DetalheConsulta from "../screens/Consulta/DetalhesConsulta";
 import Paciente from "../screens/Paciente/Index";
 import DetalhePaciente from "../screens/Paciente/DetalhesPaciente";
-import Conta from "../screens/Conta/Index";
+import Perfil from "../screens/Perfil/Index";
 
 // navegador de pilha (telas que aparecem uma na frente da outra)
 const Stack = createNativeStackNavigator();
@@ -55,7 +55,7 @@ function TabRoutes() {
                     if (route.name === "Home") iconName = "home";
                     else if (route.name === "Consultas") iconName = "calendar-outline";
                     else if (route.name === "Pacientes") iconName = "people-outline";
-                    else if (route.name === "Conta") iconName = "person-circle-outline";
+                    else if (route.name === "Perfil") iconName = "person-circle-outline";
                     return <Ionicons name={iconName} size={28} color={color} />;
                 },
             })}
@@ -63,7 +63,7 @@ function TabRoutes() {
             <Tab.Screen name="Home" component={Home} options={{ title: "Clínica Veterinária" }} />
             <Tab.Screen name="Consultas" component={Consulta} options={{ title: "Consultas" }} />
             <Tab.Screen name="Pacientes" component={Paciente} options={{ title: "Pacientes" }} />
-            <Tab.Screen name="Conta" component={Conta} options={{ title: "Conta" }} />
+            <Tab.Screen name="Perfil" component={Perfil} options={{ title: "Perfil" }} />
         </Tab.Navigator>
     );
 }
