@@ -1,129 +1,169 @@
-import { StyleSheet, Dimensions } from "react-native";
+import { StyleSheet } from "react-native";
 import { colors } from "../../global/colors";
 
-const { height } = Dimensions.get("window");
-
 export const styles = StyleSheet.create({
-    // Container principal - tela inteira
-    containerTela: {
-        flex: 1,
-        backgroundColor: colors.white,
-    },
+  // Fundo da tela toda
+  containerTela: {
+    flex: 1,
+    backgroundColor: colors.white,
+  },
 
-    // View para garantir q o conteúdo ocupe 100% da are disponivel para dividir (4 e 6) sem bugs
-    containerConteudo: {
-        flex: 1,
-    },
+  // Parte principal da tela, deixando o conteúdo no meio
+  containerConteudo: {
+    flex: 1,
+    justifyContent: "center",
+    paddingHorizontal: 28,
+  },
 
-    // Container de cima - onde fica a imagem
-    containerBanner: {
-        flex: 4,
-        width: "100%",
-    },
+  // Junta o ícone, nome e subtítulo do app
+  containerLogo: {
+    alignItems: "center",
+    marginBottom: 36,
+    gap: 8,
+  },
 
-    // Estilização da imagem no container de cima
-    imagemBanner: {
-        width: "100%",
-        height: "100%",
-        resizeMode: "cover",
-    },
+  // Círculo azul que fica atrás do ícone
+  circuloLogo: {
+    width: 88,
+    height: 88,
+    borderRadius: 24,
+    backgroundColor: colors.bluePrimary,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 4,
+    elevation: 8,
+    shadowColor: colors.bluePrimary,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.35,
+    shadowRadius: 12,
+  },
 
-    // Container q fica por cima da imagem, arredondado nos cantos
-    containerFormulario: {
-        flex: 6,
-        backgroundColor: colors.white,
-        marginTop: -50,
-        borderTopLeftRadius: 40,
-        borderTopRightRadius: 40,
-        paddingHorizontal: 30,
-        paddingTop: 40,
-        paddingBottom: 20,
-        justifyContent: "space-between",
+  // Nome do app
+  textoMarca: {
+    fontSize: 30,
+    fontWeight: "800",
+    color: colors.blueDark,
+    letterSpacing: 1,
+  },
 
-        // Subindo e Sombra
-        elevation: 15,
-        shadowColor: colors.black,
-        shadowOffset: { width: 0, height: -5 },
-        shadowOpacity: 0.1,
-        shadowRadius: 8,
-    },
+  // Parte do nome que fica mais destacada
+  textoMarcaDestaque: {
+    fontWeight: "900",
+    color: colors.bluePrimary,
+  },
 
-    // Centralizando o texto (Bem-vindo) e o subtitulo (Faça login para continuar)
-    // e da espaço pra os inputs
-    containerTextos: {
-        alignItems: "center",
-        marginBottom: 10,
-    },
+  // Linhazinha azul abaixo do nome
+  linhaDecorativa: {
+    width: 48,
+    height: 3,
+    backgroundColor: colors.bluePrimary,
+    borderRadius: 2,
+    marginTop: 4,
+  },
 
-    // Titulo (Bem-vindo)
-    textoTitulo: {
-        fontSize: 32,
-        fontWeight: "bold",
-        color: colors.blueDark,
-    },
+  // Texto pequeno abaixo do nome do app
+  textoMarcaSub: {
+    fontSize: 11,
+    color: colors.gray,
+    letterSpacing: 2,
+    textTransform: "uppercase",
+  },
 
-    // Subtitulo (faça login para continuar)
-    textoSubtitulo: {
-        fontSize: 16,
-        color: colors.gray,
-        marginTop: 5,
-    },
+  // Card onde fica o formulário de login
+  containerFormulario: {
+    backgroundColor: colors.white,
+    borderRadius: 24,
+    borderWidth: 1,
+    borderColor: colors.grayLight,
+    padding: 24,
+    elevation: 4,
+    shadowColor: colors.black,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.06,
+    shadowRadius: 12,
+  },
 
-    // Espaços entre os inputs
-    containerInputs: {
-        gap: 15,
-    },
+  // Junta o título e o subtítulo do formulário
+  containerTextos: {
+    alignItems: "center",
+    marginBottom: 24,
+  },
 
-    // Alinhamento do "Esqueceu sua senha?"
-    botaoEsqueceuSenha: {
-        alignSelf: "center", // ou flex-end
-    },
+  // Título de boas-vindas
+  textoTitulo: {
+    fontSize: 24,
+    fontWeight: "800",
+    color: colors.dark,
+  },
 
-    // Estilização do "Esqueceu sua senha?"
-    textoEsqueceuSenha: {
-        color: colors.gray,
-        fontSize: 14,
-    },
+  // Texto logo abaixo do título
+  textoSubtitulo: {
+    fontSize: 14,
+    color: colors.gray,
+    marginTop: 4,
+  },
 
-    // Agrupando botão de cadastro e botão entrar
-    containerAcoes: {
-        width: "100%",
-        gap: 20,
-        marginBottom: 10,
-    },
+  // Espaço entre os campos de texto
+  containerInputs: {
+    gap: 4,
+  },
 
-    // Botão de login
-    botaoEntrar: {
-        backgroundColor: colors.bluePrimary,
-        paddingVertical: 16,
-        borderRadius: 15,
-        alignItems: "center",
-        justifyContent: "center",
-        elevation: 3,
-    },
+  // Posição do botão de esquecer senha
+  botaoEsqueceuSenha: {
+    alignSelf: "center",
+    marginTop: 4,
+    marginBottom: 8,
+  },
 
-    // Texto do botão de login
-    textoBotaoEntrar: {
-        color: colors.white,
-        fontSize: 18,
-        fontWeight: "bold",
-    },
+  // Texto do botão de esquecer senha
+  textoEsqueceuSenha: {
+    color: colors.gray,
+    fontSize: 13,
+  },
 
-    // Botão de cadastro
-    botaoCadastro: {
-        alignItems: "center",
-        paddingVertical: 10,
-    },
+  // Botão para entrar na conta
+  botaoEntrar: {
+    backgroundColor: colors.bluePrimary,
+    paddingVertical: 16,
+    borderRadius: 14,
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "row",
+    gap: 8,
+    marginTop: 8,
+    elevation: 4,
+    shadowColor: colors.bluePrimary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+  },
 
-    // Texto do botão de cadastro
-    textoCadastro: {
-        fontSize: 15,
-        color: colors.gray,
-    },
+  // Texto dentro do botão de entrar
+  textoBotaoEntrar: {
+    color: colors.white,
+    fontSize: 16,
+    fontWeight: "700",
+    letterSpacing: 0.3,
+  },
 
-    // Texto colorido do cadastro
-    textoCadastroDestaque: {
-        color: colors.bluePrimary,
-        fontWeight: "bold",
-    },
+  // Área do botão para criar conta
+  botaoCadastro: {
+    alignItems: "center",
+    marginTop: 20,
+    paddingTop: 20,
+    borderTopWidth: 1,
+    borderTopColor: colors.grayLight,
+  },
+
+  // Texto normal do botão de cadastro
+  textoCadastro: {
+    fontSize: 14,
+    color: colors.gray,
+  },
+
+  // Parte colorida do texto “Cadastre-se”
+  textoCadastroDestaque: {
+    color: colors.bluePrimary,
+    fontWeight: "700",
+  },
 });

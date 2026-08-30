@@ -1,29 +1,47 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
     View,
     Text,
-    Image,
-    KeyboardAvoidingView,
-    Platform,
-    TouchableWithoutFeedback,
+    Animated,
     Keyboard,
+    TouchableWithoutFeedback,
     TouchableOpacity,
     StatusBar,
     Alert,
     ActivityIndicator,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
+import { Ionicons } from "@expo/vector-icons";
 import { styles } from "./styles";
 import { colors } from "../../global/colors";
 import CustomTextInput from "../../components/CustomTextInput/Index";
 import { authController } from "../../controllers/authController";
 
 export default function Login() {
-    const [email, setEmail] = useState("teste@email.com");
-    const [senha, setSenha] = useState("123456");
+    const [email, setEmail] = useState("dev@clyvovet.dev");
+    const [senha, setSenha] = useState("dev123456");
+    const [senhaVisivel, setSenhaVisivel] = useState(false);
     const [carregando, setCarregando] = useState(false);
 
     const navigation = useNavigation<any>();
+
+    // tela sobe quando teclado abre
+    // evita que o teclado tampe os campos
+    const deslocamentoY = useRef(new Animated.Value(0)).current;
+
+    useEffect(() => {
+        const abrir = Keyboard.addListener("keyboardDidShow", () => {
+            Animated.timing(deslocamentoY, { toValue: -250, duration: 250, useNativeDriver: true }).start();
+        });
+        const fechar = Keyboard.addListener("keyboardDidHide", () => {
+            Animated.timing(deslocamentoY, { toValue: 0, duration: 250, useNativeDriver: true }).start();
+        });
+        return () => {
+            abrir.remove();
+            fechar.remove();
+        };
+    }, [deslocamentoY]);
 
     async function handleLogin() {
 
@@ -38,7 +56,6 @@ export default function Login() {
             const sucesso = await authController.fazerLogin(email.trim(), senha.trim());
 
             if (sucesso) {
-                // login ok, vai pro app e limpa o histórico (não volta pro login com o botão voltar)
                 navigation.reset({
                     index: 0,
                     routes: [{ name: "App" }],
@@ -49,37 +66,31 @@ export default function Login() {
         } catch (error) {
             Alert.alert("Erro", "Algo deu errado. Tente novamente.");
         } finally {
-            // para o carregando independente do resultado
             setCarregando(false);
         }
     }
 
     return (
-        <KeyboardAvoidingView
-            style={styles.containerTela}
-            behavior={Platform.OS === "ios" ? "padding" : undefined}
-        >
-            <StatusBar
-                backgroundColor="transparent"
-                translucent
-                barStyle="light-content"
-            />
+        <SafeAreaView style={styles.containerTela}>
+            <StatusBar backgroundColor={colors.white} barStyle="dark-content" />
 
-            {/* clicando fora dos inputs fecha o teclado */}
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-                <View style={styles.containerConteudo}>
+                <Animated.View style={[styles.containerConteudo, { transform: [{ translateY: deslocamentoY }] }]}>
 
-                    {/* parte de cima, imagem de do naimal */}
-                    <View style={styles.containerBanner}>
-                        <Image
-                            source={require("../../../assets/img-login.png")}
-                            style={styles.imagemBanner}
-                        />
+                    {/* logo, centralizado, sem imagem de fundo */}
+                    <View style={styles.containerLogo}>
+                        <View style={styles.circuloLogo}>
+                            <Ionicons name="paw" size={38} color={colors.white} />
+                        </View>
+                        <Text style={styles.textoMarca}>
+                            Clyvo <Text style={styles.textoMarcaDestaque}>ELLV</Text>
+                        </Text>
+                        <View style={styles.linhaDecorativa} />
+                        <Text style={styles.textoMarcaSub}>gestão veterinária inteligente</Text>
                     </View>
 
-                    {/* parte de baixo, formulário de login */}
+                    {/* card do formulário */}
                     <View style={styles.containerFormulario}>
-
                         <View style={styles.containerTextos}>
                             <Text style={styles.textoTitulo}>Bem-vindo</Text>
                             <Text style={styles.textoSubtitulo}>Faça login para continuar</Text>
@@ -100,8 +111,10 @@ export default function Login() {
                             <CustomTextInput
                                 title="Senha"
                                 placeholder="Sua senha cadastrada"
-                                rightIconName="lock-closed"
-                                secureTextEntry
+                                rightIconName={senhaVisivel ? "eye-off" : "eye"}
+                                rightIconType="button"
+                                onRightIconPress={() => setSenhaVisivel(!senhaVisivel)}
+                                secureTextEntry={!senhaVisivel}
                                 value={senha}
                                 onChangeText={setSenha}
                                 titleStyle={{ color: colors.blueDark }}
@@ -115,37 +128,35 @@ export default function Login() {
                             </TouchableOpacity>
                         </View>
 
-                        <View style={styles.containerAcoes}>
-
-                            {/* botão de entrar, fica desabilitado enquanto carrega */}
-                            <TouchableOpacity
-                                style={[styles.botaoEntrar, carregando && { opacity: 0.7 }]}
-                                onPress={handleLogin}
-                                activeOpacity={0.8}
-                                disabled={carregando}
-                            >
-                                {/* se estiver carregando mostra o círculo, senão mostra o texto */}
-                                {carregando ? (
-                                    <ActivityIndicator color={colors.white} />
-                                ) : (
+                        <TouchableOpacity
+                            style={[styles.botaoEntrar, carregando && { opacity: 0.7 }]}
+                            onPress={handleLogin}
+                            activeOpacity={0.8}
+                            disabled={carregando}
+                        >
+                            {carregando ? (
+                                <ActivityIndicator color={colors.white} />
+                            ) : (
+                                <>
+                                    <Ionicons name="log-in-outline" size={20} color={colors.white} />
                                     <Text style={styles.textoBotaoEntrar}>Entrar</Text>
-                                )}
-                            </TouchableOpacity>
+                                </>
+                            )}
+                        </TouchableOpacity>
 
-                            <TouchableOpacity
-                                style={styles.botaoCadastro}
-                                onPress={() => Alert.alert("Cadastro", "Entre em contato com o administrador.")}
-                            >
-                                <Text style={styles.textoCadastro}>
-                                    Não tem uma conta?{" "}
-                                    <Text style={styles.textoCadastroDestaque}>Cadastre-se</Text>
-                                </Text>
-                            </TouchableOpacity>
-                        </View>
-
+                        <TouchableOpacity
+                            style={styles.botaoCadastro}
+                            onPress={() => navigation.navigate("Cadastro")}
+                        >
+                            <Text style={styles.textoCadastro}>
+                                Não tem uma conta?{" "}
+                                <Text style={styles.textoCadastroDestaque}>Cadastre-se</Text>
+                            </Text>
+                        </TouchableOpacity>
                     </View>
-                </View>
+
+                </Animated.View>
             </TouchableWithoutFeedback>
-        </KeyboardAvoidingView>
+        </SafeAreaView>
     );
 }

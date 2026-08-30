@@ -1,37 +1,45 @@
 import { authStorage } from "../storage/authStorage";
+import { authService } from "../services/authService";
 import { User } from "../models/User";
-
-// usuário fixo para validação, como não tem backend, o login é simulado aqui
-const USUARIO_MOCK: User = {
-    email: "teste@email.com",
-    senha: "123456",
-    nm_usuario: "Veterinario",
-};
 
 export const authController = {
 
-    // valida email e senha, se bater com o mock, salva a sessão e retorna true
+    // chama o backend - se der certo, salva token+usuário e retorna true
     async fazerLogin(email: string, senha: string): Promise<boolean> {
-        if (email === USUARIO_MOCK.email && senha === USUARIO_MOCK.senha) {
-            await authStorage.salvarUsuario(USUARIO_MOCK);
+        try {
+            const { token, usuario } = await authService.login(email, senha);
+            await authStorage.salvarSessao(token, usuario);
             return true;
+        } catch (error) {
+            // qualquer falha aqui é "login não deu certo"
+            return false;
         }
-        return false;
     },
 
-    // verifica se tem sessão salva no asyncstorage, usado pra decidir onde o app começa
+    // chama o cadastro no backend - se der certo, ja salva a sessão (loga direto sem precisar logar de novo)
+    async fazerCadastro(nome: string, email: string, senha: string): Promise<boolean> {
+        try {
+            const { token, usuario } = await authService.cadastrar(nome, email, senha);
+            await authStorage.salvarSessao(token, usuario);
+            return true;
+        } catch (error) {
+            return false;
+        }
+    },
+
+    // verifica se tem sessão salva no asyncstorage, usado pra ver onde o app começa
     async verificarSessao(): Promise<boolean> {
-        const user = await authStorage.buscarUsuario();
-        return user !== null;
+        const token = await authStorage.buscarToken();
+        return token !== null;
     },
 
-    // retorna os dados do usuário logado (nome, email etc)
+    // retorna os dados do usuario logado (nome, email etc)
     async buscarUsuarioLogado(): Promise<User | null> {
         return await authStorage.buscarUsuario();
     },
 
-    // remove a sessão do asyncstorage, equivale ao logout
+    // remove a sessão do asyncstorage, tipo ao logout
     async fazerLogout(): Promise<void> {
-        await authStorage.removerUsuario();
+        await authStorage.removerSessao();
     },
 };

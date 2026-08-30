@@ -17,16 +17,18 @@ export default StyleSheet.create({
         marginBottom: 8,
     },
 
-    // linha branca com borda que envolve ícone + input + ícone
+    // linha branca com borda que envolve ícone + input + ícone.
+    // Fundo levemente acinzentado em vez de branco puro — separa visualmente
+    // o campo do resto da tela sem precisar de uma borda mais escura.
     inputContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: colors.white,
-        borderRadius: 12,
-        borderWidth: 1,
-        borderColor: colors.grayLight,
+        backgroundColor: colors.grayLight,
+        borderRadius: 14,
+        borderWidth: 1.5,
+        borderColor: 'transparent',
         paddingHorizontal: 16,
-        height: 52,
+        height: 54,
     },
 
     // campo de texto ocupa todo o espaço disponível
