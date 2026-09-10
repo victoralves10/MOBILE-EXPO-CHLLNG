@@ -94,37 +94,43 @@ export default function Routes() {
 
     return (
         <NavigationContainer>
-            <Stack.Navigator
-                initialRouteName={logado ? "App" : "Login"}
-                screenOptions={{ headerShown: false }}
-            >
-                <Stack.Screen name="Login" component={Login} />
-                <Stack.Screen name="Cadastro" component={Cadastro} />
-                <Stack.Screen name="App" component={TabRoutes} />
+            <Stack.Navigator screenOptions={{ headerShown: false }}>
+                {!logado ? (
+                    /* ROTAS PÚBLICAS: acessíveis apenas deslogado */
+                    <Stack.Group>
+                        <Stack.Screen name="Login" component={Login} />
+                        <Stack.Screen name="Cadastro" component={Cadastro} />
+                    </Stack.Group>
+                ) : (
+                    /* ROTAS PROTEGIDAS: acessíveis apenas com token */
+                    <Stack.Group>
+                        <Stack.Screen name="App" component={TabRoutes} />
 
-                {/* tela de detalhe da consulta, aparece por cima das abas com o seu proprio header */}
-                <Stack.Screen
-                    name="DetalheConsulta"
-                    component={DetalheConsulta}
-                    options={{
-                        headerShown: true,
-                        headerTitle: "Detalhes da Consulta",
-                        headerTintColor: colors.bluePrimary,
-                        headerStyle: { backgroundColor: colors.white },
-                    }}
-                />
+                        {/* tela de detalhe da consulta, aparece por cima das abas com o seu proprio header */}
+                        <Stack.Screen
+                            name="DetalheConsulta"
+                            component={DetalheConsulta}
+                            options={{
+                                headerShown: true,
+                                headerTitle: "Detalhes da Consulta",
+                                headerTintColor: colors.bluePrimary,
+                                headerStyle: { backgroundColor: colors.white },
+                            }}
+                        />
 
-                {/* tela de ficha do paciente, aparece por cima das abas com o seu proprio header */}
-                <Stack.Screen
-                    name="DetalhePaciente"
-                    component={DetalhePaciente}
-                    options={{
-                        headerShown: true,
-                        headerTitle: "Ficha do Paciente",
-                        headerTintColor: colors.bluePrimary,
-                        headerStyle: { backgroundColor: colors.white },
-                    }}
-                />
+                        {/* tela de ficha do paciente, aparece por cima das abas com o seu proprio header */}
+                        <Stack.Screen
+                            name="DetalhePaciente"
+                            component={DetalhePaciente}
+                            options={{
+                                headerShown: true,
+                                headerTitle: "Ficha do Paciente",
+                                headerTintColor: colors.bluePrimary,
+                                headerStyle: { backgroundColor: colors.white },
+                            }}
+                        />
+                    </Stack.Group>
+                )}
             </Stack.Navigator>
         </NavigationContainer>
     );

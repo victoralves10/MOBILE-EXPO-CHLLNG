@@ -1,89 +1,108 @@
-import { consultaStorage } from "../storage/consultaStorage";
-import { pacienteStorage } from "../storage/pacienteStorage";
-import { Consulta } from "../models/Consulta";
-import { Responsavel } from "../models/Responsavel";
-import { Animal } from "../models/Animal";
+import { consultaService } from "../services/consultaService";
+import { animalService } from "../services/animalService";
+import { responsavelService } from "../services/responsavelService";
+import { converterParaIso } from "../utils/formatacao";
+import { Consulta, StatusConsulta } from "../models/Consulta";
 
-// gera um id único combinando timestamp + string aleatória
-function gerarId(): string {
-    return Date.now().toString() + Math.random().toString(36).substring(2, 7);
+// dados soltos do formulário de "Nova Consulta" (ainda sem ids, porque
+// animal/responsável podem já existir ou precisar ser criados agora)
+interface DadosNovaConsulta {
+    historico_consulta: string;
+    dt_consulta: string; // DD/MM/AAAA, vindo do formulário
+    hr_consulta: string;
+    st_consulta: StatusConsulta;
+}
+
+interface DadosNovoResponsavel {
+    cpf_responsavel: string;
+    nm_responsavel: string;
+    nr_telefone_responsavel: string;
+}
+
+interface DadosNovoAnimal {
+    nm_animal: string;
+    especie_animal: string;
+    raca_animal: string;
+    dt_nascimento_animal: string; // DD/MM/AAAA, vindo do formulário
+    peso_animal: string;
+    rg_animal: string;
+    nr_microchip_animal: string;
 }
 
 export const consultaController = {
 
-    // retorna todas as consultas salvas
+    // retorna todas as consultas do usuário logado
     async buscarTodas(): Promise<Consulta[]> {
-        return await consultaStorage.buscarTodas();
+        return await consultaService.listar();
     },
 
     // busca uma consulta específica pelo id
-    async buscarPorId(id_consulta: string): Promise<Consulta | null> {
-        const todas = await consultaStorage.buscarTodas();
-        return todas.find(c => c.id_consulta === id_consulta) ?? null;
+    async buscarPorId(id_consulta: number): Promise<Consulta | null> {
+        return await consultaService.buscarPorId(id_consulta);
     },
 
-    // cria uma nova consulta junto com o animal e responsável
+    // cria uma nova consulta junto com o animal e responsável (evita duplicar
+    // responsável/animal já cadastrados, buscando por cpf/microchip na API)
     async criar(
-        dados: Omit<Consulta, "id_consulta">,
-        responsavel: Omit<Responsavel, "id_responsavel">,
-        animal: Omit<Animal, "id_animal" | "id_responsavel">
+        dados: DadosNovaConsulta,
+        responsavel: DadosNovoResponsavel,
+        animal: DadosNovoAnimal
     ): Promise<void> {
 
-        // verifica se o responsável já existe pelo cpf para evitar duplicadas
-        const todosResponsaveis = await pacienteStorage.buscarTodosResponsaveis();
-        let responsavelExistente = todosResponsaveis.find(
-            r => r.cpf_responsavel === responsavel.cpf_responsavel
-        );
+        // verifica se o responsável já existe pelo cpf, evita duplicado
+        const responsavelExistente = await responsavelService.buscarPorCpf(responsavel.cpf_responsavel);
 
-        let id_responsavel: string;
+        let id_responsavel: number;
 
         if (responsavelExistente) {
             id_responsavel = responsavelExistente.id_responsavel;
         } else {
-            id_responsavel = gerarId();
-            await pacienteStorage.adicionarResponsavel({
-                ...responsavel,
-                id_responsavel,
-            });
+            const novoResponsavel = await responsavelService.criar(responsavel);
+            id_responsavel = novoResponsavel.id_responsavel;
         }
 
-        // verifica se o animal já existe pelo microchip, evita duplicadas
-        const todosAnimais = await pacienteStorage.buscarTodosAnimais();
-        let animalExistente = todosAnimais.find(
-            a => a.nr_microchip_animal === animal.nr_microchip_animal
-        );
+        // verifica se o animal já existe pelo microchip, evita duplicado
+        const animalExistente = animal.nr_microchip_animal
+            ? await animalService.buscarPorMicrochip(animal.nr_microchip_animal)
+            : null;
 
-        let id_animal: string;
+        let id_animal: number;
 
         if (animalExistente) {
             id_animal = animalExistente.id_animal;
         } else {
-            id_animal = gerarId();
-            await pacienteStorage.adicionarAnimal({
-                ...animal,
-                id_animal,
+            const novoAnimal = await animalService.criar({
+                nm_animal: animal.nm_animal,
+                especie_animal: animal.especie_animal,
+                raca_animal: animal.raca_animal || null,
+                dt_nascimento_animal: animal.dt_nascimento_animal ? converterParaIso(animal.dt_nascimento_animal) : null,
+                peso_animal: animal.peso_animal ? Number(animal.peso_animal) : null,
+                rg_animal: animal.rg_animal || null,
+                nr_microchip_animal: animal.nr_microchip_animal || null,
                 id_responsavel,
             });
+            id_animal = novoAnimal.id_animal;
         }
 
-        // monta e salva a consulta com os ids gerados
-        const novaConsulta: Consulta = {
-            ...dados,
-            id_consulta: gerarId(),
+        // por fim cria a consulta vinculada ao animal
+        await consultaService.criar({
+            historico_consulta: dados.historico_consulta,
+            dt_consulta: converterParaIso(dados.dt_consulta),
+            hr_consulta: dados.hr_consulta,
+            st_consulta: dados.st_consulta,
             id_animal,
-            id_responsavel,
-        };
-
-        await consultaStorage.adicionar(novaConsulta);
+        });
     },
 
     // atualiza os dados de uma consulta existente
     async atualizar(consulta: Consulta): Promise<void> {
-        await consultaStorage.atualizar(consulta);
+        await consultaService.atualizar(consulta);
     },
 
     // remove uma consulta pelo id
-    async remover(id_consulta: string): Promise<void> {
-        await consultaStorage.remover(id_consulta);
+    async remover(id_consulta: number): Promise<void> {
+        await consultaService.remover(id_consulta);
     },
 };
+
+export type { DadosNovaConsulta, DadosNovoResponsavel, DadosNovoAnimal };
