@@ -3,77 +3,111 @@ import { colors } from "../../global/colors";
 
 export const styles = StyleSheet.create({
 
-    // card branco com sombra leve e bordas arredondadas
     card: {
         backgroundColor: colors.white,
-        borderRadius: 16,
-        padding: 16,
+        borderRadius: 18,
         marginBottom: 12,
         flexDirection: "row",
-        alignItems: "center",
-        elevation: 2,
+        overflow: "hidden",
+
+        elevation: 3,
         shadowColor: colors.black,
-        shadowOffset: { width: 0, height: 2 },
+        shadowOffset: { width: 0, height: 3 },
         shadowOpacity: 0.08,
-        shadowRadius: 4,
+        shadowRadius: 8,
     },
 
-    // ocupa todo o espaço sobrando à esquerda do ícone
+    // linha colorida vertical à esquerda, indica o status de relance
+    linhaStatus: {
+        width: 4,
+    },
+
+    containerConteudo: {
+        flex: 1,
+        flexDirection: "row",
+        alignItems: "flex-start",
+        padding: 14,
+        gap: 12,
+    },
+
+    // círculo com a inicial do nome do animal
+    avatar: {
+        width: 44,
+        height: 44,
+        borderRadius: 22,
+        alignItems: "center",
+        justifyContent: "center",
+    },
+
+    textoAvatar: {
+        fontSize: 18,
+        fontWeight: "800",
+    },
+
     containerInfo: {
         flex: 1,
     },
 
-    // nome do animal em destaque
     textoNomeAnimal: {
-        fontSize: 16,
+        fontSize: 15,
         fontWeight: "700",
         color: colors.dark,
     },
 
-    // espécie e raça em cinza abaixo do nome
     textoEspecie: {
-        fontSize: 13,
+        fontSize: 12,
         color: colors.gray,
-        marginTop: 2,
+        marginTop: 1,
     },
 
-    // motivo da consulta
     textoConsulta: {
         fontSize: 13,
         color: colors.dark,
         marginTop: 6,
     },
 
-    // data e horário da consulta
-    textoHorario: {
-        fontSize: 12,
-        color: colors.gray,
-        marginTop: 2,
+    containerRodape: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        marginTop: 8,
+        gap: 8,
     },
 
-    // badge colorido do status (Agendado / Concluido / Atrasado)
-    containerStatus: {
-        marginTop: 8,
-        alignSelf: "flex-start",
-        paddingHorizontal: 10,
+    containerHorario: {
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 4,
+        flexShrink: 1,
+    },
+
+    textoHorario: {
+        fontSize: 11,
+        color: colors.gray,
+    },
+
+    // badge colorido do status, com ícone pequeno junto
+    badgeStatus: {
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 3,
+        paddingHorizontal: 8,
         paddingVertical: 3,
         borderRadius: 20,
     },
 
-    // texto do badge de status
-    textoStatus: {
-        fontSize: 11,
-        fontWeight: "600",
+    textoBadgeStatus: {
+        fontSize: 10,
+        fontWeight: "700",
     },
 
-    // círculo cinza do ícone de câmera no lado direito
-    containerIcone: {
-        width: 44,
-        height: 44,
-        borderRadius: 22,
+    // botão circular do ícone de câmera
+    botaoIcone: {
+        width: 36,
+        height: 36,
+        borderRadius: 18,
         backgroundColor: colors.grayLight,
         alignItems: "center",
         justifyContent: "center",
-        marginLeft: 12,
     },
 });

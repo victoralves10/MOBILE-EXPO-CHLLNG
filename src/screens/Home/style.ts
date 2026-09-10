@@ -1,18 +1,15 @@
 import { StyleSheet, Dimensions } from "react-native";
 import { colors } from "../../global/colors";
 
-// pega a largura total da tela usada para calcular o tamanho do card do carrossel
 const { width } = Dimensions.get("window");
 
 export const styles = StyleSheet.create({
 
-    // tela inteira, fundo cinza claro
     container: {
         flex: 1,
         backgroundColor: colors.grayLight,
     },
 
-    // parte de cima, fundo branco com borda embaixo separando do destaque
     containerCarrossel: {
         backgroundColor: colors.white,
         paddingVertical: 16,
@@ -20,41 +17,66 @@ export const styles = StyleSheet.create({
         borderBottomColor: colors.grayLight,
     },
 
-    // titulo "Consultas Recentes" e "Destaque"
-    tituloSecao: {
-        fontSize: 16,
-        fontWeight: "700",
-        color: colors.dark,
+    // agrupa o título + o badge com o contador
+    containerTitulo: {
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 8,
         paddingHorizontal: 16,
         marginBottom: 12,
     },
 
-    // espaçamento de dentro do carrossel
+    tituloSecao: {
+        fontSize: 16,
+        fontWeight: "700",
+        color: colors.dark,
+    },
+
+    // bolinha azul com o número de consultas agendadas
+    badgeContador: {
+        backgroundColor: colors.bluePrimary,
+        borderRadius: 10,
+        minWidth: 20,
+        height: 20,
+        paddingHorizontal: 6,
+        alignItems: "center",
+        justifyContent: "center",
+    },
+
+    textoBadgeContador: {
+        color: colors.white,
+        fontSize: 11,
+        fontWeight: "700",
+    },
+
     flatListCarrossel: {
         paddingHorizontal: 16,
     },
 
-    // cada card do carrossel ocupa 75% da largura da tela, isso faz sentir q tem coisa pra rolar
     cardCarrossel: {
         width: width * 0.75,
         marginRight: 12,
     },
 
-    // mensagem quando c tem consultas cadastradas ainda
+    // estado vazio, com ícone acima do texto
+    containerVazio: {
+        alignItems: "center",
+        paddingHorizontal: 16,
+        paddingVertical: 20,
+        gap: 8,
+    },
+
     textoVazioCarrossel: {
         color: colors.gray,
         fontSize: 14,
-        paddingHorizontal: 16,
-        paddingVertical: 8,
+        textAlign: "center",
     },
 
-    // part de baixo, ocupa o resto da tela com padding
     containerDestaque: {
         flex: 1,
         padding: 16,
     },
 
-    // titulo "Destaque"
     tituloDestaque: {
         fontSize: 16,
         fontWeight: "700",
@@ -62,7 +84,6 @@ export const styles = StyleSheet.create({
         marginBottom: 12,
     },
 
-    // imagem de destaque, ocupa todo o espaço reto com bordas arredondadas
     imagemDestaque: {
         flex: 1,
         width: "100%",
