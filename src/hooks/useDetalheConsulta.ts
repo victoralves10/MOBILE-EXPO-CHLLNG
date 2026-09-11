@@ -3,6 +3,7 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { consultaController } from "../controllers/consultaController";
 import { pacienteController } from "../controllers/pacienteController";
+import { schemaEditarConsulta } from "../validations/consultaValidations";
 import { StatusConsulta } from "../models/Consulta";
 import { toastErro, toastSucesso } from "../utils/toast";
 
@@ -11,10 +12,8 @@ export function useDetalheConsulta() {
     const route = useRoute<any>();
     const queryClient = useQueryClient();
 
-    // pega o id que foi passado ao navegar pra essa tela
     const { id_consulta } = route.params;
 
-    // busca a consulta, e só depois dela chegar busca o animal e o responsável
     const consultaQuery = useQuery({
         queryKey: ["consulta", id_consulta],
         queryFn: () => consultaController.buscarPorId(id_consulta),
@@ -36,8 +35,6 @@ export function useDetalheConsulta() {
     const responsavel = responsavelQuery.data ?? null;
 
     const carregando = consultaQuery.isLoading || animalQuery.isFetching || responsavelQuery.isFetching;
-
-    // ---------- modal de edição ----------
 
     const [modalVisivel, setModalVisivel] = useState(false);
     const [historico, setHistorico] = useState("");
@@ -73,19 +70,22 @@ export function useDetalheConsulta() {
             queryClient.invalidateQueries({ queryKey: ["consultas"] });
             setModalVisivel(false);
         },
-        onError: () => toastErro("Não foi possível salvar as alterações."),
+        onError: (error) => {
+            console.error("[useDetalheConsulta.handleSalvar]", error);
+            toastErro("Não foi possível salvar as alterações.");
+        },
     });
 
-    function handleSalvar() {
+    async function handleSalvar() {
         if (!consulta) return;
-        if (!historico || !dtConsulta || !hrConsulta) {
-            toastErro("Preencha todos os campos obrigatórios.");
+        try {
+            await schemaEditarConsulta.validate({ historico, dtConsulta, hrConsulta });
+        } catch (erro: any) {
+            toastErro(erro.message);
             return;
         }
         mutationAtualizar.mutate();
     }
-
-    // ---------- remover ----------
 
     const mutationRemover = useMutation({
         mutationFn: () => consultaController.remover(id_consulta),
@@ -94,7 +94,10 @@ export function useDetalheConsulta() {
             queryClient.invalidateQueries({ queryKey: ["consultas"] });
             navigation.goBack();
         },
-        onError: () => toastErro("Não foi possível remover a consulta."),
+        onError: (error) => {
+            console.error("[useDetalheConsulta.remover]", error);
+            toastErro("Não foi possível remover a consulta.");
+        },
     });
 
     return {

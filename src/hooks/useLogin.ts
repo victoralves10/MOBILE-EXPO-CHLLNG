@@ -2,10 +2,11 @@ import { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { useMutation } from "@tanstack/react-query";
 import { useSenhaVisivel } from "./useSenhaVisivel";
+import { useAuth } from "../context/AuthContext";
 import { authController, ErroSemConexao } from "../controllers/authController";
-import { toastErro, toastAviso } from "../utils/toast";
+import { schemaLogin } from "../validations/authValidations";
+import { toastErro } from "../utils/toast";
 
-// espera um pouco antes de navegar, pra n deixar parecer que travou
 function aguardar(ms: number) {
     return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -16,18 +17,20 @@ export function useLogin() {
 
     const senhaVisivel = useSenhaVisivel();
     const navigation = useNavigation<any>();
+    const { entrar } = useAuth();
 
     const mutation = useMutation({
         mutationFn: () => authController.fazerLogin(email.trim(), senha.trim()),
         onSuccess: async (sucesso) => {
             if (sucesso) {
                 await aguardar(600);
-                navigation.reset({ index: 0, routes: [{ name: "App" }] });
+                entrar();
             } else {
                 toastErro("E-mail ou senha incorretos.");
             }
         },
         onError: (error) => {
+            console.error("[useLogin.fazerLogin]", error);
             if (error instanceof ErroSemConexao) {
                 toastErro("Sem conexão com o servidor.");
             } else {
@@ -36,9 +39,11 @@ export function useLogin() {
         },
     });
 
-    function fazerLogin() {
-        if (!email.trim() || !senha.trim()) {
-            toastAviso("Preencha e-mail e senha.");
+    async function fazerLogin() {
+        try {
+            await schemaLogin.validate({ email, senha });
+        } catch (erro: any) {
+            toastErro(erro.message);
             return;
         }
         mutation.mutate();

@@ -3,6 +3,7 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { pacienteController } from "../controllers/pacienteController";
 import { converterParaIso } from "../utils/formatacao";
+import { schemaEditarPaciente } from "../validations/pacienteValidations";
 import { toastErro, toastSucesso } from "../utils/toast";
 
 export function useDetalhePaciente() {
@@ -10,7 +11,6 @@ export function useDetalhePaciente() {
     const route = useRoute<any>();
     const queryClient = useQueryClient();
 
-    // pega o id que foi passado ao navegar pra essa tela
     const { id_animal } = route.params;
 
     const fichaQuery = useQuery({
@@ -22,8 +22,6 @@ export function useDetalhePaciente() {
     const responsavel = fichaQuery.data?.responsavel ?? null;
     const consultas = fichaQuery.data?.consultas ?? [];
     const carregando = fichaQuery.isLoading;
-
-    // ---------- modal de edição ----------
 
     const [modalVisivel, setModalVisivel] = useState(false);
     const [nmAnimal, setNmAnimal] = useState("");
@@ -83,19 +81,22 @@ export function useDetalhePaciente() {
             queryClient.invalidateQueries({ queryKey: ["responsaveis"] });
             setModalVisivel(false);
         },
-        onError: () => toastErro("Não foi possível salvar as alterações."),
+        onError: (error) => {
+            console.error("[useDetalhePaciente.handleSalvar]", error);
+            toastErro("Não foi possível salvar as alterações.");
+        },
     });
 
-    function handleSalvar() {
+    async function handleSalvar() {
         if (!animal || !responsavel) return;
-        if (!nmAnimal || !especieAnimal || !nmResponsavel || !cpfResponsavel || !telefoneResponsavel) {
-            toastErro("Preencha todos os campos obrigatórios.");
+        try {
+            await schemaEditarPaciente.validate({ nmAnimal, especieAnimal, nmResponsavel, cpfResponsavel, telefoneResponsavel });
+        } catch (erro: any) {
+            toastErro(erro.message);
             return;
         }
         mutationAtualizar.mutate();
     }
-
-    // ---------- remover ----------
 
     const mutationRemover = useMutation({
         mutationFn: () => pacienteController.removerPaciente(animal!.id_animal, responsavel!.id_responsavel),
@@ -105,7 +106,10 @@ export function useDetalhePaciente() {
             queryClient.invalidateQueries({ queryKey: ["responsaveis"] });
             navigation.goBack();
         },
-        onError: () => toastErro("Não foi possível remover o paciente."),
+        onError: (error) => {
+            console.error("[useDetalhePaciente.remover]", error);
+            toastErro("Não foi possível remover o paciente.");
+        },
     });
 
     function abrirDetalheConsulta(id_consulta: number) {

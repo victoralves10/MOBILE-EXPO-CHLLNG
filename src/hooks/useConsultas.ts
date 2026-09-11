@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { consultaService } from "../services/consultaService";
 import { animalService } from "../services/animalService";
 import { consultaController, DadosNovaConsulta, DadosNovoResponsavel, DadosNovoAnimal } from "../controllers/consultaController";
+import { schemaNovaConsulta } from "../validations/consultaValidations";
 import { Consulta, StatusConsulta } from "../models/Consulta";
 import { Animal } from "../models/Animal";
 import { toastErro, toastSucesso } from "../utils/toast";
@@ -36,6 +37,7 @@ export function useConsultas() {
         useCallback(() => {
             consultasQuery.refetch();
             animaisQuery.refetch();
+            // eslint-disable-next-line react-hooks/exhaustive-deps
         }, [])
     );
 
@@ -60,7 +62,8 @@ export function useConsultas() {
         navigation.navigate("DetalheConsulta", { id_consulta });
     }
 
-    // ---------- Modal Nova Consulta ----------
+    // ---------- nova consulta ----------
+
     const [modalVisivel, setModalVisivel] = useState(false);
 
     const [historico, setHistorico] = useState("");
@@ -105,35 +108,26 @@ export function useConsultas() {
             animal: DadosNovoAnimal;
         }) => consultaController.criar(dados, responsavel, animal),
         onSuccess: () => {
-            toastSucesso("Consulta agendada!");
+            toastSucesso("Consulta criada!");
             queryClient.invalidateQueries({ queryKey: ["consultas"] });
             queryClient.invalidateQueries({ queryKey: ["animais"] });
             setModalVisivel(false);
             limparCampos();
         },
-        onError: () => {
+        onError: (error) => {
+            console.error("[useConsultas.handleSalvar]", error);
             toastErro("Não foi possível salvar a consulta.");
         },
     });
 
-    const mutationRemover = useMutation({
-        mutationFn: (id_consulta: number) => consultaController.remover(id_consulta),
-        onSuccess: () => {
-            toastSucesso("Consulta excluída.");
-            queryClient.invalidateQueries({ queryKey: ["consultas"] });
-        },
-        onError: () => {
-            toastErro("Erro ao excluir consulta.");
-        }
-    });
-
-    function handleSalvar() {
-        if (!historico || !dtConsulta || !hrConsulta || !nmAnimal || !especieAnimal) {
-            toastErro("Preencha os campos obrigatórios.");
-            return;
-        }
-        if (!nmResponsavel || !cpfResponsavel || !telefoneResponsavel) {
-            toastErro("Preencha os dados do responsável.");
+    async function handleSalvar() {
+        try {
+            await schemaNovaConsulta.validate(
+                { historico, dtConsulta, hrConsulta, nmAnimal, especieAnimal, nmResponsavel, cpfResponsavel, telefoneResponsavel },
+                { abortEarly: true }
+            );
+        } catch (erro: any) {
+            toastErro(erro.message);
             return;
         }
 
@@ -153,7 +147,6 @@ export function useConsultas() {
         carregando,
         consultasFiltradas,
         abrirDetalheConsulta,
-        removerConsulta: (id: number) => mutationRemover.mutate(id),
 
         modalVisivel,
         abrirModalNovaConsulta,

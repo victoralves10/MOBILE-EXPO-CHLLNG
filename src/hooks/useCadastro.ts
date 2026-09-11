@@ -2,9 +2,10 @@ import { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { useMutation } from "@tanstack/react-query";
 import { useSenhaVisivel } from "./useSenhaVisivel";
-import { emailValido, senhaForte } from "../utils/validacoes";
+import { useAuth } from "../context/AuthContext";
 import { authController, ErroSemConexao } from "../controllers/authController";
-import { toastErro, toastAviso } from "../utils/toast";
+import { schemaCadastro } from "../validations/authValidations";
+import { toastErro } from "../utils/toast";
 
 function aguardar(ms: number) {
     return new Promise((resolve) => setTimeout(resolve, ms));
@@ -19,19 +20,20 @@ export function useCadastro() {
     const senhaVisivel = useSenhaVisivel();
     const confirmarSenhaVisivel = useSenhaVisivel();
     const navigation = useNavigation<any>();
+    const { entrar } = useAuth();
 
     const mutation = useMutation({
         mutationFn: () => authController.fazerCadastro(nome.trim(), email.trim(), senha),
         onSuccess: async (sucesso) => {
             if (sucesso) {
                 await aguardar(600);
-                // já loga direto, não precisa voltar pro login
-                navigation.reset({ index: 0, routes: [{ name: "App" }] });
+                entrar();
             } else {
                 toastErro("Não deu pra criar a conta. Tenta outro e-mail.");
             }
         },
         onError: (error) => {
+            console.error("[useCadastro.fazerCadastro]", error);
             if (error instanceof ErroSemConexao) {
                 toastErro("Sem conexão com o servidor.");
             } else {
@@ -40,27 +42,13 @@ export function useCadastro() {
         },
     });
 
-    function fazerCadastro() {
-        if (!nome.trim() || !email.trim() || !senha.trim() || !confirmarSenha.trim()) {
-            toastAviso("Preencha todos os campos.");
+    async function fazerCadastro() {
+        try {
+            await schemaCadastro.validate({ nome, email, senha, confirmarSenha });
+        } catch (erro: any) {
+            toastErro(erro.message);
             return;
         }
-
-        if (!emailValido(email.trim())) {
-            toastErro("E-mail com formato inválido.");
-            return;
-        }
-
-        if (senha !== confirmarSenha) {
-            toastErro("As senhas não coincidem.");
-            return;
-        }
-
-        if (!senhaForte(senha)) {
-            toastErro("Senha fraca: min. 8 caracteres, com maiúscula, número e símbolo.");
-            return;
-        }
-
         mutation.mutate();
     }
 

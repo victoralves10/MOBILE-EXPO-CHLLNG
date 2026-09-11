@@ -1,11 +1,10 @@
-import { useEffect, useState } from "react";
 import { ActivityIndicator, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
 import { colors } from "../global/colors";
-import { authController } from "../controllers/authController";
+import { useAuth } from "../context/AuthContext";
 
 import Login from "../screens/Login/Index";
 import Cadastro from "../screens/Cadastro/Index";
@@ -16,13 +15,9 @@ import Paciente from "../screens/Paciente/Index";
 import DetalhePaciente from "../screens/Paciente/DetalhesPaciente";
 import Perfil from "../screens/Perfil/Index";
 
-// navegador de pilha (telas que aparecem uma na frente da outra)
 const Stack = createNativeStackNavigator();
-
-// navegador de abas (barra de navegação lá embaixo)
 const Tab = createBottomTabNavigator();
 
-// função que monta as 4 abas principais do app
 function TabRoutes() {
     return (
         <Tab.Navigator
@@ -68,22 +63,9 @@ function TabRoutes() {
     );
 }
 
-// componente principal que controla toda a navegação do app
 export default function Routes() {
-    const [carregando, setCarregando] = useState(true);
-    const [logado, setLogado] = useState(false);
+    const { logado, carregando } = useAuth();
 
-    // roda 1 vez quando o app abre
-    useEffect(() => {
-        async function verificarSessao() {
-            const sessaoAtiva = await authController.verificarSessao();
-            setLogado(sessaoAtiva);
-            setCarregando(false);
-        }
-        verificarSessao();
-    }, []);
-
-    // enquanto verifica a sessão mostra o círculo girando
     if (carregando) {
         return (
             <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -94,37 +76,42 @@ export default function Routes() {
 
     return (
         <NavigationContainer>
-            <Stack.Navigator
-                initialRouteName={logado ? "App" : "Login"}
-                screenOptions={{ headerShown: false }}
-            >
-                <Stack.Screen name="Login" component={Login} />
-                <Stack.Screen name="Cadastro" component={Cadastro} />
-                <Stack.Screen name="App" component={TabRoutes} />
+            <Stack.Navigator screenOptions={{ headerShown: false }}>
 
-                {/* tela de detalhe da consulta, aparece por cima das abas com o seu proprio header */}
-                <Stack.Screen
-                    name="DetalheConsulta"
-                    component={DetalheConsulta}
-                    options={{
-                        headerShown: true,
-                        headerTitle: "Detalhes da Consulta",
-                        headerTintColor: colors.bluePrimary,
-                        headerStyle: { backgroundColor: colors.white },
-                    }}
-                />
+                {/* rotas só existem quando o usuário está logado */}
+                {logado ? (
+                    <Stack.Group>
+                        <Stack.Screen name="App" component={TabRoutes} />
 
-                {/* tela de ficha do paciente, aparece por cima das abas com o seu proprio header */}
-                <Stack.Screen
-                    name="DetalhePaciente"
-                    component={DetalhePaciente}
-                    options={{
-                        headerShown: true,
-                        headerTitle: "Ficha do Paciente",
-                        headerTintColor: colors.bluePrimary,
-                        headerStyle: { backgroundColor: colors.white },
-                    }}
-                />
+                        <Stack.Screen
+                            name="DetalheConsulta"
+                            component={DetalheConsulta}
+                            options={{
+                                headerShown: true,
+                                headerTitle: "Detalhes da Consulta",
+                                headerTintColor: colors.bluePrimary,
+                                headerStyle: { backgroundColor: colors.white },
+                            }}
+                        />
+
+                        <Stack.Screen
+                            name="DetalhePaciente"
+                            component={DetalhePaciente}
+                            options={{
+                                headerShown: true,
+                                headerTitle: "Ficha do Paciente",
+                                headerTintColor: colors.bluePrimary,
+                                headerStyle: { backgroundColor: colors.white },
+                            }}
+                        />
+                    </Stack.Group>
+                ) : (
+                    <Stack.Group>
+                        <Stack.Screen name="Login" component={Login} />
+                        <Stack.Screen name="Cadastro" component={Cadastro} />
+                    </Stack.Group>
+                )}
+
             </Stack.Navigator>
         </NavigationContainer>
     );

@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { useNavigation } from "@react-navigation/native";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { authController, ErroSemConexao, ErroSenhaIncorreta } from "../controllers/authController";
+import { useAuth } from "../context/AuthContext";
 import { usuarioService } from "../services/usuarioService";
 import { consultaService } from "../services/consultaService";
 import { animalService } from "../services/animalService";
 import { useSenhaVisivel } from "./useSenhaVisivel";
+import { schemaEditarPerfil, schemaApagarConta } from "../validations/authValidations";
 import { toastErro, toastSucesso } from "../utils/toast";
 
 function ehMesAtual(dataIso: string): boolean {
@@ -15,17 +16,15 @@ function ehMesAtual(dataIso: string): boolean {
 }
 
 export function usePerfil() {
-    const navigation = useNavigation<any>();
+    const { sair: sairDoAuthContext } = useAuth();
     const queryClient = useQueryClient();
 
-    // Dados do usuário buscados diretamente do backend
     const usuarioQuery = useQuery({
         queryKey: ["usuario"],
         queryFn: () => usuarioService.buscarDados(),
     });
     const usuario = usuarioQuery.data ?? null;
 
-    // Consultas e animais para KPIs
     const consultasQuery = useQuery({
         queryKey: ["consultas"],
         queryFn: () => consultaService.listar(),
@@ -54,7 +53,8 @@ export function usePerfil() {
 
     const inicial = usuario?.nm_usuario?.charAt(0).toUpperCase() ?? "?";
 
-    // ---------- Modal Editar ----------
+    // ---------- editar dados ----------
+
     const [modalEditarAberto, setModalEditarAberto] = useState(false);
     const [nome, setNome] = useState("");
     const [email, setEmail] = useState("");
@@ -76,28 +76,32 @@ export function usePerfil() {
         mutationFn: ({ nome, email, senha }: { nome: string; email: string; senha?: string }) =>
             authController.atualizarPerfil(nome, email, senha),
         onSuccess: () => {
-            toastSucesso("Dados atualizados com sucesso!");
+            toastSucesso("Dados atualizados.");
             queryClient.invalidateQueries({ queryKey: ["usuario"] });
             setModalEditarAberto(false);
         },
         onError: (error) => {
+            console.error("[usePerfil.confirmarEdicao]", error);
             if (error instanceof ErroSemConexao) {
                 toastErro("Sem conexão com o servidor.");
             } else {
-                toastErro("Não foi possível atualizar o perfil.");
+                toastErro("Não deu pra atualizar. Tenta de novo.");
             }
         },
     });
 
-    function confirmarEdicao() {
-        if (!nome.trim() || !email.trim()) {
-            toastErro("Preencha nome e e-mail.");
+    async function confirmarEdicao() {
+        try {
+            await schemaEditarPerfil.validate({ nome, email, novaSenha });
+        } catch (erro: any) {
+            toastErro(erro.message);
             return;
         }
         mutationEditar.mutate({ nome: nome.trim(), email: email.trim(), senha: novaSenha || undefined });
     }
 
-    // ---------- Modal Apagar Conta ----------
+    // ---------- apagar conta ----------
+
     const [modalApagarAberto, setModalApagarAberto] = useState(false);
     const [modalConfirmarApagarAberto, setModalConfirmarApagarAberto] = useState(false);
     const [senhaConfirmacao, setSenhaConfirmacao] = useState("");
@@ -117,25 +121,27 @@ export function usePerfil() {
         mutationFn: (senha: string) => authController.apagarConta(senha),
         onSuccess: () => {
             setModalApagarAberto(false);
-            queryClient.clear(); // Limpa todo o cache de consultas/pacientes
-            toastSucesso("Conta removida com sucesso.");
-            navigation.reset({ index: 0, routes: [{ name: "Login" }] });
+            toastSucesso("Conta apagada.");
+            sairDoAuthContext();
         },
         onError: (error) => {
+            console.error("[usePerfil.executarApagarConta]", error);
             setModalApagarAberto(false);
             if (error instanceof ErroSenhaIncorreta) {
                 toastErro("Senha incorreta.");
             } else if (error instanceof ErroSemConexao) {
                 toastErro("Sem conexão com o servidor.");
             } else {
-                toastErro("Erro ao excluir conta.");
+                toastErro("Não deu pra apagar a conta. Tenta de novo.");
             }
         },
     });
 
-    function confirmarApagarConta() {
-        if (!senhaConfirmacao.trim()) {
-            toastErro("Informe sua senha para confirmar.");
+    async function confirmarApagarConta() {
+        try {
+            await schemaApagarConta.validate({ senha: senhaConfirmacao });
+        } catch (erro: any) {
+            toastErro(erro.message);
             return;
         }
         setModalConfirmarApagarAberto(true);
@@ -146,13 +152,12 @@ export function usePerfil() {
         mutationApagar.mutate(senhaConfirmacao);
     }
 
-    // ---------- Logout seguro ----------
+    // ---------- sair ----------
+
     const [modalSairAberto, setModalSairAberto] = useState(false);
 
-    async function sair() {
-        await authController.fazerLogout();
-        queryClient.clear(); // Garante limpeza total de cache no logout
-        navigation.reset({ index: 0, routes: [{ name: "Login" }] });
+    function sair() {
+        sairDoAuthContext();
     }
 
     return {
