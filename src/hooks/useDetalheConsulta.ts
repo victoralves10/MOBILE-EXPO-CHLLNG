@@ -5,6 +5,7 @@ import { consultaController } from "../controllers/consultaController";
 import { pacienteController } from "../controllers/pacienteController";
 import { schemaEditarConsulta } from "../validations/consultaValidations";
 import { StatusConsulta } from "../models/Consulta";
+import { formatarData, converterParaIso } from "../utils/formatacao";
 import { toastErro, toastSucesso } from "../utils/toast";
 
 export function useDetalheConsulta() {
@@ -45,7 +46,9 @@ export function useDetalheConsulta() {
     function abrirModalEditar() {
         if (!consulta) return;
         setHistorico(consulta.historico_consulta);
-        setDtConsulta(consulta.dt_consulta);
+        // a consulta vem da API em formato ISO (ex: "2026-09-15T00:00:00.000Z") —
+        // mostra em DD/MM/AAAA no campo, igual o padrão usado em Paciente
+        setDtConsulta(formatarData(consulta.dt_consulta));
         setHrConsulta(consulta.hr_consulta);
         setStatus(consulta.st_consulta);
         setModalVisivel(true);
@@ -60,7 +63,9 @@ export function useDetalheConsulta() {
             consultaController.atualizar({
                 ...consulta!,
                 historico_consulta: historico,
-                dt_consulta: dtConsulta,
+                // converte de volta pro formato AAAA-MM-DD que o backend espera
+                // antes de mandar — sem isso, o TO_DATE do Oracle rejeita o valor
+                dt_consulta: converterParaIso(dtConsulta),
                 hr_consulta: hrConsulta,
                 st_consulta: status,
             }),
@@ -72,6 +77,8 @@ export function useDetalheConsulta() {
         },
         onError: (error) => {
             console.error("[useDetalheConsulta.handleSalvar]", error);
+            // fecha o modal, senão o toast de erro fica escondido atrás dele
+            setModalVisivel(false);
             toastErro("Não foi possível salvar as alterações.");
         },
     });

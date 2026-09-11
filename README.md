@@ -1,27 +1,33 @@
 # Clyvo ELLV 🐾
 
-Clyvo ELLV é o app mobile desenvolvido em React Native com Expo como parte do **Challenge FIAP 2026**, em parceria com a **CLYVO VET** — uma solução que centraliza a gestão de consultas e pacientes de clínicas veterinárias.
+Aplicativo mobile de gestão veterinária desenvolvido em **React Native com Expo**, como parte do **Challenge FIAP 2026** em parceria com a **Clyvo Vet**. A proposta centraliza o cadastro de pacientes e o histórico clínico de cada animal, integrado em tempo real a um backend próprio.
 
 ---
 
-## 🐕 O problema e como atacamos ele
+## 🎥 Vídeo de apresentação
 
-Clínicas veterinárias perdem receita de vacinas e protocolos anuais porque a rotina agitada do dia a dia faz com que consultas preventivas fiquem em segundo plano. Sem um histórico clínico centralizado, o animal só volta à clínica em emergências — o que atrasa o diagnóstico e prejudica o tratamento.
-
-O Clyvo ELLV ataca isso concentrando em um só lugar o cadastro de pacientes (animal + responsável) e o histórico completo de consultas de cada um, com tudo sincronizado direto com o backend — nada de planilha solta ou papel.
+📺 [Assista no YouTube](COLE_AQUI_O_LINK_DO_VIDEO)
 
 ---
 
-## ✨ O que o app faz hoje
+## 🐕 O problema
 
-- **Login e cadastro reais**, com sessão persistida (o usuário não precisa logar de novo toda vez que abre o app)
+Clínicas veterinárias costumam perder receita recorrente — vacinas, protocolos anuais, retornos — porque a rotina do dia a dia empurra as consultas preventivas pra segundo plano. Sem um histórico clínico centralizado, o paciente só volta à clínica em situação de emergência, o que atrasa diagnósticos e compromete o tratamento.
+
+O Clyvo ELLV resolve isso reunindo, em um único lugar, o cadastro de cada paciente (animal + responsável) e o histórico completo de suas consultas, sincronizado diretamente com o backend — sem planilhas soltas, sem papel, sem dado perdido.
+
+---
+
+## ✨ Funcionalidades
+
+- **Autenticação real**, com sessão persistida — o usuário não precisa logar novamente a cada vez que abre o app
 - **Home** com carrossel das próximas consultas agendadas
-- **Consultas**: listagem com busca por animal, filtro por status (Agendado / Atrasado / Concluído), criação de nova consulta (já cadastrando animal e responsável, se ainda não existirem) e tela de detalhes com edição e remoção
-- **Pacientes**: listagem de todos os animais cadastrados com busca por nome do animal ou do responsável, e ficha completa (dados do animal, do responsável e histórico de consultas) com edição e remoção
-- **Perfil**: dados do usuário logado, KPIs simples (consultas do mês, agendadas, atrasadas, total de pacientes, taxa de retorno), edição de dados, apagar conta e logout
-- **Validação de formulários com Yup** em todas as telas com formulário (login, cadastro, consultas e pacientes)
-- **Proteção de rotas**: enquanto o usuário não está autenticado, as telas internas do app nem existem na navegação — não tem como acessá-las por atalho, deep link ou botão de voltar
-- Tudo (exceto o token de sessão) vem e volta pra API em tempo real — não há dado mockado ou salvo só localmente
+- **Consultas** — listagem com busca por animal, filtro por status (Agendado / Atrasado / Concluído), criação de nova consulta (cadastrando automaticamente animal e responsável, caso ainda não existam) e detalhe com edição e remoção
+- **Pacientes** — listagem de todos os animais cadastrados, com busca por nome do animal ou do responsável, e ficha completa com edição e remoção
+- **Perfil** — dados do usuário logado, indicadores de uso (consultas do mês, agendadas, atrasadas, total de pacientes, taxa de retorno), edição de conta, exclusão de conta e logout
+- **Validação de formulários** com Yup em todas as telas que possuem entrada de dados
+- **Rotas protegidas** — enquanto o usuário não está autenticado, as telas internas do app sequer existem na árvore de navegação
+- Integração completa com a API — nenhum dado é mockado ou mantido apenas em memória local (à exceção do token de sessão)
 
 ---
 
@@ -29,14 +35,14 @@ O Clyvo ELLV ataca isso concentrando em um só lugar o cadastro de pacientes (an
 
 | Tela | Descrição |
 |------|-----------|
-| **Login** | Autenticação real via API, com sessão salva — ao reabrir o app, o usuário já entra direto |
-| **Cadastro** | Criação de conta nova, já loga automaticamente depois de cadastrar |
+| **Login** | Autenticação via API, com persistência de sessão |
+| **Cadastro** | Criação de conta nova, com login automático em seguida |
 | **Home** | Carrossel com as próximas consultas agendadas |
-| **Consultas** | Listagem com busca, filtro por status (Agendado / Atrasado / Concluído) e criação de novas consultas |
-| **Detalhe da Consulta** | Dados completos da consulta, do animal e do responsável — com opções de editar e remover |
-| **Pacientes** | Listagem de todos os pacientes com busca por nome do animal ou do responsável |
-| **Ficha do Paciente** | Dados completos do animal e do responsável, histórico de consultas e atalho para o WhatsApp |
-| **Perfil** | Dados do usuário logado, KPIs de consultas/pacientes, edição de perfil, apagar conta e logout |
+| **Consultas** | Listagem com busca, filtro por status e criação de novas consultas |
+| **Detalhe da Consulta** | Dados completos da consulta, do animal e do responsável, com edição e remoção |
+| **Pacientes** | Listagem de todos os pacientes, com busca por animal ou responsável |
+| **Ficha do Paciente** | Dados completos do animal e do responsável, histórico de consultas e atalho para WhatsApp |
+| **Perfil** | Dados do usuário, indicadores de uso, edição de conta, exclusão de conta e logout |
 
 ---
 
@@ -53,13 +59,13 @@ O Clyvo ELLV ataca isso concentrando em um só lugar o cadastro de pacientes (an
 
 ## ⚠️ Antes de rodar: acorde a API
 
-O backend está publicado gratuitamente no **Render**, e o plano gratuito hiberna a API depois de um tempo sem uso. Se o app não conseguir se conectar (erro de "sem conexão" logo no login), é isso.
+O backend está publicado no **Render**, cujo plano gratuito hiberna a aplicação após um período de inatividade. Se o app não conseguir se conectar (erro de "sem conexão" logo no login), é esse o motivo.
 
-**Antes de abrir o app**, acesse o Swagger da API e espere de **1 a 3 minutos**:
+**Antes de abrir o app**, acesse o Swagger da API e aguarde de **1 a 3 minutos**:
 
 👉 https://apirest-node-chllng.onrender.com/docs/
 
-Assim que a página do Swagger carregar, a API já está acordada e o app funciona normalmente.
+Assim que a página carregar por completo, a API está ativa e o app funciona normalmente.
 
 ---
 
@@ -70,7 +76,7 @@ E-mail: dev@clyvovet.dev
 Senha:  dev123456
 ```
 
-Esse usuário já vem pré-preenchido na tela de login. É totalmente possível criar sua própria conta pelo app (tela de Cadastro) — mas pra facilitar testes e correção, deixamos esse usuário de teste com **pacientes e consultas já cadastrados no banco**, então dá pra avaliar a navegação e as funcionalidades sem precisar montar dado nenhum na mão. 🚀
+Esse é um usuário já pré-pronto, para facilitar testes e correções. Mas é totalmente possível criar o seu próprio usuário na tela de Cadastro. Esse usuário de teste já tem dados cadastrados, para facilitar a visualização. 🚀
 
 ---
 
@@ -83,15 +89,16 @@ Esse usuário já vem pré-preenchido na tela de login. É totalmente possível 
 - App **Expo Go** no celular (o projeto usa **Expo SDK 54**):
   - [Android — Google Play](https://play.google.com/store/apps/details?id=host.exp.exponent)
   - [iOS — App Store](https://apps.apple.com/app/expo-go/id982107779)
+  - Caso o Expo Go da loja já esteja numa versão mais nova (SDK incompatível), baixe a versão certa direto do site oficial: [Expo Go SDK 54 (Android)](https://expo.dev/go?sdkVersion=54&platform=android&device=true)
 
 ### Passo a passo
 
 ```bash
 # Clone o repositório
-git clone https://github.com/AntonioCarvalhoFIAP/challenge-1-victoralves10.git
+git clone https://github.com/victoralves10/MOBILE-EXPO-CHLLNG.git
 
 # Entre na pasta do projeto
-cd challenge-1-victoralves10
+cd MOBILE-EXPO-CHLLNG
 
 # Instale as dependências
 npm install
@@ -99,13 +106,13 @@ npm install
 # Instale as dependências nativas
 npx expo install
 
-# Inicie o projeto
-npx expo start
+# Inicie o projeto (--clear limpa o cache do Metro, evita problemas de build antigo)
+npx expo start --clear
 ```
 
 Com o Expo Go instalado, conecte o celular na **mesma rede Wi-Fi** do computador e escaneie o QR Code exibido no terminal.
 
-> Não esquece do passo "Acorde a API" lá em cima antes de testar — sem isso o login não vai responder.
+> Não esqueça do passo "Acorde a API" logo acima antes de testar — sem isso, o login não vai responder.
 
 ---
 
@@ -117,7 +124,7 @@ Com o Expo Go instalado, conecte o celular na **mesma rede Wi-Fi** do computador
 - Axios
 - TanStack Query (`useQuery` / `useMutation`) para toda a integração com a API
 - Yup, para validação dos formulários
-- AsyncStorage (usado só para persistir o token de sessão)
+- AsyncStorage (usado apenas para persistir o token de sessão)
 - Ionicons (`@expo/vector-icons`)
 
 ---
@@ -133,7 +140,7 @@ src/
 ├── hooks/             # Lógica de cada tela, com TanStack Query
 ├── models/            # Interfaces TypeScript dos dados da API
 ├── navigation/        # Configuração de rotas (públicas x protegidas)
-├── screens/           # Telas do app (só UI)
+├── screens/           # Telas do app (somente UI)
 ├── services/          # Chamadas HTTP à API (axios)
 ├── storage/           # Acesso ao AsyncStorage (token de sessão)
 ├── utils/             # Funções puras (formatação, toast, validações de baixo nível)

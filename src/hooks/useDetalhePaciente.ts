@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { pacienteController } from "../controllers/pacienteController";
-import { converterParaIso } from "../utils/formatacao";
+import { formatarData, converterParaIso } from "../utils/formatacao";
 import { schemaEditarPaciente } from "../validations/pacienteValidations";
 import { toastErro, toastSucesso } from "../utils/toast";
 
@@ -40,7 +40,8 @@ export function useDetalhePaciente() {
         setNmAnimal(animal.nm_animal);
         setEspecieAnimal(animal.especie_animal);
         setRacaAnimal(animal.raca_animal ?? "");
-        setDtNascimento(animal.dt_nascimento_animal ?? "");
+        // a data vem da API em ISO - mostra formatada em DD/MM/AAAA no campo
+        setDtNascimento(animal.dt_nascimento_animal ? formatarData(animal.dt_nascimento_animal) : "");
         setPesoAnimal(animal.peso_animal != null ? String(animal.peso_animal) : "");
         setRgAnimal(animal.rg_animal ?? "");
         setMicrochip(animal.nr_microchip_animal ?? "");
@@ -83,6 +84,8 @@ export function useDetalhePaciente() {
         },
         onError: (error) => {
             console.error("[useDetalhePaciente.handleSalvar]", error);
+            // fecha o modal, senão o toast de erro fica escondido atrás dele
+            setModalVisivel(false);
             toastErro("Não foi possível salvar as alterações.");
         },
     });
