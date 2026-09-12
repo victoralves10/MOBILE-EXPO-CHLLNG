@@ -82,7 +82,7 @@ export const consultaController = {
                 id_animal,
             });
         } catch (error) {
-            console.error("[consultaController.criar]", error);
+            console.warn("[consultaController.criar]", error);
             throw error;
         }
     },
@@ -91,7 +91,7 @@ export const consultaController = {
         try {
             await consultaService.atualizar(consulta);
         } catch (error) {
-            console.error("[consultaController.atualizar]", error);
+            console.warn("[consultaController.atualizar]", error);
             throw error;
         }
     },
@@ -100,7 +100,7 @@ export const consultaController = {
         try {
             await consultaService.remover(id_consulta);
         } catch (error) {
-            console.error("[consultaController.remover]", error);
+            console.warn("[consultaController.remover]", error);
             throw error;
         }
     },

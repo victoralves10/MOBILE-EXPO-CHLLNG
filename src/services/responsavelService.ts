@@ -13,7 +13,7 @@ export const responsavelService = {
             const resposta = await api.get(`/responsaveis/${id}`);
             return resposta.data;
         } catch (error) {
-            console.error("[responsavelService.buscarPorId]", error);
+            console.warn("[responsavelService.buscarPorId]", error);
             return null;
         }
     },

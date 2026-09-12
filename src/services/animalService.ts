@@ -14,7 +14,7 @@ export const animalService = {
             const resposta = await api.get(`/animais/${id}`);
             return resposta.data;
         } catch (error) {
-            console.error("[animalService.buscarPorId]", error);
+            console.warn("[animalService.buscarPorId]", error);
             return null;
         }
     },

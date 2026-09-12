@@ -115,7 +115,7 @@ export function useConsultas() {
             limparCampos();
         },
         onError: (error) => {
-            console.error("[useConsultas.handleSalvar]", error);
+            console.warn("[useConsultas.handleSalvar]", error);
             toastErro("Não foi possível salvar a consulta.");
         },
     });

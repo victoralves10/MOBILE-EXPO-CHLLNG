@@ -13,7 +13,7 @@ export const consultaService = {
             const resposta = await api.get(`/consultas/${id}`);
             return resposta.data;
         } catch (error) {
-            console.error("[consultaService.buscarPorId]", error);
+            console.warn("[consultaService.buscarPorId]", error);
             return null;
         }
     },

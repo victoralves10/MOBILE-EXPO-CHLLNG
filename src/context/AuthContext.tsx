@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { authController } from "../controllers/authController";
+import { registrarAoSessaoExpirar } from "../services/api";
+import { toastAviso } from "../utils/toast";
 
 interface AuthContextData {
     logado: boolean;
@@ -20,7 +22,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 const sessaoAtiva = await authController.verificarSessao();
                 setLogado(sessaoAtiva);
             } catch (error) {
-                console.error("[AuthContext.verificarSessaoSalva]", error);
+                console.warn("[AuthContext.verificarSessaoSalva]", error);
                 setLogado(false);
             } finally {
                 setCarregando(false);
@@ -29,13 +31,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         verificarSessaoSalva();
     }, []);
 
+    useEffect(() => {
+        registrarAoSessaoExpirar(() => {
+            setLogado(false);
+            toastAviso("Sua sessão expirou. Faça login novamente.");
+        });
+    }, []);
+
     function entrar() {
         setLogado(true);
     }
 
     function sair() {
         authController.fazerLogout().catch((error) => {
-            console.error("[AuthContext.sair]", error);
+            console.warn("[AuthContext.sair]", error);
         });
         setLogado(false);
     }

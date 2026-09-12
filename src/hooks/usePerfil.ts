@@ -81,7 +81,7 @@ export function usePerfil() {
             setModalEditarAberto(false);
         },
         onError: (error) => {
-            console.error("[usePerfil.confirmarEdicao]", error);
+            console.warn("[usePerfil.confirmarEdicao]", error);
             if (error instanceof ErroSemConexao) {
                 toastErro("Sem conexão com o servidor.");
             } else {
@@ -125,7 +125,7 @@ export function usePerfil() {
             sairDoAuthContext();
         },
         onError: (error) => {
-            console.error("[usePerfil.executarApagarConta]", error);
+            console.warn("[usePerfil.executarApagarConta]", error);
             setModalApagarAberto(false);
             if (error instanceof ErroSenhaIncorreta) {
                 toastErro("Senha incorreta.");

@@ -64,7 +64,7 @@ export function useDetalheConsulta() {
                 ...consulta!,
                 historico_consulta: historico,
                 // converte de volta pro formato AAAA-MM-DD que o backend espera
-                // antes de mandar — sem isso, o TO_DATE do Oracle rejeita o valor
+                // antes de mandar / sem isso, o TO_DATE do Oracle rejeita o valor
                 dt_consulta: converterParaIso(dtConsulta),
                 hr_consulta: hrConsulta,
                 st_consulta: status,
@@ -76,7 +76,7 @@ export function useDetalheConsulta() {
             setModalVisivel(false);
         },
         onError: (error) => {
-            console.error("[useDetalheConsulta.handleSalvar]", error);
+            console.warn("[useDetalheConsulta.handleSalvar]", error);
             // fecha o modal, senão o toast de erro fica escondido atrás dele
             setModalVisivel(false);
             toastErro("Não foi possível salvar as alterações.");
@@ -102,7 +102,7 @@ export function useDetalheConsulta() {
             navigation.goBack();
         },
         onError: (error) => {
-            console.error("[useDetalheConsulta.remover]", error);
+            console.warn("[useDetalheConsulta.remover]", error);
             toastErro("Não foi possível remover a consulta.");
         },
     });

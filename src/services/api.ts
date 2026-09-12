@@ -11,15 +11,26 @@ api.interceptors.request.use(async (config) => {
     return config;
 });
 
-// loga qualquer requisição que falhar
+let aoSessaoExpirar: (() => void) | null = null;
+
+export function registrarAoSessaoExpirar(callback: () => void) {
+    aoSessaoExpirar = callback;
+}
+
 api.interceptors.response.use(
     (resposta) => resposta,
-    (erro) => {
+    async (erro) => {
         const metodo = erro?.config?.method?.toUpperCase();
         const url = erro?.config?.url;
         const status = erro?.response?.status;
         const dados = erro?.response?.data;
-        console.error(`[api] Falha em ${metodo} ${url} — status: ${status ?? "sem resposta (rede/timeout)"}`, dados ?? erro.message);
+        console.warn(`[api] Falha em ${metodo} ${url} — status: ${status ?? "sem resposta (rede/timeout)"}`, dados ?? erro.message);
+
+        if (status === 401) {
+            await tokenStorage.removerToken();
+            aoSessaoExpirar?.();
+        }
+
         return Promise.reject(erro);
     }
 );

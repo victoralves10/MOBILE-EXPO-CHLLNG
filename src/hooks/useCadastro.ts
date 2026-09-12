@@ -33,7 +33,7 @@ export function useCadastro() {
             }
         },
         onError: (error) => {
-            console.error("[useCadastro.fazerCadastro]", error);
+            console.warn("[useCadastro.fazerCadastro]", error);
             if (error instanceof ErroSemConexao) {
                 toastErro("Sem conexão com o servidor.");
             } else {

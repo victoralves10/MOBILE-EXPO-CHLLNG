@@ -26,7 +26,7 @@ export const authController = {
             await tokenStorage.salvarToken(token);
             return true;
         } catch (error) {
-            console.error("[authController.fazerLogin]", error);
+            console.warn("[authController.fazerLogin]", error);
             if (ehErroDeRede(error)) throw new ErroSemConexao();
             return false;
         }
@@ -38,7 +38,7 @@ export const authController = {
             await tokenStorage.salvarToken(token);
             return true;
         } catch (error) {
-            console.error("[authController.fazerCadastro]", error);
+            console.warn("[authController.fazerCadastro]", error);
             if (ehErroDeRede(error)) throw new ErroSemConexao();
             return false;
         }
@@ -48,7 +48,7 @@ export const authController = {
         try {
             await usuarioService.editar(nome, email, senha);
         } catch (error) {
-            console.error("[authController.atualizarPerfil]", error);
+            console.warn("[authController.atualizarPerfil]", error);
             if (ehErroDeRede(error)) throw new ErroSemConexao();
             throw error;
         }
@@ -59,7 +59,7 @@ export const authController = {
             await usuarioService.remover(senha);
             await tokenStorage.removerToken();
         } catch (error: any) {
-            console.error("[authController.apagarConta]", error);
+            console.warn("[authController.apagarConta]", error);
             if (ehErroDeRede(error)) throw new ErroSemConexao();
             if (error?.response?.status === 401) throw new ErroSenhaIncorreta();
             throw error;
@@ -71,7 +71,7 @@ export const authController = {
             const token = await tokenStorage.buscarToken();
             return token !== null;
         } catch (error) {
-            console.error("[authController.verificarSessao]", error);
+            console.warn("[authController.verificarSessao]", error);
             return false;
         }
     },
@@ -80,7 +80,7 @@ export const authController = {
         try {
             await tokenStorage.removerToken();
         } catch (error) {
-            console.error("[authController.fazerLogout]", error);
+            console.warn("[authController.fazerLogout]", error);
         }
     },
 };

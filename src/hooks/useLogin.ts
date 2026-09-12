@@ -12,8 +12,8 @@ function aguardar(ms: number) {
 }
 
 export function useLogin() {
-    const [email, setEmail] = useState("dev@clyvovet.dev");
-    const [senha, setSenha] = useState("dev123456");
+    const [email, setEmail] = useState("");
+    const [senha, setSenha] = useState("");
 
     const senhaVisivel = useSenhaVisivel();
     const navigation = useNavigation<any>();
@@ -30,7 +30,7 @@ export function useLogin() {
             }
         },
         onError: (error) => {
-            console.error("[useLogin.fazerLogin]", error);
+            console.warn("[useLogin.fazerLogin]", error);
             if (error instanceof ErroSemConexao) {
                 toastErro("Sem conexão com o servidor.");
             } else {

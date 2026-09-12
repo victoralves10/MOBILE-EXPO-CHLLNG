@@ -48,7 +48,7 @@ export const pacienteController = {
 
             return { animal, responsavel, consultas };
         } catch (error) {
-            console.error("[pacienteController.buscarFichaCompleta]", error);
+            console.warn("[pacienteController.buscarFichaCompleta]", error);
             throw error;
         }
     },
@@ -57,7 +57,7 @@ export const pacienteController = {
         try {
             await animalService.atualizar(animal);
         } catch (error) {
-            console.error("[pacienteController.atualizarAnimal]", error);
+            console.warn("[pacienteController.atualizarAnimal]", error);
             throw error;
         }
     },
@@ -66,7 +66,7 @@ export const pacienteController = {
         try {
             await responsavelService.atualizar(responsavel);
         } catch (error) {
-            console.error("[pacienteController.atualizarResponsavel]", error);
+            console.warn("[pacienteController.atualizarResponsavel]", error);
             throw error;
         }
     },
@@ -80,7 +80,7 @@ export const pacienteController = {
                 await responsavelService.remover(id_responsavel);
             }
         } catch (error) {
-            console.error("[pacienteController.removerPaciente]", error);
+            console.warn("[pacienteController.removerPaciente]", error);
             throw error;
         }
     },

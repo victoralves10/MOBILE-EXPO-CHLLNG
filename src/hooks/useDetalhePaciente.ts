@@ -83,7 +83,7 @@ export function useDetalhePaciente() {
             setModalVisivel(false);
         },
         onError: (error) => {
-            console.error("[useDetalhePaciente.handleSalvar]", error);
+            console.warn("[useDetalhePaciente.handleSalvar]", error);
             // fecha o modal, senão o toast de erro fica escondido atrás dele
             setModalVisivel(false);
             toastErro("Não foi possível salvar as alterações.");
@@ -110,7 +110,7 @@ export function useDetalhePaciente() {
             navigation.goBack();
         },
         onError: (error) => {
-            console.error("[useDetalhePaciente.remover]", error);
+            console.warn("[useDetalhePaciente.remover]", error);
             toastErro("Não foi possível remover o paciente.");
         },
     });
