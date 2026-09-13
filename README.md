@@ -6,7 +6,7 @@ Aplicativo mobile de gestão veterinária desenvolvido em **React Native com Exp
 
 ## 🎥 Vídeo de apresentação
 
-📺 [Assista no YouTube](COLE_AQUI_O_LINK_DO_VIDEO)
+📺 [Assista no YouTube](https://www.youtube.com/shorts/OfbiFEC93DE?is=_MV6OnoEgx79crmn)
 
 ---
 
