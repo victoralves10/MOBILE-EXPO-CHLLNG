@@ -1,57 +1,32 @@
 import { useState, useCallback } from "react";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
-import { useQuery } from "@tanstack/react-query";
-import { animalService } from "../services/animalService";
-import { responsavelService } from "../services/responsavelService";
-import { Animal } from "../models/Animal";
-import { Responsavel } from "../models/Responsavel";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
+import { pacienteService } from "../services/pacienteService";
+import { mensagemDeErro } from "../services/api";
+import { useDebounce } from "./useDebounce";
 
-// tipagem que junta o animal com o responsável dele
-interface PacienteComDados {
-    animal: Animal;
-    responsavel: Responsavel;
-}
-
+// lógica da lista de pacientes: só a busca, quem filtra é o backend
 export function usePacientes() {
     const navigation = useNavigation<any>();
 
     const [busca, setBusca] = useState("");
 
-    const animaisQuery = useQuery({
-        queryKey: ["animais"],
-        queryFn: () => animalService.listar(),
+    // só manda a busca pro backend quando o usuário para de digitar
+    const buscaDebounced = useDebounce(busca.trim(), 500);
+
+    // busca pelo nome do animal ou do responsável (vazio traz todos)
+    const pacientesQuery = useQuery({
+        queryKey: ["pacientes", buscaDebounced],
+        queryFn: () => pacienteService.buscar(buscaDebounced),
+        placeholderData: keepPreviousData,
     });
 
-    const responsaveisQuery = useQuery({
-        queryKey: ["responsaveis"],
-        queryFn: () => responsavelService.listar(),
-    });
-
-    // toda vez que o usuário voltar pra essa tela, busca os dados mais recentes
+    // recarrega sempre que volta pra essa tela
     useFocusEffect(
         useCallback(() => {
-            animaisQuery.refetch();
-            responsaveisQuery.refetch();
+            pacientesQuery.refetch();
             // eslint-disable-next-line react-hooks/exhaustive-deps
         }, [])
-    );
-
-    const carregando = animaisQuery.isLoading || responsaveisQuery.isLoading;
-    const animais = animaisQuery.data ?? [];
-    const responsaveis = responsaveisQuery.data ?? [];
-
-    // combina cada animal com o responsável dele
-    const pacientes: PacienteComDados[] = animais
-        .map((animal) => {
-            const responsavel = responsaveis.find((r) => r.id_responsavel === animal.id_responsavel);
-            return responsavel ? { animal, responsavel } : null;
-        })
-        .filter((item): item is PacienteComDados => item !== null);
-
-    // filtra por nome do animal ou nome do responsável
-    const pacientesFiltrados = pacientes.filter(({ animal, responsavel }) =>
-        animal.nm_animal.toLowerCase().includes(busca.toLowerCase()) ||
-        responsavel.nm_responsavel.toLowerCase().includes(busca.toLowerCase())
     );
 
     function abrirDetalhePaciente(id_animal: number) {
@@ -61,10 +36,9 @@ export function usePacientes() {
     return {
         busca,
         setBusca,
-        carregando,
-        pacientesFiltrados,
+        pacientes: pacientesQuery.data ?? [],
+        carregando: pacientesQuery.isLoading,
+        erro: pacientesQuery.isError ? mensagemDeErro(pacientesQuery.error) : null,
         abrirDetalhePaciente,
     };
 }
-
-export type { PacienteComDados };

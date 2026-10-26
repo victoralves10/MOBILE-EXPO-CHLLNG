@@ -1,10 +1,7 @@
-import { Animal } from "../../models/Animal";
-import { Responsavel } from "../../models/Responsavel";
+import { PacienteItem } from "../../models/Paciente";
 
-// tipagem das props que o PacienteCard recebe
+// o card só precisa do paciente (que já vem com o responsável) e do clique
 export interface PacienteCardProps {
-    animal: Animal; // dados do animal
-    responsavel: Responsavel; // dados do responsável vinculado
-    onPress: () => void; // clicou no card
-    onPressIcone: () => void; // clicou no ícone do whatsapp
+    paciente: PacienteItem;
+    onPress: () => void;
 }

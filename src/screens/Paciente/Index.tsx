@@ -5,16 +5,10 @@ import CustomTextInput from "../../components/CustomTextInput/Index";
 import PacienteCard from "../../components/PacienteCard/Index";
 import TelaCarregando from "../../components/TelaCarregando/Index";
 import { usePacientes } from "../../hooks/usePacientes";
-import { toastAviso } from "../../utils/toast";
 
+// tela de pacientes: busca e lista, no mesmo estilo da tela de consultas
 export default function Paciente() {
-    const {
-        busca,
-        setBusca,
-        carregando,
-        pacientesFiltrados,
-        abrirDetalhePaciente,
-    } = usePacientes();
+    const { busca, setBusca, pacientes, carregando, erro, abrirDetalhePaciente } = usePacientes();
 
     return (
         <View style={styles.container}>
@@ -30,32 +24,26 @@ export default function Paciente() {
                 />
             </View>
 
-            {/* lista de cards de paciente */}
+            {/* lista de pacientes num painel branco tipo lista de contatos */}
             <View style={styles.containerLista}>
                 {carregando ? (
                     <TelaCarregando telaCheia />
+                ) : pacientes.length === 0 ? (
+                    <Text style={styles.textoVazio}>
+                        {erro ?? "Nenhum paciente encontrado.\nCrie uma consulta para cadastrar um paciente."}
+                    </Text>
                 ) : (
-                    <FlatList
-                        data={pacientesFiltrados}
-                        keyExtractor={({ animal }) => String(animal.id_animal)}
-                        renderItem={({ item }) => (
-                            <PacienteCard
-                                animal={item.animal}
-                                responsavel={item.responsavel}
-                                onPress={() => abrirDetalhePaciente(item.animal.id_animal)}
-                                onPressIcone={() =>
-                                    toastAviso(`Abrindo conversa com ${item.responsavel.nm_responsavel} pelo WhatsApp.`)
-                                }
-                            />
-                        )}
-                        ListEmptyComponent={
-                            <Text style={styles.textoVazio}>
-                                Nenhum paciente encontrado.{"\n"}Crie uma consulta para cadastrar um paciente.
-                            </Text>
-                        }
-                        showsVerticalScrollIndicator={false}
-                        contentContainerStyle={{ paddingBottom: 100 }}
-                    />
+                    <View style={styles.painelLista}>
+                        <FlatList
+                            data={pacientes}
+                            keyExtractor={(item) => String(item.id_animal)}
+                            renderItem={({ item }) => (
+                                <PacienteCard paciente={item} onPress={() => abrirDetalhePaciente(item.id_animal)} />
+                            )}
+                            showsVerticalScrollIndicator={false}
+                            ListFooterComponent={<View style={{ height: 40 }} />}
+                        />
+                    </View>
                 )}
             </View>
 

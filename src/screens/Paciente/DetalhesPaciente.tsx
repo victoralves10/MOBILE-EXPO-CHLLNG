@@ -1,169 +1,108 @@
-import React, { useState } from "react";
-import { View, Text, ScrollView, TouchableOpacity } from "react-native";
+import React from "react";
+import { View, Text, ScrollView, TouchableOpacity, Linking } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { colors } from "../../global/colors";
 import CustomTextInput from "../../components/CustomTextInput/Index";
+import ItemLista from "../../components/ItemLista/Index";
 import ModalFormulario from "../../components/ModalFormulario/Index";
 import ModalConfirmacao from "../../components/ModalConfirmacao/Index";
+import SeletorCalendario from "../../components/SeletorCalendario/Index";
+import SeletorOpcoes from "../../components/SeletorOpcoes/Index";
 import TelaCarregando from "../../components/TelaCarregando/Index";
 import { useDetalhePaciente } from "../../hooks/useDetalhePaciente";
-import { formatarData } from "../../utils/formatacao";
-import { toastAviso } from "../../utils/toast";
+import { mascararCpf, mascararPeso, mascararTelefone } from "../../utils/mascaras";
 import { styles } from "./styles";
 
-// retorna a cor de fundo e do texto dependendo do status da consulta
-function getStatusEstilo(status: string) {
-    switch (status) {
-        case "Concluido":
-            return { bg: colors.success + "20", texto: colors.success };
-        case "Atrasado":
-            return { bg: colors.danger + "20", texto: colors.danger };
-        default:
-            return { bg: colors.bluePrimary + "20", texto: colors.bluePrimary };
-    }
+// cor de cada status (só visual, o status vem do backend)
+const COR_STATUS = {
+    Agendado: colors.bluePrimary,
+    Atrasado: colors.danger,
+    Concluido: colors.success,
+};
+
+// uma linha com ícone e texto
+function Linha({ icone, texto }: { icone: keyof typeof Ionicons.glyphMap; texto: string }) {
+    return (
+        <View style={styles.linha}>
+            <Ionicons name={icone} size={18} color={colors.bluePrimary} />
+            <Text style={styles.textoLinha}>{texto}</Text>
+        </View>
+    );
 }
 
+// ficha do paciente: tudo já vem formatado do backend, a tela só mostra
 export default function DetalhePaciente() {
-    const {
-        animal,
-        responsavel,
-        consultas,
-        carregando,
-        abrirDetalheConsulta,
+    const d = useDetalhePaciente();
+    const { ficha, form, mudar } = d;
 
-        modalVisivel,
-        abrirModalEditar,
-        fecharModalEditar,
-        nmAnimal, setNmAnimal,
-        especieAnimal, setEspecieAnimal,
-        racaAnimal, setRacaAnimal,
-        dtNascimento, setDtNascimento,
-        pesoAnimal, setPesoAnimal,
-        rgAnimal, setRgAnimal,
-        microchip, setMicrochip,
-        nmResponsavel, setNmResponsavel,
-        cpfResponsavel, setCpfResponsavel,
-        telefoneResponsavel, setTelefoneResponsavel,
-        handleSalvar,
-        salvando,
+    if (d.carregando) return <TelaCarregando telaCheia />;
+    if (!ficha) return <Text style={styles.textoVazio}>{d.erro ?? "Paciente não encontrado."}</Text>;
 
-        remover,
-        removendo,
-    } = useDetalhePaciente();
-
-    const [confirmarRemoverAberto, setConfirmarRemoverAberto] = useState(false);
-
-    if (carregando || !animal || !responsavel) {
-        return <TelaCarregando telaCheia />;
-    }
+    const { animal, responsavel, consultas } = ficha;
 
     return (
         <View style={styles.container}>
             <ScrollView contentContainerStyle={styles.scroll}>
 
-                {/* seção com os dados do animal */}
+                {/* animal */}
                 <View style={styles.secao}>
                     <Text style={styles.tituloSecao}>Animal</Text>
-                    <View style={styles.linha}>
-                        <Ionicons name="paw-outline" size={18} color={colors.bluePrimary} />
-                        <Text style={styles.textoLinha}>{animal.nm_animal}</Text>
-                    </View>
-                    <View style={styles.linha}>
-                        <Ionicons name="leaf-outline" size={18} color={colors.bluePrimary} />
-                        <Text style={styles.textoLinha}>{animal.especie_animal} • {animal.raca_animal ?? "-"}</Text>
-                    </View>
-                    <View style={styles.linha}>
-                        <Ionicons name="calendar-outline" size={18} color={colors.bluePrimary} />
-                        <Text style={styles.textoLinha}>Nascimento: {animal.dt_nascimento_animal ? formatarData(animal.dt_nascimento_animal) : "-"}</Text>
-                    </View>
-                    <View style={styles.linha}>
-                        <Ionicons name="fitness-outline" size={18} color={colors.bluePrimary} />
-                        <Text style={styles.textoLinha}>Peso: {animal.peso_animal ?? "-"} kg</Text>
-                    </View>
-                    <View style={styles.linha}>
-                        <Ionicons name="card-outline" size={18} color={colors.bluePrimary} />
-                        <Text style={styles.textoLinha}>RG: {animal.rg_animal ?? "-"}</Text>
-                    </View>
-                    <View style={styles.linha}>
-                        <Ionicons name="wifi-outline" size={18} color={colors.bluePrimary} />
-                        <Text style={styles.textoLinha}>Microchip: {animal.nr_microchip_animal ?? "-"}</Text>
-                    </View>
+                    <Linha icone="paw-outline" texto={animal.nm_animal} />
+                    <Linha icone="leaf-outline" texto={`${animal.especie_animal} • ${animal.raca_animal_exibicao}`} />
+                    <Linha icone="calendar-outline" texto={`Nascimento: ${animal.dt_nascimento_animal_exibicao}`} />
+                    <Linha icone="fitness-outline" texto={`Peso: ${animal.peso_animal_exibicao}`} />
+                    <Linha icone="card-outline" texto={`RG: ${animal.rg_animal_exibicao}`} />
+                    <Linha icone="hardware-chip-outline" texto={`Microchip: ${animal.nr_microchip_animal_exibicao}`} />
                 </View>
 
-                {/* seção com os dados do responsável */}
+                {/* responsável */}
                 <View style={styles.secao}>
                     <Text style={styles.tituloSecao}>Responsável</Text>
-                    <View style={styles.linha}>
-                        <Ionicons name="person-outline" size={18} color={colors.bluePrimary} />
-                        <Text style={styles.textoLinha}>{responsavel.nm_responsavel}</Text>
-                    </View>
-                    <View style={styles.linha}>
-                        <Ionicons name="id-card-outline" size={18} color={colors.bluePrimary} />
-                        <Text style={styles.textoLinha}>CPF: {responsavel.cpf_responsavel}</Text>
-                    </View>
-                    <View style={styles.linha}>
-                        <Ionicons name="call-outline" size={18} color={colors.bluePrimary} />
-                        <Text style={styles.textoLinha}>{responsavel.nr_telefone_responsavel}</Text>
-                    </View>
+                    <Linha icone="person-outline" texto={responsavel.nm_responsavel} />
+                    <Linha icone="id-card-outline" texto={`CPF: ${responsavel.cpf_responsavel_exibicao}`} />
+                    <Linha icone="call-outline" texto={responsavel.nr_telefone_responsavel_exibicao} />
+                    <Linha icone="location-outline" texto={`Região: ${responsavel.nm_regiao_exibicao}`} />
 
-                    <TouchableOpacity
-                        style={styles.botaoWhatsApp}
-                        onPress={() => toastAviso(`Abrindo conversa com ${responsavel.nm_responsavel} pelo WhatsApp.`)}
-                    >
+                    {/* abre o WhatsApp já com a mensagem pronta (link vem do backend) */}
+                    <TouchableOpacity style={styles.botaoWhatsApp} onPress={() => Linking.openURL(responsavel.link_whatsapp)}>
                         <Ionicons name="logo-whatsapp" size={18} color={colors.white} />
-                        <Text style={styles.textoBotaoWhatsApp}>Abrir WhatsApp</Text>
+                        <Text style={styles.textoBotaoWhatsApp}>Conversar no WhatsApp</Text>
                     </TouchableOpacity>
                 </View>
 
-                {/* histórico de consultas — cada card é clicável */}
+                {/* histórico de consultas, mesmo visual das listas */}
                 <View style={styles.secao}>
-                    <Text style={styles.tituloSecao}>Histórico de Consultas</Text>
+                    <Text style={styles.tituloSecao}>Histórico de consultas ({ficha.total_consultas})</Text>
 
                     {consultas.length === 0 ? (
                         <Text style={styles.textoSemConsulta}>Nenhuma consulta registrada.</Text>
                     ) : (
-                        consultas.map((consulta) => {
-                            const statusEstilo = getStatusEstilo(consulta.st_consulta);
-                            return (
-                                <TouchableOpacity
+                        <View style={styles.listaHistorico}>
+                            {consultas.map((consulta) => (
+                                <ItemLista
                                     key={consulta.id_consulta}
-                                    style={styles.cardConsulta}
-                                    onPress={() => abrirDetalheConsulta(consulta.id_consulta)}
-                                    activeOpacity={0.7}
-                                >
-                                    <View style={styles.linhaConsulta}>
-                                        <Text style={styles.textoConsultaMotivo}>
-                                            {consulta.historico_consulta}
-                                        </Text>
-                                        <View style={[styles.tagStatus, { backgroundColor: statusEstilo.bg }]}>
-                                            <Text style={[styles.textoStatus, { color: statusEstilo.texto }]}>
-                                                {consulta.st_consulta}
-                                            </Text>
-                                        </View>
-                                    </View>
-                                    <Text style={styles.textoConsultaData}>
-                                        {formatarData(consulta.dt_consulta)} às {consulta.hr_consulta}
-                                    </Text>
-                                    <View style={styles.linhaVerDetalhes}>
-                                        <Text style={styles.textoVerDetalhes}>Ver detalhes</Text>
-                                        <Ionicons name="chevron-forward" size={14} color={colors.bluePrimary} />
-                                    </View>
-                                </TouchableOpacity>
-                            );
-                        })
+                                    inicial={animal.inicial_animal}
+                                    cor={COR_STATUS[consulta.st_consulta]}
+                                    titulo={consulta.historico_consulta}
+                                    subtitulo={consulta.data_hora_exibicao}
+                                    selo={consulta.st_consulta_rotulo}
+                                    onPress={() => d.abrirDetalheConsulta(consulta.id_consulta)}
+                                />
+                            ))}
+                        </View>
                     )}
                 </View>
 
-                {/* botões de editar e remover no final da tela */}
+                {/* editar e remover */}
                 <View style={styles.containerBotoes}>
-                    <TouchableOpacity style={styles.botaoEditar} onPress={abrirModalEditar}>
+                    <TouchableOpacity style={styles.botaoEditar} onPress={d.abrirModalEditar}>
                         <Ionicons name="pencil-outline" size={18} color={colors.white} />
                         <Text style={styles.textoBotao}>Editar</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
-                        style={[styles.botaoRemover, removendo && { opacity: 0.7 }]}
-                        onPress={() => setConfirmarRemoverAberto(true)}
-                        disabled={removendo}
+                        style={[styles.botaoRemover, d.removendo && { opacity: 0.7 }]}
+                        onPress={d.abrirConfirmarRemover}
+                        disabled={d.removendo}
                     >
                         <Ionicons name="trash-outline" size={18} color={colors.white} />
                         <Text style={styles.textoBotao}>Remover</Text>
@@ -172,39 +111,73 @@ export default function DetalhePaciente() {
 
             </ScrollView>
 
-            {/* modal de edição do animal e responsável */}
+            {/* modal de edição do animal e do responsável */}
             <ModalFormulario
-                visivel={modalVisivel}
+                visivel={d.modalEditarAberto}
                 titulo="Editar Paciente"
-                onFechar={fecharModalEditar}
-                onSalvar={handleSalvar}
-                carregando={salvando}
-                labelSalvar="Salvar"
+                onFechar={d.fecharModalEditar}
+                onSalvar={d.salvar}
+                carregando={d.salvando}
             >
-                <CustomTextInput title="Nome do Animal *" placeholder="Ex: Rex" value={nmAnimal} onChangeText={setNmAnimal} />
-                <CustomTextInput title="Espécie *" placeholder="Ex: Cão, Gato" value={especieAnimal} onChangeText={setEspecieAnimal} />
-                <CustomTextInput title="Raça" placeholder="Ex: Labrador" value={racaAnimal} onChangeText={setRacaAnimal} />
-                <CustomTextInput title="Data de Nascimento" placeholder="DD/MM/AAAA" value={dtNascimento} onChangeText={setDtNascimento} />
-                <CustomTextInput title="Peso (kg)" placeholder="Ex: 12.5" value={pesoAnimal} onChangeText={setPesoAnimal} keyboardType="numeric" />
-                <CustomTextInput title="RG do Animal" placeholder="Ex: 123456" value={rgAnimal} onChangeText={setRgAnimal} />
-                <CustomTextInput title="Microchip" placeholder="Ex: 985112345678901" value={microchip} onChangeText={setMicrochip} keyboardType="numeric" />
+                <Text style={styles.secaoModal}>Animal</Text>
+                <CustomTextInput title="Nome do animal *" placeholder="Ex: Rex" value={form.nm_animal} onChangeText={mudar("nm_animal")} />
+                <CustomTextInput title="Espécie *" placeholder="Ex: Cão, Gato" value={form.especie_animal} onChangeText={mudar("especie_animal")} />
+                <CustomTextInput title="Raça" placeholder="Ex: Labrador" value={form.raca_animal} onChangeText={mudar("raca_animal")} />
+                <SeletorCalendario titulo="Data de nascimento" valor={form.dt_nascimento_animal} onChange={mudar("dt_nascimento_animal")} />
+                <CustomTextInput
+                    title="Peso (kg)"
+                    placeholder="Ex: 12,5"
+                    keyboardType="decimal-pad"
+                    value={form.peso_animal}
+                    onChangeText={(v) => mudar("peso_animal")(mascararPeso(v))}
+                />
+                <CustomTextInput title="RG do animal" placeholder="Ex: 123456" value={form.rg_animal} onChangeText={mudar("rg_animal")} />
+                <CustomTextInput
+                    title="Microchip"
+                    placeholder="Ex: 985112345678901"
+                    keyboardType="numeric"
+                    value={form.nr_microchip_animal}
+                    onChangeText={mudar("nr_microchip_animal")}
+                />
 
-                <CustomTextInput title="Nome do Responsável *" placeholder="Ex: João Silva" value={nmResponsavel} onChangeText={setNmResponsavel} />
-                <CustomTextInput title="CPF do Responsável *" placeholder="Ex: 000.000.000-00" value={cpfResponsavel} onChangeText={setCpfResponsavel} keyboardType="numeric" />
-                <CustomTextInput title="Telefone do Responsável *" placeholder="Ex: (11) 99999-9999" value={telefoneResponsavel} onChangeText={setTelefoneResponsavel} keyboardType="numeric" />
+                <Text style={styles.secaoModal}>Responsável</Text>
+
+                {/* aviso pronto do backend quando o responsável tem outros pacientes */}
+                {responsavel.aviso_edicao && <Text style={styles.avisoModal}>{responsavel.aviso_edicao}</Text>}
+
+                <CustomTextInput title="Nome *" placeholder="Ex: João Silva" value={form.nm_responsavel} onChangeText={mudar("nm_responsavel")} />
+                <CustomTextInput
+                    title="CPF *"
+                    placeholder="000.000.000-00"
+                    keyboardType="numeric"
+                    value={form.cpf_responsavel}
+                    onChangeText={(v) => mudar("cpf_responsavel")(mascararCpf(v))}
+                />
+                <CustomTextInput
+                    title="Telefone *"
+                    placeholder="(11) 99999-9999"
+                    keyboardType="phone-pad"
+                    value={form.nr_telefone_responsavel}
+                    onChangeText={(v) => mudar("nr_telefone_responsavel")(mascararTelefone(v))}
+                />
+                <SeletorOpcoes
+                    titulo="Região (opcional)"
+                    opcoes={d.regioes.map((r) => ({ valor: r.id_regiao, rotulo: r.nm_regiao }))}
+                    selecionado={form.id_regiao}
+                    onSelecionar={mudar("id_regiao")}
+                />
             </ModalFormulario>
 
-            {/* confirmação de remover */}
+            {/* confirmação antes de remover */}
             <ModalConfirmacao
-                visivel={confirmarRemoverAberto}
-                titulo="Remover Paciente"
-                mensagem="Deseja realmente remover este paciente? Todas as consultas associadas também serão removidas."
+                visivel={d.confirmarRemoverAberto}
+                titulo="Remover paciente"
+                mensagem="Deseja remover este paciente? As consultas dele também serão removidas. O responsável continua cadastrado."
                 labelConfirmar="Remover"
                 perigoso
-                onConfirmar={() => { setConfirmarRemoverAberto(false); remover(); }}
-                onCancelar={() => setConfirmarRemoverAberto(false)}
+                onConfirmar={d.confirmarRemover}
+                onCancelar={d.fecharConfirmarRemover}
             />
-
         </View>
     );
 }

@@ -1,11 +1,29 @@
 import { useState } from "react";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { pacienteController } from "../controllers/pacienteController";
-import { formatarData, converterParaIso } from "../utils/formatacao";
-import { schemaEditarPaciente } from "../validations/pacienteValidations";
+import { pacienteService } from "../services/pacienteService";
+import { catalogoService } from "../services/catalogoService";
+import { mensagemDeErro } from "../services/api";
 import { toastErro, toastSucesso } from "../utils/toast";
 
+// todos os campos do modal de edição num objeto só
+const FORM_VAZIO = {
+    nm_animal: "",
+    especie_animal: "",
+    raca_animal: "",
+    dt_nascimento_animal: "",
+    peso_animal: "",
+    rg_animal: "",
+    nr_microchip_animal: "",
+    nm_responsavel: "",
+    cpf_responsavel: "",
+    nr_telefone_responsavel: "",
+    id_regiao: null as number | null,
+};
+
+type Formulario = typeof FORM_VAZIO;
+
+// lógica da ficha do paciente: mostrar, editar e remover
 export function useDetalhePaciente() {
     const navigation = useNavigation<any>();
     const route = useRoute<any>();
@@ -13,136 +31,125 @@ export function useDetalhePaciente() {
 
     const { id_animal } = route.params;
 
+    // tudo numa requisição só: animal + responsável + histórico de consultas
     const fichaQuery = useQuery({
-        queryKey: ["ficha-paciente", id_animal],
-        queryFn: () => pacienteController.buscarFichaCompleta(id_animal),
+        queryKey: ["pacientes", "ficha", id_animal],
+        queryFn: () => pacienteService.buscarFicha(id_animal),
     });
+    const ficha = fichaQuery.data ?? null;
 
-    const animal = fichaQuery.data?.animal ?? null;
-    const responsavel = fichaQuery.data?.responsavel ?? null;
-    const consultas = fichaQuery.data?.consultas ?? [];
-    const carregando = fichaQuery.isLoading;
+    // regiões pro seletor do responsável (carrega uma vez só)
+    const regioesQuery = useQuery({ queryKey: ["catalogo", "regioes"], queryFn: catalogoService.regioes, staleTime: Infinity });
 
-    const [modalVisivel, setModalVisivel] = useState(false);
-    const [nmAnimal, setNmAnimal] = useState("");
-    const [especieAnimal, setEspecieAnimal] = useState("");
-    const [racaAnimal, setRacaAnimal] = useState("");
-    const [dtNascimento, setDtNascimento] = useState("");
-    const [pesoAnimal, setPesoAnimal] = useState("");
-    const [rgAnimal, setRgAnimal] = useState("");
-    const [microchip, setMicrochip] = useState("");
-    const [nmResponsavel, setNmResponsavel] = useState("");
-    const [cpfResponsavel, setCpfResponsavel] = useState("");
-    const [telefoneResponsavel, setTelefoneResponsavel] = useState("");
+    // depois de editar ou remover, recarrega as listas que mostram esse paciente
+    function recarregarListas() {
+        queryClient.invalidateQueries({ queryKey: ["pacientes"] });
+        queryClient.invalidateQueries({ queryKey: ["consultas"] });
+    }
 
+    // ---------- editar ----------
+
+    const [modalEditarAberto, setModalEditarAberto] = useState(false);
+    const [form, setForm] = useState<Formulario>(FORM_VAZIO);
+
+    // atalho pra atualizar um campo: mudar("nm_animal")("Rex")
+    function mudar<C extends keyof Formulario>(campo: C) {
+        return (valor: Formulario[C]) => setForm((atual) => ({ ...atual, [campo]: valor }));
+    }
+
+    // abre o modal já preenchido com o que veio do backend
     function abrirModalEditar() {
-        if (!animal || !responsavel) return;
-        setNmAnimal(animal.nm_animal);
-        setEspecieAnimal(animal.especie_animal);
-        setRacaAnimal(animal.raca_animal ?? "");
-        // a data vem da API em ISO - mostra formatada em DD/MM/AAAA no campo
-        setDtNascimento(animal.dt_nascimento_animal ? formatarData(animal.dt_nascimento_animal) : "");
-        setPesoAnimal(animal.peso_animal != null ? String(animal.peso_animal) : "");
-        setRgAnimal(animal.rg_animal ?? "");
-        setMicrochip(animal.nr_microchip_animal ?? "");
-        setNmResponsavel(responsavel.nm_responsavel);
-        setCpfResponsavel(responsavel.cpf_responsavel);
-        setTelefoneResponsavel(responsavel.nr_telefone_responsavel);
-        setModalVisivel(true);
+        if (!ficha) return;
+        const { animal, responsavel } = ficha;
+        setForm({
+            nm_animal: animal.nm_animal,
+            especie_animal: animal.especie_animal,
+            raca_animal: animal.raca_animal ?? "",
+            dt_nascimento_animal: animal.dt_nascimento_animal ?? "",
+            peso_animal: animal.peso_animal === null ? "" : String(animal.peso_animal).replace(".", ","),
+            rg_animal: animal.rg_animal ?? "",
+            nr_microchip_animal: animal.nr_microchip_animal ?? "",
+            nm_responsavel: responsavel.nm_responsavel,
+            cpf_responsavel: responsavel.cpf_responsavel_exibicao,
+            nr_telefone_responsavel: responsavel.nr_telefone_responsavel_exibicao,
+            id_regiao: responsavel.id_regiao,
+        });
+        setModalEditarAberto(true);
     }
 
-    function fecharModalEditar() {
-        setModalVisivel(false);
-    }
-
+    // manda animal e responsável juntos; o backend salva os dois de uma vez
     const mutationAtualizar = useMutation({
-        mutationFn: async () => {
-            await pacienteController.atualizarAnimal({
-                ...animal!,
-                nm_animal: nmAnimal,
-                especie_animal: especieAnimal,
-                raca_animal: racaAnimal || null,
-                dt_nascimento_animal: dtNascimento ? converterParaIso(dtNascimento) : null,
-                peso_animal: pesoAnimal ? Number(pesoAnimal) : null,
-                rg_animal: rgAnimal || null,
-                nr_microchip_animal: microchip || null,
-            });
-
-            await pacienteController.atualizarResponsavel({
-                ...responsavel!,
-                nm_responsavel: nmResponsavel,
-                cpf_responsavel: cpfResponsavel,
-                nr_telefone_responsavel: telefoneResponsavel,
-            });
+        mutationFn: () =>
+            pacienteService.atualizar(id_animal, {
+                animal: {
+                    nm_animal: form.nm_animal,
+                    especie_animal: form.especie_animal,
+                    raca_animal: form.raca_animal,
+                    dt_nascimento_animal: form.dt_nascimento_animal,
+                    peso_animal: form.peso_animal,
+                    rg_animal: form.rg_animal,
+                    nr_microchip_animal: form.nr_microchip_animal,
+                },
+                responsavel: {
+                    nm_responsavel: form.nm_responsavel,
+                    cpf_responsavel: form.cpf_responsavel,
+                    nr_telefone_responsavel: form.nr_telefone_responsavel,
+                    id_regiao: form.id_regiao,
+                },
+            }),
+        onSuccess: (resposta) => {
+            toastSucesso(resposta.mensagem);
+            queryClient.setQueryData(["pacientes", "ficha", id_animal], resposta.paciente);
+            recarregarListas();
+            setModalEditarAberto(false);
         },
-        onSuccess: () => {
-            toastSucesso("Paciente atualizado!");
-            queryClient.invalidateQueries({ queryKey: ["ficha-paciente", id_animal] });
-            queryClient.invalidateQueries({ queryKey: ["animais"] });
-            queryClient.invalidateQueries({ queryKey: ["responsaveis"] });
-            setModalVisivel(false);
-        },
-        onError: (error) => {
-            console.warn("[useDetalhePaciente.handleSalvar]", error);
-            // fecha o modal, senão o toast de erro fica escondido atrás dele
-            setModalVisivel(false);
-            toastErro("Não foi possível salvar as alterações.");
-        },
+        // deu erro (ex: CPF de outro responsável): mostra a mensagem e deixa o modal aberto
+        onError: (erro) => toastErro(mensagemDeErro(erro)),
     });
 
-    async function handleSalvar() {
-        if (!animal || !responsavel) return;
-        try {
-            await schemaEditarPaciente.validate({ nmAnimal, especieAnimal, nmResponsavel, cpfResponsavel, telefoneResponsavel });
-        } catch (erro: any) {
-            toastErro(erro.message);
-            return;
-        }
-        mutationAtualizar.mutate();
-    }
+    // ---------- remover ----------
 
+    const [confirmarRemoverAberto, setConfirmarRemoverAberto] = useState(false);
+
+    // remove e volta pra lista
     const mutationRemover = useMutation({
-        mutationFn: () => pacienteController.removerPaciente(animal!.id_animal, responsavel!.id_responsavel),
-        onSuccess: () => {
-            toastSucesso("Paciente removido.");
-            queryClient.invalidateQueries({ queryKey: ["animais"] });
-            queryClient.invalidateQueries({ queryKey: ["responsaveis"] });
+        mutationFn: () => pacienteService.remover(id_animal),
+        onSuccess: (resposta) => {
+            toastSucesso(resposta.mensagem);
+            recarregarListas();
             navigation.goBack();
         },
-        onError: (error) => {
-            console.warn("[useDetalhePaciente.remover]", error);
-            toastErro("Não foi possível remover o paciente.");
-        },
+        onError: (erro) => toastErro(mensagemDeErro(erro)),
     });
+
+    function confirmarRemover() {
+        setConfirmarRemoverAberto(false);
+        mutationRemover.mutate();
+    }
 
     function abrirDetalheConsulta(id_consulta: number) {
         navigation.navigate("DetalheConsulta", { id_consulta });
     }
 
     return {
-        animal,
-        responsavel,
-        consultas,
-        carregando,
+        ficha,
+        carregando: fichaQuery.isLoading,
+        erro: fichaQuery.isError ? mensagemDeErro(fichaQuery.error) : null,
         abrirDetalheConsulta,
 
-        modalVisivel,
+        modalEditarAberto,
         abrirModalEditar,
-        fecharModalEditar,
-        nmAnimal, setNmAnimal,
-        especieAnimal, setEspecieAnimal,
-        racaAnimal, setRacaAnimal,
-        dtNascimento, setDtNascimento,
-        pesoAnimal, setPesoAnimal,
-        rgAnimal, setRgAnimal,
-        microchip, setMicrochip,
-        nmResponsavel, setNmResponsavel,
-        cpfResponsavel, setCpfResponsavel,
-        telefoneResponsavel, setTelefoneResponsavel,
-        handleSalvar,
+        fecharModalEditar: () => setModalEditarAberto(false),
+        form,
+        mudar,
+        regioes: regioesQuery.data ?? [],
+        salvar: () => mutationAtualizar.mutate(),
         salvando: mutationAtualizar.isPending,
 
-        remover: mutationRemover.mutate,
+        confirmarRemoverAberto,
+        abrirConfirmarRemover: () => setConfirmarRemoverAberto(true),
+        fecharConfirmarRemover: () => setConfirmarRemoverAberto(false),
+        confirmarRemover,
         removendo: mutationRemover.isPending,
     };
 }

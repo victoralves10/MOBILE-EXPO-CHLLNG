@@ -1,3 +1,5 @@
+import type { ConsultaResumo } from "./Consulta";
+
 // paciente na lista e na busca (animal + responsável resumidos)
 export interface PacienteItem {
     id_animal: number;
@@ -56,4 +58,37 @@ export interface ResponsavelCompleto {
     nm_regiao: string | null;
     nm_regiao_exibicao: string;
     link_whatsapp: string;
+}
+
+// consulta no histórico da ficha (igual ao card, só que sem repetir o animal)
+export type ConsultaHistorico = Omit<ConsultaResumo, "animal">;
+
+// ficha completa do paciente, tudo numa resposta só
+export interface Ficha {
+    animal: AnimalCompleto;
+    responsavel: ResponsavelCompleto & {
+        outros_pacientes: number;
+        aviso_edicao: string | null; // aviso pronto do backend quando o responsável tem outros pacientes
+    };
+    consultas: ConsultaHistorico[];
+    total_consultas: number;
+}
+
+// o que o app manda no PUT /pacientes/:id
+export interface DadosPaciente {
+    animal: {
+        nm_animal: string;
+        especie_animal: string;
+        raca_animal: string;
+        dt_nascimento_animal: string;
+        peso_animal: string;
+        rg_animal: string;
+        nr_microchip_animal: string;
+    };
+    responsavel: {
+        nm_responsavel: string;
+        cpf_responsavel: string;
+        nr_telefone_responsavel: string;
+        id_regiao: number | null;
+    };
 }

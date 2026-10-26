@@ -137,6 +137,15 @@ export const styles = StyleSheet.create({
         paddingTop: 16,
     },
 
+    // painel branco com cantos arredondados onde ficam as linhas da lista
+    painelLista: {
+        flex: 1,
+        backgroundColor: colors.white,
+        borderTopLeftRadius: 18,
+        borderTopRightRadius: 18,
+        overflow: "hidden",
+    },
+
     // ──────────────────────── DETALHE PACIENTE ────────────────────────
 
     // scroll com padding interno
@@ -258,5 +267,31 @@ export const styles = StyleSheet.create({
         color: colors.white,
         fontWeight: "700",
         fontSize: 15,
+    },
+
+    // lista do histórico dentro da seção (o ItemLista já tem padding próprio)
+    listaHistorico: {
+        marginHorizontal: -16,
+    },
+
+    // título de cada parte do modal de edição
+    secaoModal: {
+        fontSize: 13,
+        fontWeight: "800",
+        color: colors.bluePrimary,
+        textTransform: "uppercase",
+        letterSpacing: 1,
+        marginTop: 8,
+        marginBottom: 12,
+    },
+
+    // caixinha amarela com o aviso do backend
+    avisoModal: {
+        fontSize: 13,
+        color: colors.dark,
+        backgroundColor: colors.orange + "26",
+        borderRadius: 12,
+        padding: 12,
+        marginBottom: 16,
     },
 });
