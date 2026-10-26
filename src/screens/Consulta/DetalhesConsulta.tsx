@@ -1,152 +1,115 @@
-import React, { useState } from "react";
-import { View, Text, ScrollView, TouchableOpacity } from "react-native";
+import React from "react";
+import { View, Text, ScrollView, TouchableOpacity, Linking } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { colors } from "../../global/colors";
 import CustomTextInput from "../../components/CustomTextInput/Index";
+import FiltroTabs from "../../components/FiltroTabs/Index";
 import ModalFormulario from "../../components/ModalFormulario/Index";
 import ModalConfirmacao from "../../components/ModalConfirmacao/Index";
+import SeletorCalendario from "../../components/SeletorCalendario/Index";
+import SeletorNativo from "../../components/SeletorNativo/Index";
 import TelaCarregando from "../../components/TelaCarregando/Index";
 import { useDetalheConsulta } from "../../hooks/useDetalheConsulta";
-import { formatarData } from "../../utils/formatacao";
-import { toastAviso } from "../../utils/toast";
 import { StatusConsulta } from "../../models/Consulta";
 import { styles } from "./styles";
 
-const STATUS_OPCOES: StatusConsulta[] = ["Agendado", "Concluido", "Atrasado"];
+// cor de cada status (só visual, o status vem do backend)
+const COR_STATUS = {
+    Agendado: colors.bluePrimary,
+    Atrasado: colors.danger,
+    Concluido: colors.success,
+};
 
-// retorna a cor de fundo e do texto dependendo do status da consulta
-function getStatusEstilo(status: string) {
-    switch (status) {
-        case "Concluido":
-            return { bg: colors.success + "20", texto: colors.success };
-        case "Atrasado":
-            return { bg: colors.danger + "20", texto: colors.danger };
-        default:
-            return { bg: colors.bluePrimary + "20", texto: colors.bluePrimary };
-    }
+// opções da situação no modal de edição
+const OPCOES_STATUS: { valor: StatusConsulta; label: string; cor: string }[] = [
+    { valor: "Agendado", label: "Agendar", cor: colors.bluePrimary },
+    { valor: "Concluido", label: "Já realizada", cor: colors.success },
+];
+
+// uma linha com ícone e texto
+function Linha({ icone, texto }: { icone: keyof typeof Ionicons.glyphMap; texto: string }) {
+    return (
+        <View style={styles.linha}>
+            <Ionicons name={icone} size={18} color={colors.bluePrimary} />
+            <Text style={styles.textoLinha}>{texto}</Text>
+        </View>
+    );
 }
 
+// tela de detalhe da consulta: tudo já vem formatado do backend, a tela só mostra
 export default function DetalheConsulta() {
-    const {
-        consulta,
-        animal,
-        responsavel,
-        carregando,
+    const d = useDetalheConsulta();
+    const { consulta } = d;
 
-        modalVisivel,
-        abrirModalEditar,
-        fecharModalEditar,
-        historico, setHistorico,
-        dtConsulta, setDtConsulta,
-        hrConsulta, setHrConsulta,
-        status, setStatus,
-        handleSalvar,
-        salvando,
+    if (d.carregando) return <TelaCarregando telaCheia />;
+    if (!consulta) return <Text style={styles.textoVazio}>{d.erro ?? "Consulta não encontrada."}</Text>;
 
-        remover,
-        removendo,
-    } = useDetalheConsulta();
-
-    const [confirmarRemoverAberto, setConfirmarRemoverAberto] = useState(false);
-
-    if (carregando || !consulta || !animal || !responsavel) {
-        return <TelaCarregando telaCheia />;
-    }
-
-    const statusEstilo = getStatusEstilo(consulta.st_consulta);
+    const { animal, responsavel } = consulta;
+    const cor = COR_STATUS[consulta.st_consulta];
 
     return (
         <View style={styles.container}>
             <ScrollView contentContainerStyle={styles.scroll}>
 
-                {/* badge colorido do status no topo */}
-                <View style={[styles.tagStatus, { backgroundColor: statusEstilo.bg }]}>
-                    <Text style={[styles.textoStatus, { color: statusEstilo.texto }]}>
-                        {consulta.st_consulta}
-                    </Text>
+                {/* selo do status no topo */}
+                <View style={[styles.tagStatus, { backgroundColor: cor + "20" }]}>
+                    <Text style={[styles.textoStatus, { color: cor }]}>{consulta.st_consulta_rotulo}</Text>
                 </View>
 
-                {/* seção com os dados da consulta */}
+                {/* consulta */}
                 <View style={styles.secao}>
                     <Text style={styles.tituloSecao}>Consulta</Text>
-                    <View style={styles.linha}>
-                        <Ionicons name="document-text-outline" size={18} color={colors.bluePrimary} />
-                        <Text style={styles.textoLinha}>{consulta.historico_consulta}</Text>
-                    </View>
-                    <View style={styles.linha}>
-                        <Ionicons name="calendar-outline" size={18} color={colors.bluePrimary} />
-                        <Text style={styles.textoLinha}>{formatarData(consulta.dt_consulta)}</Text>
-                    </View>
-                    <View style={styles.linha}>
-                        <Ionicons name="time-outline" size={18} color={colors.bluePrimary} />
-                        <Text style={styles.textoLinha}>{consulta.hr_consulta}</Text>
-                    </View>
+                    <Linha icone="document-text-outline" texto={consulta.historico_consulta} />
+                    <Linha icone="calendar-outline" texto={consulta.data_hora_exibicao} />
 
-                    <TouchableOpacity
-                        style={styles.botaoOnline}
-                        onPress={() => toastAviso("Levando você para a consulta online.")}
-                    >
+                    {/* abre a sala real da consulta online (link vem do backend) */}
+                    <TouchableOpacity style={styles.botaoOnline} onPress={() => Linking.openURL(consulta.link_consulta_online)}>
                         <Ionicons name="videocam-outline" size={18} color={colors.white} />
-                        <Text style={styles.textoBotaoOnline}>Iniciar Consulta Online</Text>
+                        <Text style={styles.textoBotaoOnline}>Iniciar consulta online</Text>
                     </TouchableOpacity>
                 </View>
 
-                {/* seção com os dados do animal */}
+                {/* animal */}
                 <View style={styles.secao}>
                     <Text style={styles.tituloSecao}>Animal</Text>
-                    <View style={styles.linha}>
-                        <Ionicons name="paw-outline" size={18} color={colors.bluePrimary} />
-                        <Text style={styles.textoLinha}>{animal.nm_animal}</Text>
-                    </View>
-                    <View style={styles.linha}>
-                        <Ionicons name="leaf-outline" size={18} color={colors.bluePrimary} />
-                        <Text style={styles.textoLinha}>{animal.especie_animal} • {animal.raca_animal ?? "-"}</Text>
-                    </View>
-                    <View style={styles.linha}>
-                        <Ionicons name="calendar-outline" size={18} color={colors.bluePrimary} />
-                        <Text style={styles.textoLinha}>Nascimento: {animal.dt_nascimento_animal ? formatarData(animal.dt_nascimento_animal) : "-"}</Text>
-                    </View>
-                    <View style={styles.linha}>
-                        <Ionicons name="fitness-outline" size={18} color={colors.bluePrimary} />
-                        <Text style={styles.textoLinha}>Peso: {animal.peso_animal ?? "-"} kg</Text>
-                    </View>
-                    <View style={styles.linha}>
-                        <Ionicons name="card-outline" size={18} color={colors.bluePrimary} />
-                        <Text style={styles.textoLinha}>RG: {animal.rg_animal ?? "-"}</Text>
-                    </View>
-                    <View style={styles.linha}>
-                        <Ionicons name="wifi-outline" size={18} color={colors.bluePrimary} />
-                        <Text style={styles.textoLinha}>Microchip: {animal.nr_microchip_animal ?? "-"}</Text>
-                    </View>
+                    <Linha icone="paw-outline" texto={animal.nm_animal} />
+                    <Linha icone="leaf-outline" texto={`${animal.especie_animal} • ${animal.raca_animal_exibicao}`} />
+                    <Linha icone="calendar-outline" texto={`Nascimento: ${animal.dt_nascimento_animal_exibicao}`} />
+                    <Linha icone="fitness-outline" texto={`Peso: ${animal.peso_animal_exibicao}`} />
+                    <Linha icone="card-outline" texto={`RG: ${animal.rg_animal_exibicao}`} />
+                    <Linha icone="hardware-chip-outline" texto={`Microchip: ${animal.nr_microchip_animal_exibicao}`} />
+
+                    <TouchableOpacity style={styles.botaoContorno} onPress={d.abrirFichaPaciente}>
+                        <Ionicons name="folder-open-outline" size={18} color={colors.bluePrimary} />
+                        <Text style={styles.textoBotaoContorno}>Ver ficha do paciente</Text>
+                    </TouchableOpacity>
                 </View>
 
-                {/* seção com os dados do responsável */}
+                {/* responsável */}
                 <View style={styles.secao}>
                     <Text style={styles.tituloSecao}>Responsável</Text>
-                    <View style={styles.linha}>
-                        <Ionicons name="person-outline" size={18} color={colors.bluePrimary} />
-                        <Text style={styles.textoLinha}>{responsavel.nm_responsavel}</Text>
-                    </View>
-                    <View style={styles.linha}>
-                        <Ionicons name="id-card-outline" size={18} color={colors.bluePrimary} />
-                        <Text style={styles.textoLinha}>CPF: {responsavel.cpf_responsavel}</Text>
-                    </View>
-                    <View style={styles.linha}>
-                        <Ionicons name="call-outline" size={18} color={colors.bluePrimary} />
-                        <Text style={styles.textoLinha}>{responsavel.nr_telefone_responsavel}</Text>
-                    </View>
+                    <Linha icone="person-outline" texto={responsavel.nm_responsavel} />
+                    <Linha icone="id-card-outline" texto={`CPF: ${responsavel.cpf_responsavel_exibicao}`} />
+                    <Linha icone="call-outline" texto={responsavel.nr_telefone_responsavel_exibicao} />
+                    <Linha icone="location-outline" texto={`Região: ${responsavel.nm_regiao_exibicao}`} />
+
+                    {/* abre o WhatsApp já com a mensagem pronta (link vem do backend) */}
+                    <TouchableOpacity style={styles.botaoWhatsapp} onPress={() => Linking.openURL(responsavel.link_whatsapp)}>
+                        <Ionicons name="logo-whatsapp" size={18} color={colors.white} />
+                        <Text style={styles.textoBotaoOnline}>Conversar no WhatsApp</Text>
+                    </TouchableOpacity>
                 </View>
 
-                {/* botões de editar e remover no final da tela */}
+                {/* editar e remover */}
                 <View style={styles.containerBotoes}>
-                    <TouchableOpacity style={styles.botaoEditar} onPress={abrirModalEditar}>
+                    <TouchableOpacity style={styles.botaoEditar} onPress={d.abrirModalEditar}>
                         <Ionicons name="pencil-outline" size={18} color={colors.white} />
                         <Text style={styles.textoBotao}>Editar</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
-                        style={[styles.botaoRemover, removendo && { opacity: 0.7 }]}
-                        onPress={() => setConfirmarRemoverAberto(true)}
-                        disabled={removendo}
+                        style={[styles.botaoRemover, d.removendo && { opacity: 0.7 }]}
+                        onPress={d.abrirConfirmarRemover}
+                        disabled={d.removendo}
                     >
                         <Ionicons name="trash-outline" size={18} color={colors.white} />
                         <Text style={styles.textoBotao}>Remover</Text>
@@ -155,48 +118,39 @@ export default function DetalheConsulta() {
 
             </ScrollView>
 
-            {/* modal de edição da consulta */}
+            {/* modal de edição */}
             <ModalFormulario
-                visivel={modalVisivel}
+                visivel={d.modalEditarAberto}
                 titulo="Editar Consulta"
-                onFechar={fecharModalEditar}
-                onSalvar={handleSalvar}
-                carregando={salvando}
-                labelSalvar="Salvar"
+                onFechar={d.fecharModalEditar}
+                onSalvar={d.salvar}
+                carregando={d.salvando}
             >
-                <CustomTextInput title="Histórico / Motivo *" placeholder="Ex: Vacinação anual" value={historico} onChangeText={setHistorico} />
-                <CustomTextInput title="Data *" placeholder="DD/MM/AAAA" value={dtConsulta} onChangeText={setDtConsulta} />
-                <CustomTextInput title="Horário *" placeholder="HH:MM" value={hrConsulta} onChangeText={setHrConsulta} />
+                <CustomTextInput
+                    title="Motivo da consulta *"
+                    placeholder="Ex: Vacinação anual"
+                    value={d.form.historico_consulta}
+                    onChangeText={d.mudar("historico_consulta")}
+                />
+                <SeletorCalendario titulo="Data *" valor={d.form.dt_consulta} onChange={d.mudar("dt_consulta")} />
+                <SeletorNativo titulo="Horário *" valor={d.form.hr_consulta} onChange={d.mudar("hr_consulta")} />
 
-                <View style={styles.containerStatus}>
-                    <Text style={styles.labelStatus}>Status</Text>
-                    <View style={styles.containerOpcoes}>
-                        {STATUS_OPCOES.map((opcao) => (
-                            <TouchableOpacity
-                                key={opcao}
-                                style={[styles.opcaoStatus, status === opcao && styles.opcaoStatusAtiva]}
-                                onPress={() => setStatus(opcao)}
-                            >
-                                <Text style={[styles.textoOpcaoStatus, status === opcao && styles.textoOpcaoStatusAtiva]}>
-                                    {opcao}
-                                </Text>
-                            </TouchableOpacity>
-                        ))}
-                    </View>
+                <Text style={styles.labelStatus}>Situação</Text>
+                <View style={styles.containerAbasModal}>
+                    <FiltroTabs opcoes={OPCOES_STATUS} valorSelecionado={d.form.st_consulta} onSelecionar={d.mudar("st_consulta")} />
                 </View>
             </ModalFormulario>
 
-            {/* confirmação de remover */}
+            {/* confirmação antes de remover */}
             <ModalConfirmacao
-                visivel={confirmarRemoverAberto}
-                titulo="Remover Consulta"
-                mensagem="Deseja realmente remover esta consulta?"
+                visivel={d.confirmarRemoverAberto}
+                titulo="Remover consulta"
+                mensagem="Deseja remover esta consulta? O paciente e o responsável continuam cadastrados."
                 labelConfirmar="Remover"
                 perigoso
-                onConfirmar={() => { setConfirmarRemoverAberto(false); remover(); }}
-                onCancelar={() => setConfirmarRemoverAberto(false)}
+                onConfirmar={d.confirmarRemover}
+                onCancelar={d.fecharConfirmarRemover}
             />
-
         </View>
     );
 }

@@ -2,12 +2,11 @@ import { useState } from "react";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { consultaService } from "../services/consultaService";
-import { pacienteController } from "../controllers/pacienteController";
-import { schemaEditarConsulta } from "../validations/consultaValidations";
-import { StatusConsulta } from "../models/Consulta";
-import { formatarData, converterParaIso } from "../utils/formatacao";
+import { mensagemDeErro } from "../services/api";
+import { DadosConsulta } from "../models/Consulta";
 import { toastErro, toastSucesso } from "../utils/toast";
 
+// lógica da tela de detalhe da consulta: mostrar, editar e remover
 export function useDetalheConsulta() {
     const navigation = useNavigation<any>();
     const route = useRoute<any>();
@@ -15,115 +14,103 @@ export function useDetalheConsulta() {
 
     const { id_consulta } = route.params;
 
+    // tudo numa requisição só: consulta + animal + responsável, já formatados
     const consultaQuery = useQuery({
-        queryKey: ["consulta", id_consulta],
-        queryFn: () => consultaService.buscarPorId(id_consulta),
+        queryKey: ["consultas", "detalhe", id_consulta],
+        queryFn: () => consultaService.buscarDetalhe(id_consulta),
     });
     const consulta = consultaQuery.data ?? null;
 
-    const animalQuery = useQuery({
-        queryKey: ["animal", consulta?.id_animal],
-        queryFn: () => pacienteController.buscarAnimalPorId(consulta!.id_animal),
-        enabled: !!consulta,
+    // depois de editar ou remover, recarrega as listas que mostram essa consulta
+    function recarregarListas() {
+        queryClient.invalidateQueries({ queryKey: ["consultas"] });
+        queryClient.invalidateQueries({ queryKey: ["pacientes"] });
+    }
+
+    // ---------- editar ----------
+
+    const [modalEditarAberto, setModalEditarAberto] = useState(false);
+    const [form, setForm] = useState<DadosConsulta>({
+        historico_consulta: "",
+        dt_consulta: "",
+        hr_consulta: "",
+        st_consulta: "Agendado",
     });
-    const animal = animalQuery.data ?? null;
 
-    const responsavelQuery = useQuery({
-        queryKey: ["responsavel", animal?.id_responsavel],
-        queryFn: () => pacienteController.buscarResponsavelPorId(animal!.id_responsavel),
-        enabled: !!animal,
-    });
-    const responsavel = responsavelQuery.data ?? null;
+    // atalho pra atualizar um campo: mudar("hr_consulta")("09:30")
+    function mudar<C extends keyof DadosConsulta>(campo: C) {
+        return (valor: DadosConsulta[C]) => setForm((atual) => ({ ...atual, [campo]: valor }));
+    }
 
-    const carregando = consultaQuery.isLoading || animalQuery.isFetching || responsavelQuery.isFetching;
-
-    const [modalVisivel, setModalVisivel] = useState(false);
-    const [historico, setHistorico] = useState("");
-    const [dtConsulta, setDtConsulta] = useState("");
-    const [hrConsulta, setHrConsulta] = useState("");
-    const [status, setStatus] = useState<StatusConsulta>("Agendado");
-
+    // abre o modal já preenchido com o que veio do backend
+    // atrasada aparece como "Agendar": se a data continuar no passado, o backend marca atrasada de novo
     function abrirModalEditar() {
         if (!consulta) return;
-        setHistorico(consulta.historico_consulta);
-        // a consulta vem da API em formato ISO (ex: "2026-09-15T00:00:00.000Z") —
-        // mostra em DD/MM/AAAA no campo, igual o padrão usado em Paciente
-        setDtConsulta(formatarData(consulta.dt_consulta));
-        setHrConsulta(consulta.hr_consulta);
-        setStatus(consulta.st_consulta);
-        setModalVisivel(true);
+        setForm({
+            historico_consulta: consulta.historico_consulta,
+            dt_consulta: consulta.dt_consulta,
+            hr_consulta: consulta.hr_consulta,
+            st_consulta: consulta.st_consulta === "Concluido" ? "Concluido" : "Agendado",
+        });
+        setModalEditarAberto(true);
     }
 
-    function fecharModalEditar() {
-        setModalVisivel(false);
-    }
-
+    // salva e já coloca na tela a consulta que o backend devolveu
     const mutationAtualizar = useMutation({
-        mutationFn: () =>
-            consultaService.atualizar({
-                ...consulta!,
-                historico_consulta: historico,
-                // converte de volta pro formato AAAA-MM-DD que o backend espera
-                // antes de mandar / sem isso, o TO_DATE do Oracle rejeita o valor
-                dt_consulta: converterParaIso(dtConsulta),
-                hr_consulta: hrConsulta,
-                st_consulta: status,
-            }),
-        onSuccess: () => {
-            toastSucesso("Consulta atualizada!");
-            queryClient.invalidateQueries({ queryKey: ["consulta", id_consulta] });
-            queryClient.invalidateQueries({ queryKey: ["consultas"] });
-            setModalVisivel(false);
+        mutationFn: () => consultaService.atualizar(id_consulta, form),
+        onSuccess: (resposta) => {
+            toastSucesso(resposta.mensagem);
+            queryClient.setQueryData(["consultas", "detalhe", id_consulta], resposta.consulta);
+            recarregarListas();
+            setModalEditarAberto(false);
         },
-        onError: (error) => {
-            console.warn("[useDetalheConsulta.handleSalvar]", error);
-            // fecha o modal, senão o toast de erro fica escondido atrás dele
-            setModalVisivel(false);
-            toastErro("Não foi possível salvar as alterações.");
-        },
+        // deu erro: mostra a mensagem do backend e deixa o modal aberto pra corrigir
+        onError: (erro) => toastErro(mensagemDeErro(erro)),
     });
 
-    async function handleSalvar() {
-        if (!consulta) return;
-        try {
-            await schemaEditarConsulta.validate({ historico, dtConsulta, hrConsulta });
-        } catch (erro: any) {
-            toastErro(erro.message);
-            return;
-        }
-        mutationAtualizar.mutate();
-    }
+    // ---------- remover ----------
 
+    const [confirmarRemoverAberto, setConfirmarRemoverAberto] = useState(false);
+
+    // remove e volta pra tela anterior
     const mutationRemover = useMutation({
         mutationFn: () => consultaService.remover(id_consulta),
-        onSuccess: () => {
-            toastSucesso("Consulta removida.");
-            queryClient.invalidateQueries({ queryKey: ["consultas"] });
+        onSuccess: (resposta) => {
+            toastSucesso(resposta.mensagem);
+            recarregarListas();
             navigation.goBack();
         },
-        onError: (error) => {
-            console.warn("[useDetalheConsulta.remover]", error);
-            toastErro("Não foi possível remover a consulta.");
-        },
+        onError: (erro) => toastErro(mensagemDeErro(erro)),
     });
+
+    function confirmarRemover() {
+        setConfirmarRemoverAberto(false);
+        mutationRemover.mutate();
+    }
+
+    // abre a ficha do paciente dessa consulta
+    function abrirFichaPaciente() {
+        if (consulta) navigation.navigate("DetalhePaciente", { id_animal: consulta.animal.id_animal });
+    }
 
     return {
         consulta,
-        animal,
-        responsavel,
-        carregando,
+        carregando: consultaQuery.isLoading,
+        erro: consultaQuery.isError ? mensagemDeErro(consultaQuery.error) : null,
+        abrirFichaPaciente,
 
-        modalVisivel,
+        modalEditarAberto,
         abrirModalEditar,
-        fecharModalEditar,
-        historico, setHistorico,
-        dtConsulta, setDtConsulta,
-        hrConsulta, setHrConsulta,
-        status, setStatus,
-        handleSalvar,
+        fecharModalEditar: () => setModalEditarAberto(false),
+        form,
+        mudar,
+        salvar: () => mutationAtualizar.mutate(),
         salvando: mutationAtualizar.isPending,
 
-        remover: mutationRemover.mutate,
+        confirmarRemoverAberto,
+        abrirConfirmarRemover: () => setConfirmarRemoverAberto(true),
+        fecharConfirmarRemover: () => setConfirmarRemoverAberto(false),
+        confirmarRemover,
         removendo: mutationRemover.isPending,
     };
 }

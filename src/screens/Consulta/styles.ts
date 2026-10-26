@@ -340,4 +340,40 @@ export const styles = StyleSheet.create({
         gap: 12,
         marginTop: 8,
     },
+
+    // botão branco com borda azul (ver ficha do paciente)
+    botaoContorno: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: 8,
+        borderWidth: 1.5,
+        borderColor: colors.bluePrimary,
+        paddingVertical: 11,
+        borderRadius: 12,
+        marginTop: 4,
+    },
+
+    textoBotaoContorno: {
+        color: colors.bluePrimary,
+        fontWeight: "700",
+        fontSize: 15,
+    },
+
+    // botão verde do WhatsApp
+    botaoWhatsapp: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: 8,
+        backgroundColor: "#25D366",
+        paddingVertical: 12,
+        borderRadius: 12,
+        marginTop: 4,
+    },
+
+    // espaço embaixo das abinhas de situação no modal
+    containerAbasModal: {
+        marginBottom: 16,
+    },
 });

@@ -1,5 +1,13 @@
 import api from "./api";
-import { AbaConsulta, Consulta, ConsultaResumo, NovaConsulta, RespostaConsultaSalva } from "../models/Consulta";
+import {
+    AbaConsulta,
+    Consulta,
+    ConsultaDetalhe,
+    ConsultaResumo,
+    DadosConsulta,
+    NovaConsulta,
+    RespostaConsultaSalva,
+} from "../models/Consulta";
 
 // chamadas do backend ligadas a consultas
 export const consultaService = {
@@ -15,37 +23,33 @@ export const consultaService = {
         return resposta.data;
     },
 
+    // detalhe completo, já com animal e responsável (uma requisição só)
+    async buscarDetalhe(id: number): Promise<ConsultaDetalhe> {
+        const resposta = await api.get(`/consultas/${id}`);
+        return resposta.data;
+    },
+
     // cria a consulta; o backend resolve paciente e responsável numa tacada só
     async criar(dados: NovaConsulta): Promise<RespostaConsultaSalva> {
         const resposta = await api.post("/consultas", dados);
         return resposta.data;
     },
 
-    // (temporário) daqui pra baixo é o jeito antigo, vai sendo trocado nas próximas features
-    async listar(): Promise<Consulta[]> {
-        const resposta = await api.get("/consultas");
+    // edita motivo, data, horário e situação
+    async atualizar(id: number, dados: DadosConsulta): Promise<RespostaConsultaSalva> {
+        const resposta = await api.put(`/consultas/${id}`, dados);
         return resposta.data;
     },
 
-    async buscarPorId(id: number): Promise<Consulta | null> {
-        try {
-            const resposta = await api.get(`/consultas/${id}`);
-            return resposta.data;
-        } catch {
-            return null;
-        }
+    // remove só a consulta, o paciente continua cadastrado
+    async remover(id: number): Promise<{ mensagem: string }> {
+        const resposta = await api.delete(`/consultas/${id}`);
+        return resposta.data;
     },
 
-    async atualizar(consulta: Consulta): Promise<void> {
-        await api.put(`/consultas/${consulta.id_consulta}`, {
-            historico_consulta: consulta.historico_consulta,
-            dt_consulta: consulta.dt_consulta,
-            hr_consulta: consulta.hr_consulta,
-            st_consulta: consulta.st_consulta,
-        });
-    },
-
-    async remover(id: number): Promise<void> {
-        await api.delete(`/consultas/${id}`);
+    // (temporário) ainda usado pelos indicadores do Perfil, sai na feature do Perfil
+    async listar(): Promise<Consulta[]> {
+        const resposta = await api.get("/consultas");
+        return resposta.data;
     },
 };

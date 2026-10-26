@@ -1,3 +1,5 @@
+import { AnimalCompleto, ResponsavelCompleto } from "./Paciente";
+
 export type StatusConsulta = "Agendado" | "Concluido" | "Atrasado";
 
 // as 3 abas da tela de consultas, cada uma é um endpoint do backend
@@ -53,10 +55,35 @@ export interface NovaConsulta {
           };
 }
 
-// o que volta depois de salvar (o lembrete é usado na feature de notificações)
+// detalhe completo: consulta + animal + responsável, tudo formatado pelo backend
+export interface ConsultaDetalhe {
+    id_consulta: number;
+    historico_consulta: string;
+    dt_consulta: string;
+    dt_consulta_exibicao: string;
+    hr_consulta: string;
+    data_hora_exibicao: string;
+    st_consulta: StatusConsulta;
+    st_consulta_rotulo: string;
+    ds_doenca: string | null;
+    ds_doenca_exibicao: string;
+    link_consulta_online: string;
+    animal: AnimalCompleto;
+    responsavel: ResponsavelCompleto;
+}
+
+// o que o app manda no PUT /consultas/:id
+export interface DadosConsulta {
+    historico_consulta: string;
+    dt_consulta: string;
+    hr_consulta: string;
+    st_consulta: StatusConsulta;
+}
+
+// o que volta depois de criar ou editar (o lembrete é usado na feature de notificações)
 export interface RespostaConsultaSalva {
     mensagem: string;
-    consulta: { id_consulta: number };
+    consulta: ConsultaDetalhe;
     lembrete: unknown;
 }
 
