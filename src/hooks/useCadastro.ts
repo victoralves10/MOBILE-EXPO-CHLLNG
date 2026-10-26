@@ -3,45 +3,34 @@ import { useNavigation } from "@react-navigation/native";
 import { useMutation } from "@tanstack/react-query";
 import { useSenhaVisivel } from "./useSenhaVisivel";
 import { useAuth } from "../context/AuthContext";
-import { authController, ErroSemConexao } from "../controllers/authController";
+import { authService } from "../services/authService";
+import { mensagemDeErro } from "../services/api";
 import { schemaCadastro } from "../validations/authValidations";
-import { toastErro } from "../utils/toast";
+import { toastErro, toastSucesso } from "../utils/toast";
 
-function aguardar(ms: number) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
+// toda a lógica da tela de cadastro
 export function useCadastro() {
-    const [nome, setNome] = useState("");
-    const [email, setEmail] = useState("");
-    const [senha, setSenha] = useState("");
-    const [confirmarSenha, setConfirmarSenha] = useState("");
+    const [nome, setNome] = useState("Vitinho");
+    const [email, setEmail] = useState("teste2@teste.com");
+    const [senha, setSenha] = useState("Teste@123");
+    const [confirmarSenha, setConfirmarSenha] = useState("Teste@123");
 
     const senhaVisivel = useSenhaVisivel();
     const confirmarSenhaVisivel = useSenhaVisivel();
     const navigation = useNavigation<any>();
-    const { entrar } = useAuth();
+    const { iniciarSessao } = useAuth();
 
+    // cria a conta no backend e já entra; se o e-mail já existir, mostra o aviso dele
     const mutation = useMutation({
-        mutationFn: () => authController.fazerCadastro(nome.trim(), email.trim(), senha),
-        onSuccess: async (sucesso) => {
-            if (sucesso) {
-                await aguardar(600);
-                entrar();
-            } else {
-                toastErro("Não deu pra criar a conta. Tenta outro e-mail.");
-            }
+        mutationFn: () => authService.cadastrar(nome.trim(), email.trim(), senha),
+        onSuccess: async (sessao) => {
+            toastSucesso(sessao.mensagem);
+            await iniciarSessao(sessao);
         },
-        onError: (error) => {
-            console.warn("[useCadastro.fazerCadastro]", error);
-            if (error instanceof ErroSemConexao) {
-                toastErro("Sem conexão com o servidor.");
-            } else {
-                toastErro("Algo deu errado. Tente de novo.");
-            }
-        },
+        onError: (erro) => toastErro(mensagemDeErro(erro)),
     });
 
+    // valida os campos antes de mandar
     async function fazerCadastro() {
         try {
             await schemaCadastro.validate({ nome, email, senha, confirmarSenha });

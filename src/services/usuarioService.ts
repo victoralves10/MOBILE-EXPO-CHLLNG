@@ -1,25 +1,17 @@
 import api from "./api";
 import { User } from "../models/User";
 
+// chamadas do backend pra mexer na conta do usuário
 export const usuarioService = {
-
-    // GET /auth/perfil / dados do usuario logado, sempre buscados frescos da API
-    async buscarDados(): Promise<User> {
-        const resposta = await api.get("/auth/perfil");
+    // edita nome e e-mail, a senha só vai se o usuário digitou uma nova
+    async editar(nome: string, email: string, senha?: string): Promise<{ mensagem: string; usuario: User }> {
+        const resposta = await api.put("/auth/perfil", { nome, email, ...(senha ? { senha } : {}) });
         return resposta.data;
     },
 
-    // PUT /auth/perfil / nome/email obrigatorios, senha opcional
-    async editar(nome: string, email: string, senha?: string): Promise<User> {
-        const body: any = { nome, email };
-        if (senha) body.senha = senha;
-        const resposta = await api.put("/auth/perfil", body);
+    // apaga a conta, precisa da senha atual (se errar, o backend devolve 403)
+    async remover(senha: string): Promise<{ mensagem: string }> {
+        const resposta = await api.delete("/auth/conta", { data: { senha } });
         return resposta.data;
-    },
-
-    // DELETE /auth/conta / exige a senha atual pra confirmar
-    async remover(senha: string): Promise<void> {
-        await api.delete("/auth/conta", { data: { senha } });
     },
 };
-

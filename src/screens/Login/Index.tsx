@@ -34,7 +34,7 @@ export default function Login() {
 
     return (
         <SafeAreaView style={styles.containerTela}>
-            <StatusBar backgroundColor={colors.white} barStyle="dark-content" />
+            <StatusBar barStyle="dark-content" />
 
             <KeyboardAvoidingView
                 style={{ flex: 1 }}

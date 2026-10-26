@@ -3,42 +3,31 @@ import { useNavigation } from "@react-navigation/native";
 import { useMutation } from "@tanstack/react-query";
 import { useSenhaVisivel } from "./useSenhaVisivel";
 import { useAuth } from "../context/AuthContext";
-import { authController, ErroSemConexao } from "../controllers/authController";
+import { authService } from "../services/authService";
+import { mensagemDeErro } from "../services/api";
 import { schemaLogin } from "../validations/authValidations";
-import { toastErro } from "../utils/toast";
+import { toastErro, toastSucesso } from "../utils/toast";
 
-function aguardar(ms: number) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
+// toda a lógica da tela de login
 export function useLogin() {
     const [email, setEmail] = useState("dev@clyvovet.dev");
     const [senha, setSenha] = useState("dev123456");
 
     const senhaVisivel = useSenhaVisivel();
     const navigation = useNavigation<any>();
-    const { entrar } = useAuth();
+    const { iniciarSessao } = useAuth();
 
+    // manda o login pro backend; deu certo entra no app, deu errado mostra a mensagem dele
     const mutation = useMutation({
-        mutationFn: () => authController.fazerLogin(email.trim(), senha.trim()),
-        onSuccess: async (sucesso) => {
-            if (sucesso) {
-                await aguardar(600);
-                entrar();
-            } else {
-                toastErro("E-mail ou senha incorretos.");
-            }
+        mutationFn: () => authService.login(email.trim(), senha),
+        onSuccess: async (sessao) => {
+            toastSucesso(sessao.mensagem);
+            await iniciarSessao(sessao);
         },
-        onError: (error) => {
-            console.warn("[useLogin.fazerLogin]", error);
-            if (error instanceof ErroSemConexao) {
-                toastErro("Sem conexão com o servidor.");
-            } else {
-                toastErro("Algo deu errado. Tente de novo.");
-            }
-        },
+        onError: (erro) => toastErro(mensagemDeErro(erro)),
     });
 
+    // valida os campos antes de mandar
     async function fazerLogin() {
         try {
             await schemaLogin.validate({ email, senha });

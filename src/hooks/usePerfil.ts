@@ -1,30 +1,35 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { authController, ErroSemConexao, ErroSenhaIncorreta } from "../controllers/authController";
 import { useAuth } from "../context/AuthContext";
 import { usuarioService } from "../services/usuarioService";
+import { authService } from "../services/authService";
+import { mensagemDeErro } from "../services/api";
 import { consultaService } from "../services/consultaService";
 import { animalService } from "../services/animalService";
 import { useSenhaVisivel } from "./useSenhaVisivel";
 import { schemaEditarPerfil, schemaApagarConta } from "../validations/authValidations";
 import { toastErro, toastSucesso } from "../utils/toast";
 
+// (temporário) essa parte dos indicadores sai na feature do Perfil, vai vir pronta do backend
 function ehMesAtual(dataIso: string): boolean {
     const data = new Date(dataIso);
     const agora = new Date();
     return data.getMonth() === agora.getMonth() && data.getFullYear() === agora.getFullYear();
 }
 
+// toda a lógica da tela de perfil
 export function usePerfil() {
-    const { sair: sairDoAuthContext } = useAuth();
+    const { encerrarSessao } = useAuth();
     const queryClient = useQueryClient();
 
+    // dados do usuário logado
     const usuarioQuery = useQuery({
         queryKey: ["usuario"],
-        queryFn: () => usuarioService.buscarDados(),
+        queryFn: () => authService.perfil(),
     });
     const usuario = usuarioQuery.data ?? null;
 
+    // (temporário) indicadores ainda no jeito antigo
     const consultasQuery = useQuery({
         queryKey: ["consultas"],
         queryFn: () => consultaService.listar(),
@@ -51,7 +56,8 @@ export function usePerfil() {
     const pacientesComRetorno = [...consultasPorAnimal.values()].filter((qtd) => qtd >= 2).length;
     const taxaRetorno = totalPacientes > 0 ? Math.round((pacientesComRetorno / totalPacientes) * 100) : 0;
 
-    const inicial = usuario?.nm_usuario?.charAt(0).toUpperCase() ?? "?";
+    // letra do avatar já vem pronta do backend
+    const inicial = usuario?.inicial_usuario ?? "?";
 
     // ---------- editar dados ----------
 
@@ -61,6 +67,7 @@ export function usePerfil() {
     const [novaSenha, setNovaSenha] = useState("");
     const senhaVisivel = useSenhaVisivel();
 
+    // abre o modal já preenchido com os dados atuais
     function abrirModalEditar() {
         setNome(usuario?.nm_usuario ?? "");
         setEmail(usuario?.email_usuario ?? "");
@@ -72,24 +79,19 @@ export function usePerfil() {
         setModalEditarAberto(false);
     }
 
+    // salva no backend e atualiza o usuário na tela com o que ele devolveu
     const mutationEditar = useMutation({
         mutationFn: ({ nome, email, senha }: { nome: string; email: string; senha?: string }) =>
-            authController.atualizarPerfil(nome, email, senha),
-        onSuccess: () => {
-            toastSucesso("Dados atualizados.");
-            queryClient.invalidateQueries({ queryKey: ["usuario"] });
+            usuarioService.editar(nome, email, senha),
+        onSuccess: (resposta) => {
+            toastSucesso(resposta.mensagem);
+            queryClient.setQueryData(["usuario"], resposta.usuario);
             setModalEditarAberto(false);
         },
-        onError: (error) => {
-            console.warn("[usePerfil.confirmarEdicao]", error);
-            if (error instanceof ErroSemConexao) {
-                toastErro("Sem conexão com o servidor.");
-            } else {
-                toastErro("Não deu pra atualizar. Tenta de novo.");
-            }
-        },
+        onError: (erro) => toastErro(mensagemDeErro(erro)),
     });
 
+    // valida os campos antes de mandar
     async function confirmarEdicao() {
         try {
             await schemaEditarPerfil.validate({ nome, email, novaSenha });
@@ -117,26 +119,21 @@ export function usePerfil() {
         setSenhaConfirmacao("");
     }
 
+    // apaga no backend; deu certo sai do app, senha errada só mostra o aviso
     const mutationApagar = useMutation({
-        mutationFn: (senha: string) => authController.apagarConta(senha),
-        onSuccess: () => {
+        mutationFn: (senha: string) => usuarioService.remover(senha),
+        onSuccess: async (resposta) => {
             setModalApagarAberto(false);
-            toastSucesso("Conta apagada.");
-            sairDoAuthContext();
+            toastSucesso(resposta.mensagem);
+            await encerrarSessao();
         },
-        onError: (error) => {
-            console.warn("[usePerfil.executarApagarConta]", error);
+        onError: (erro) => {
             setModalApagarAberto(false);
-            if (error instanceof ErroSenhaIncorreta) {
-                toastErro("Senha incorreta.");
-            } else if (error instanceof ErroSemConexao) {
-                toastErro("Sem conexão com o servidor.");
-            } else {
-                toastErro("Não deu pra apagar a conta. Tenta de novo.");
-            }
+            toastErro(mensagemDeErro(erro));
         },
     });
 
+    // confere se digitou a senha e abre a confirmação final
     async function confirmarApagarConta() {
         try {
             await schemaApagarConta.validate({ senha: senhaConfirmacao });
@@ -156,9 +153,8 @@ export function usePerfil() {
 
     const [modalSairAberto, setModalSairAberto] = useState(false);
 
-    function sair() {
-        sairDoAuthContext();
-    }
+    // sair é só encerrar a sessão do contexto
+    const sair = encerrarSessao;
 
     return {
         usuario,
