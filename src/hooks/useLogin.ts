@@ -12,8 +12,8 @@ function aguardar(ms: number) {
 }
 
 export function useLogin() {
-    const [email, setEmail] = useState("");
-    const [senha, setSenha] = useState("");
+    const [email, setEmail] = useState("dev@clyvovet.dev");
+    const [senha, setSenha] = useState("dev123456");
 
     const senhaVisivel = useSenhaVisivel();
     const navigation = useNavigation<any>();

@@ -1,7 +1,7 @@
 import axios from "axios";
 import * as tokenStorage from "../storage/tokenStorage";
 
-const BASE_URL = "https://apirest-node-chllng.onrender.com";
+const BASE_URL = "http://192.168.1.2:3000";
 
 const api = axios.create({ baseURL: BASE_URL });
 
