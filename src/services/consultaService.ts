@@ -1,5 +1,5 @@
 import api from "./api";
-import { AbaConsulta, Consulta, ConsultaResumo } from "../models/Consulta";
+import { AbaConsulta, Consulta, ConsultaResumo, NovaConsulta, RespostaConsultaSalva } from "../models/Consulta";
 
 // chamadas do backend ligadas a consultas
 export const consultaService = {
@@ -15,7 +15,13 @@ export const consultaService = {
         return resposta.data;
     },
 
-    // (temporário) daqui pra baixo é o jeito antigo, vai sendo trocado jaja
+    // cria a consulta; o backend resolve paciente e responsável numa tacada só
+    async criar(dados: NovaConsulta): Promise<RespostaConsultaSalva> {
+        const resposta = await api.post("/consultas", dados);
+        return resposta.data;
+    },
+
+    // (temporário) daqui pra baixo é o jeito antigo, vai sendo trocado nas próximas features
     async listar(): Promise<Consulta[]> {
         const resposta = await api.get("/consultas");
         return resposta.data;
@@ -28,11 +34,6 @@ export const consultaService = {
         } catch {
             return null;
         }
-    },
-
-    async criar(dados: Omit<Consulta, "id_consulta">): Promise<Consulta> {
-        const resposta = await api.post("/consultas", dados);
-        return resposta.data;
     },
 
     async atualizar(consulta: Consulta): Promise<void> {

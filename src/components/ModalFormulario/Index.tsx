@@ -4,12 +4,14 @@ import {
     View,
     Text,
     TouchableOpacity,
-    TouchableWithoutFeedback,
+    Pressable,
     ScrollView,
     KeyboardAvoidingView,
     Platform,
     ActivityIndicator,
+    StyleSheet,
 } from "react-native";
+import Toast from "react-native-toast-message";
 import { styles } from "./styles";
 import { colors } from "../../global/colors";
 
@@ -40,45 +42,47 @@ export default function ModalFormulario({
                 behavior={Platform.OS === "ios" ? "padding" : "height"}
                 style={{ flex: 1 }}
             >
-                {/* toca fora do card (na área escura) pra fechar */}
-                <TouchableWithoutFeedback onPress={onFechar}>
-                    <View style={styles.fundo}>
-                        {/* toca dentro do card não deve fechar — TouchableWithoutFeedback
-                            aqui "absorve" o toque antes de ele chegar no fundo */}
-                        <TouchableWithoutFeedback onPress={() => {}}>
-                            <View style={styles.card}>
-                                {/* barra de arrasto — só visual, indica que dá pra "puxar" */}
-                                <View style={styles.barraArrasto} />
+                <View style={styles.fundo}>
+                    {/* área escura atrás do card: tocar nela fecha o modal.
+                        fica do lado do card (e não em volta dele) pra não roubar o
+                        toque do ScrollView, senão a lista não rola com o dedo */}
+                    <Pressable style={StyleSheet.absoluteFill} onPress={onFechar} />
 
-                                <ScrollView
-                                    contentContainerStyle={styles.scrollConteudo}
-                                    keyboardShouldPersistTaps="handled"
-                                    showsVerticalScrollIndicator={false}
+                    <View style={styles.card}>
+                        {/* barra de arrasto — só visual, indica que dá pra "puxar" */}
+                        <View style={styles.barraArrasto} />
+
+                        <ScrollView
+                            contentContainerStyle={styles.scrollConteudo}
+                            keyboardShouldPersistTaps="handled"
+                            showsVerticalScrollIndicator={false}
+                        >
+                            <Text style={styles.titulo}>{titulo}</Text>
+
+                            {children}
+
+                            <View style={styles.containerBotoes}>
+                                <TouchableOpacity style={styles.botaoCancelar} onPress={onFechar}>
+                                    <Text style={styles.textoBotaoCancelar}>Cancelar</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    style={[styles.botaoSalvar, carregando && { opacity: 0.7 }]}
+                                    onPress={onSalvar}
+                                    disabled={carregando}
                                 >
-                                    <Text style={styles.titulo}>{titulo}</Text>
-
-                                    {children}
-
-                                    <View style={styles.containerBotoes}>
-                                        <TouchableOpacity style={styles.botaoCancelar} onPress={onFechar}>
-                                            <Text style={styles.textoBotaoCancelar}>Cancelar</Text>
-                                        </TouchableOpacity>
-                                        <TouchableOpacity
-                                            style={[styles.botaoSalvar, carregando && { opacity: 0.7 }]}
-                                            onPress={onSalvar}
-                                            disabled={carregando}
-                                        >
-                                            {carregando
-                                                ? <ActivityIndicator color={colors.white} />
-                                                : <Text style={styles.textoBotaoSalvar}>{labelSalvar}</Text>}
-                                        </TouchableOpacity>
-                                    </View>
-                                </ScrollView>
+                                    {carregando
+                                        ? <ActivityIndicator color={colors.white} />
+                                        : <Text style={styles.textoBotaoSalvar}>{labelSalvar}</Text>}
+                                </TouchableOpacity>
                             </View>
-                        </TouchableWithoutFeedback>
+                        </ScrollView>
                     </View>
-                </TouchableWithoutFeedback>
+                </View>
             </KeyboardAvoidingView>
+
+            {/* o Modal fica por cima de tudo, até do Toast do App.tsx.
+                com um Toast aqui dentro, as mensagens de erro aparecem por cima do formulário */}
+            <Toast />
         </Modal>
     );
 }

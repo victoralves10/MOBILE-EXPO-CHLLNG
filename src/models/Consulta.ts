@@ -26,6 +26,40 @@ export interface ConsultaResumo {
     animal: AnimalResumo;
 }
 
+// o que o app manda no POST /consultas (os 3 casos da especificação)
+export interface NovaConsulta {
+    consulta: {
+        historico_consulta: string;
+        dt_consulta: string;
+        hr_consulta: string;
+        st_consulta: StatusConsulta;
+        ds_doenca: string | null;
+    };
+    paciente:
+        | { id_animal: number | null } // caso 1: paciente já cadastrado
+        | {
+              novo: {
+                  nm_animal: string;
+                  especie_animal: string;
+                  raca_animal: string;
+                  dt_nascimento_animal: string;
+                  peso_animal: string;
+                  rg_animal: string;
+                  nr_microchip_animal: string;
+                  responsavel:
+                      | { id_responsavel: number | null } // caso 2: responsável já cadastrado
+                      | { novo: { nm_responsavel: string; cpf_responsavel: string; nr_telefone_responsavel: string; id_regiao: number | null } }; // caso 3
+              };
+          };
+}
+
+// o que volta depois de salvar (o lembrete é usado na feature de notificações)
+export interface RespostaConsultaSalva {
+    mensagem: string;
+    consulta: { id_consulta: number };
+    lembrete: unknown;
+}
+
 // (temporário) modelo antigo, sai quando o detalhe da consulta for refeito
 export interface Consulta {
     id_consulta: number;

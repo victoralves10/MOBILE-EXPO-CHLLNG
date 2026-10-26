@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { consultaController } from "../controllers/consultaController";
+import { consultaService } from "../services/consultaService";
 import { pacienteController } from "../controllers/pacienteController";
 import { schemaEditarConsulta } from "../validations/consultaValidations";
 import { StatusConsulta } from "../models/Consulta";
@@ -17,7 +17,7 @@ export function useDetalheConsulta() {
 
     const consultaQuery = useQuery({
         queryKey: ["consulta", id_consulta],
-        queryFn: () => consultaController.buscarPorId(id_consulta),
+        queryFn: () => consultaService.buscarPorId(id_consulta),
     });
     const consulta = consultaQuery.data ?? null;
 
@@ -60,7 +60,7 @@ export function useDetalheConsulta() {
 
     const mutationAtualizar = useMutation({
         mutationFn: () =>
-            consultaController.atualizar({
+            consultaService.atualizar({
                 ...consulta!,
                 historico_consulta: historico,
                 // converte de volta pro formato AAAA-MM-DD que o backend espera
@@ -95,7 +95,7 @@ export function useDetalheConsulta() {
     }
 
     const mutationRemover = useMutation({
-        mutationFn: () => consultaController.remover(id_consulta),
+        mutationFn: () => consultaService.remover(id_consulta),
         onSuccess: () => {
             toastSucesso("Consulta removida.");
             queryClient.invalidateQueries({ queryKey: ["consultas"] });

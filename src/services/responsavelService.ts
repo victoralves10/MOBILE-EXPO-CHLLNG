@@ -1,7 +1,15 @@
 import api from "./api";
 import { Responsavel } from "../models/Responsavel";
+import { ResponsavelItem } from "../models/Paciente";
 
 export const responsavelService = {
+    // busca por nome, CPF ou telefone (o backend devolve no máximo 20)
+    async buscar(busca: string): Promise<ResponsavelItem[]> {
+        const resposta = await api.get("/responsaveis", { params: busca ? { busca } : undefined });
+        return resposta.data;
+    },
+
+    // (temporário) daqui pra baixo é o jeito antigo, sai na feature de pacientes
 
     async listar(): Promise<Responsavel[]> {
         const resposta = await api.get("/responsaveis");
