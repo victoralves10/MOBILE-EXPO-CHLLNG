@@ -219,6 +219,15 @@ export const styles = StyleSheet.create({
         paddingTop: 16,
     },
 
+    // painel branco com cantos arredondados onde ficam as linhas da lista
+    painelLista: {
+        flex: 1,
+        backgroundColor: colors.white,
+        borderTopLeftRadius: 18,
+        borderTopRightRadius: 18,
+        overflow: "hidden",
+    },
+
     // botão "+" flutuante no canto inferior direito
     botaoAdicionar: {
         position: "absolute",

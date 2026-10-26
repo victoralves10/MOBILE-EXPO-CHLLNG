@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, FlatList, Alert, Image } from "react-native";
+import { View, Text, FlatList, Image } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { styles } from "./style";
 import { colors } from "../../global/colors";
@@ -7,8 +7,9 @@ import ConsultaCard from "../../components/ConsultaCard/Index";
 import TelaCarregando from "../../components/TelaCarregando/Index";
 import { useHome } from "../../hooks/useHome";
 
+// tela inicial: carrossel com as próximas consultas e o destaque embaixo
 export default function Home() {
-    const { agendadasComAnimal, carregando, abrirDetalheConsulta } = useHome();
+    const { proximas, carregando, abrirDetalheConsulta } = useHome();
 
     return (
         <View style={styles.container}>
@@ -17,36 +18,33 @@ export default function Home() {
             <View style={styles.containerCarrossel}>
                 <View style={styles.containerTitulo}>
                     <Text style={styles.tituloSecao}>Próximas Consultas</Text>
-                    {agendadasComAnimal.length > 0 && (
+                    {proximas.length > 0 && (
                         <View style={styles.badgeContador}>
-                            <Text style={styles.textoBadgeContador}>{agendadasComAnimal.length}</Text>
+                            <Text style={styles.textoBadgeContador}>{proximas.length}</Text>
                         </View>
                     )}
                 </View>
 
                 {carregando ? (
                     <TelaCarregando />
-                ) : agendadasComAnimal.length === 0 ? (
+                ) : proximas.length === 0 ? (
                     <View style={styles.containerVazio}>
                         <Ionicons name="calendar-outline" size={28} color={colors.grayMedium} />
                         <Text style={styles.textoVazioCarrossel}>Nenhuma consulta agendada no momento.</Text>
                     </View>
                 ) : (
                     <FlatList
-                        data={agendadasComAnimal}
-                        keyExtractor={(item) => String(item.consulta.id_consulta)}
+                        data={proximas}
+                        keyExtractor={(item) => String(item.id_consulta)}
                         horizontal
                         showsHorizontalScrollIndicator={false}
                         contentContainerStyle={styles.flatListCarrossel}
                         renderItem={({ item }) => (
                             <View style={styles.cardCarrossel}>
                                 <ConsultaCard
-                                    consulta={item.consulta}
-                                    animal={item.animal}
-                                    onPress={() => abrirDetalheConsulta(item.consulta.id_consulta)}
-                                    onPressIcone={() =>
-                                        Alert.alert("Consulta Online", "Levando você para a consulta online.")
-                                    }
+                                    consulta={item}
+                                    variante="cartao"
+                                    onPress={() => abrirDetalheConsulta(item.id_consulta)}
                                 />
                             </View>
                         )}

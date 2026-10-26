@@ -9,24 +9,22 @@ import FiltroTabs from "../../components/FiltroTabs/Index";
 import ModalFormulario from "../../components/ModalFormulario/Index";
 import TelaCarregando from "../../components/TelaCarregando/Index";
 import { useConsultas } from "../../hooks/useConsultas";
-import { toastAviso } from "../../utils/toast";
+import { useNovaConsulta } from "../../hooks/useNovaConsulta";
+import { AbaConsulta } from "../../models/Consulta";
 
-// cor de cada aba de filtro
-const CORES_STATUS = {
-    Agendado: colors.bluePrimary,
-    Atrasado: colors.danger,
-    Concluido: colors.success,
-};
+// as 3 abas da tela, cada uma com a sua cor
+const ABAS: { valor: AbaConsulta; label: string; cor: string }[] = [
+    { valor: "agendadas", label: "Agendadas", cor: colors.bluePrimary },
+    { valor: "atrasadas", label: "Atrasadas", cor: colors.danger },
+    { valor: "concluidas", label: "Concluídas", cor: colors.success },
+];
 
+// tela de consultas: busca, abas e lista; o modal de nova consulta fica embaixo
 export default function ConsultaTela() {
-    const {
-        busca, setBusca,
-        filtroStatus, setFiltroStatus,
-        FILTROS_STATUS,
-        carregando,
-        consultasFiltradas,
-        abrirDetalheConsulta,
+    const { aba, setAba, busca, setBusca, consultas, carregando, erro, abrirDetalheConsulta } = useConsultas();
 
+    const {
+        OPCOES_STATUS,
         modalVisivel,
         abrirModalNovaConsulta,
         fecharModalNovaConsulta,
@@ -47,50 +45,42 @@ export default function ConsultaTela() {
         nmResponsavel, setNmResponsavel,
         cpfResponsavel, setCpfResponsavel,
         telefoneResponsavel, setTelefoneResponsavel,
-    } = useConsultas();
+    } = useNovaConsulta();
 
     return (
         <View style={styles.container}>
 
-            {/* barra de busca + abas de filtro por status */}
+            {/* barra de busca + abas */}
             <View style={styles.containerBusca}>
                 <CustomTextInput
-                    placeholder="Buscar consulta..."
+                    placeholder="Buscar pelo nome do animal..."
                     leftIconName="search"
                     value={busca}
                     onChangeText={setBusca}
                     containerStyle={{ marginBottom: 0 }}
                 />
 
-                <FiltroTabs
-                    opcoes={FILTROS_STATUS.map((s) => ({ valor: s, label: s, cor: CORES_STATUS[s] }))}
-                    valorSelecionado={filtroStatus}
-                    onSelecionar={setFiltroStatus}
-                />
+                <FiltroTabs opcoes={ABAS} valorSelecionado={aba} onSelecionar={setAba} />
             </View>
 
-            {/* lista de cards de consulta */}
+            {/* lista de consultas da aba escolhida, num painel branco tipo lista de contatos */}
             <View style={styles.containerLista}>
                 {carregando ? (
                     <TelaCarregando telaCheia />
+                ) : consultas.length === 0 ? (
+                    <Text style={styles.textoVazio}>{erro ?? "Nenhuma consulta encontrada."}</Text>
                 ) : (
-                    <FlatList
-                        data={consultasFiltradas}
-                        keyExtractor={({ consulta }) => String(consulta.id_consulta)}
-                        renderItem={({ item }) => (
-                            <ConsultaCard
-                                consulta={item.consulta}
-                                animal={item.animal}
-                                onPress={() => abrirDetalheConsulta(item.consulta.id_consulta)}
-                                onPressIcone={() => toastAviso("Levando você para a consulta online.")}
-                            />
-                        )}
-                        ListEmptyComponent={
-                            <Text style={styles.textoVazio}>Nenhuma consulta encontrada.</Text>
-                        }
-                        showsVerticalScrollIndicator={false}
-                        contentContainerStyle={{ paddingBottom: 100 }}
-                    />
+                    <View style={styles.painelLista}>
+                        <FlatList
+                            data={consultas}
+                            keyExtractor={(item) => String(item.id_consulta)}
+                            renderItem={({ item }) => (
+                                <ConsultaCard consulta={item} onPress={() => abrirDetalheConsulta(item.id_consulta)} />
+                            )}
+                            showsVerticalScrollIndicator={false}
+                            ListFooterComponent={<View style={{ height: 90 }} />}
+                        />
+                    </View>
                 )}
             </View>
 
@@ -117,7 +107,7 @@ export default function ConsultaTela() {
                 <View style={styles.containerStatus}>
                     <Text style={styles.labelStatus}>Status</Text>
                     <View style={styles.containerOpcoes}>
-                        {FILTROS_STATUS.map((opcao) => (
+                        {OPCOES_STATUS.map((opcao) => (
                             <TouchableOpacity
                                 key={opcao}
                                 style={[styles.opcaoStatus, status === opcao && styles.opcaoStatusAtiva]}

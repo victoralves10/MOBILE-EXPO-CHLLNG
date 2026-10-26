@@ -1,8 +1,21 @@
 import api from "./api";
-import { Consulta } from "../models/Consulta";
+import { AbaConsulta, Consulta, ConsultaResumo } from "../models/Consulta";
 
+// chamadas do backend ligadas a consultas
 export const consultaService = {
+    // lista de uma aba (agendadas, atrasadas ou concluidas), a busca é pelo nome do animal
+    async listarPorAba(aba: AbaConsulta, busca: string): Promise<ConsultaResumo[]> {
+        const resposta = await api.get(`/consultas/${aba}`, { params: busca ? { busca } : undefined });
+        return resposta.data;
+    },
 
+    // próximas consultas pro carrossel da Home
+    async listarProximas(): Promise<ConsultaResumo[]> {
+        const resposta = await api.get("/consultas/proximas");
+        return resposta.data;
+    },
+
+    // (temporário) daqui pra baixo é o jeito antigo, vai sendo trocado jaja
     async listar(): Promise<Consulta[]> {
         const resposta = await api.get("/consultas");
         return resposta.data;
@@ -12,8 +25,7 @@ export const consultaService = {
         try {
             const resposta = await api.get(`/consultas/${id}`);
             return resposta.data;
-        } catch (error) {
-            console.warn("[consultaService.buscarPorId]", error);
+        } catch {
             return null;
         }
     },
