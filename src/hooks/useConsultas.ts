@@ -1,5 +1,5 @@
-import { useState, useCallback } from "react";
-import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { useState, useCallback, useEffect } from "react";
+import { useFocusEffect, useNavigation, useRoute } from "@react-navigation/native";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { consultaService } from "../services/consultaService";
 import { mensagemDeErro } from "../services/api";
@@ -10,8 +10,16 @@ import { AbaConsulta } from "../models/Consulta";
 export function useConsultas() {
     const navigation = useNavigation<any>();
 
+    const route = useRoute<any>();
+
     const [aba, setAba] = useState<AbaConsulta>("agendadas");
     const [busca, setBusca] = useState("");
+
+    // quando outra tela manda abrir uma aba (ex: Perfil → "Atrasadas"), troca pra ela
+    const abaPedida: AbaConsulta | undefined = route.params?.aba;
+    useEffect(() => {
+        if (abaPedida) setAba(abaPedida);
+    }, [abaPedida]);
 
     // só manda a busca pro backend quando o usuário para de digitar
     const buscaDebounced = useDebounce(busca.trim(), 500);

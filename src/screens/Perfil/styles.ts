@@ -2,20 +2,25 @@ import { StyleSheet } from "react-native";
 import { colors } from "../../global/colors";
 
 export const styles = StyleSheet.create({
-    containerTela: {
+    container: {
         flex: 1,
         backgroundColor: colors.grayLight,
     },
 
-    containerScroll: {
-        padding: 20,
+    scroll: {
+        padding: 16,
         paddingBottom: 40,
     },
 
-    // cabeçalho
-    containerCabecalho: {
+    // ---------- cabeçalho ----------
+
+    // card branco com avatar, nome e e-mail
+    cabecalho: {
+        backgroundColor: colors.white,
+        borderRadius: 20,
         alignItems: "center",
-        marginBottom: 24,
+        paddingVertical: 24,
+        paddingHorizontal: 16,
     },
 
     avatar: {
@@ -26,161 +31,229 @@ export const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
         marginBottom: 12,
-
-        elevation: 6,
-        shadowColor: colors.bluePrimary,
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.3,
-        shadowRadius: 10,
     },
 
     textoAvatar: {
-        color: colors.white,
-        fontSize: 34,
+        fontSize: 36,
         fontWeight: "800",
+        color: colors.white,
     },
 
-    textoNome: {
-        fontSize: 20,
+    nome: {
+        fontSize: 22,
         fontWeight: "800",
         color: colors.dark,
     },
 
-    textoEmail: {
+    email: {
         fontSize: 14,
         color: colors.gray,
         marginTop: 2,
     },
 
-    // grid 2x2 de kpis
-    gridKpis: {
+    // botão pequeno com borda azul
+    botaoEditarPerfil: {
         flexDirection: "row",
-        flexWrap: "wrap",
-        gap: 12,
+        alignItems: "center",
+        gap: 6,
+        marginTop: 14,
+        paddingHorizontal: 16,
+        paddingVertical: 8,
+        borderRadius: 20,
+        backgroundColor: colors.bluePrimary + "14",
+    },
+
+    textoEditarPerfil: {
+        fontSize: 14,
+        fontWeight: "700",
+        color: colors.bluePrimary,
+    },
+
+    // ---------- grupos ----------
+
+    // título cinza em cima de cada grupo, igual nas configurações do celular
+    tituloGrupo: {
+        fontSize: 13,
+        fontWeight: "700",
+        color: colors.gray,
+        textTransform: "uppercase",
+        letterSpacing: 0.8,
+        marginTop: 24,
+        marginBottom: 8,
+        marginLeft: 4,
+    },
+
+    // ---------- indicadores ----------
+
+    // aviso vermelho clicável das atrasadas
+    aviso: {
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 10,
+        backgroundColor: colors.danger + "14",
+        borderRadius: 14,
+        padding: 14,
         marginBottom: 12,
     },
 
-    cardKpi: {
-        width: "47%",
+    textoAviso: {
+        flex: 1,
+        fontSize: 14,
+        fontWeight: "600",
+        color: colors.danger,
+    },
+
+    // grade 2x2
+    gradeIndicadores: {
+        flexDirection: "row",
+        flexWrap: "wrap",
+        gap: 12,
+    },
+
+    indicador: {
+        width: "47.5%",
+        flexGrow: 1,
         backgroundColor: colors.white,
         borderRadius: 16,
-        padding: 16,
+        padding: 14,
+    },
+
+    iconeIndicador: {
+        width: 34,
+        height: 34,
+        borderRadius: 10,
         alignItems: "center",
-
-        elevation: 2,
-        shadowColor: colors.black,
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.05,
-        shadowRadius: 6,
+        justifyContent: "center",
+        marginBottom: 10,
     },
 
-    // destaque sutil quando tem consulta atrasada — borda vermelha fina
-    cardKpiAlerta: {
-        borderWidth: 1.5,
-        borderColor: colors.danger,
-    },
-
-    numeroKpi: {
-        fontSize: 28,
+    numeroIndicador: {
+        fontSize: 26,
         fontWeight: "800",
         color: colors.dark,
     },
 
-    labelKpi: {
-        fontSize: 12,
-        color: colors.gray,
-        textAlign: "center",
-        marginTop: 4,
-    },
-
-    // card de destaque (taxa de retorno) — cor sólida, diferente dos cards brancos
-    cardDestaque: {
-        backgroundColor: colors.bluePrimary,
-        borderRadius: 16,
-        padding: 20,
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "space-between",
-        marginBottom: 24,
-
-        elevation: 4,
-        shadowColor: colors.bluePrimary,
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.25,
-        shadowRadius: 10,
-    },
-
-    containerDestaqueTexto: {
-        flex: 1,
-        marginRight: 12,
-    },
-
-    numeroDestaque: {
-        fontSize: 32,
-        fontWeight: "900",
-        color: colors.white,
-    },
-
-    labelDestaque: {
+    rotuloIndicador: {
         fontSize: 13,
-        color: colors.white,
-        opacity: 0.9,
+        color: colors.gray,
         marginTop: 2,
     },
 
-    // menu
-    containerMenu: {
+    // card da taxa de retorno
+    cartaoRetorno: {
         backgroundColor: colors.white,
         borderRadius: 16,
-        marginBottom: 20,
-        overflow: "hidden",
+        padding: 16,
+        marginTop: 12,
+    },
 
-        elevation: 2,
+    linhaRetorno: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        marginBottom: 10,
+    },
+
+    tituloRetorno: {
+        fontSize: 15,
+        fontWeight: "700",
+        color: colors.dark,
+    },
+
+    valorRetorno: {
+        fontSize: 18,
+        fontWeight: "800",
+        color: colors.bluePrimary,
+    },
+
+    // fundo cinza da barrinha
+    trilhaBarra: {
+        height: 8,
+        borderRadius: 4,
+        backgroundColor: colors.grayLight,
+        overflow: "hidden",
+    },
+
+    // parte azul da barrinha (largura = porcentagem que vem do backend)
+    barra: {
+        height: 8,
+        borderRadius: 4,
+        backgroundColor: colors.bluePrimary,
+    },
+
+    descricaoRetorno: {
+        fontSize: 13,
+        color: colors.gray,
+        marginTop: 10,
+    },
+
+    // ---------- modais e rodapé ----------
+
+    textoModal: {
+        fontSize: 13,
+        color: colors.gray,
+        marginBottom: 16,
+    },
+
+    textoModalPerigo: {
+        fontSize: 14,
+        color: colors.danger,
+        backgroundColor: colors.danger + "14",
+        borderRadius: 12,
+        padding: 12,
+        marginBottom: 16,
+    },
+
+    rodape: {
+        textAlign: "center",
+        fontSize: 12,
+        color: colors.textSecondary,
+        marginTop: 24,
+    },
+
+    // ---------- menu do canto ----------
+
+    botaoMenu: {
+        paddingHorizontal: 16,
+        paddingVertical: 4,
+    },
+
+    // área transparente que cobre a tela pra fechar o menu ao tocar fora
+    fundoMenu: {
+        position: "absolute",
+        top: 0,
+        right: 0,
+        bottom: 0,
+        left: 0,
+    },
+
+    // caixinha branca com sombra no canto de cima
+    caixaMenu: {
+        position: "absolute",
+        top: 8,
+        right: 12,
+        width: 220,
+        backgroundColor: colors.white,
+        borderRadius: 14,
+        paddingVertical: 6,
+        elevation: 8,
         shadowColor: colors.black,
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.05,
-        shadowRadius: 6,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.15,
+        shadowRadius: 12,
     },
 
     itemMenu: {
         flexDirection: "row",
         alignItems: "center",
         gap: 12,
-        paddingVertical: 16,
+        paddingVertical: 12,
         paddingHorizontal: 16,
-        borderBottomWidth: 1,
-        borderBottomColor: colors.grayLight,
     },
 
     textoItemMenu: {
-        flex: 1,
         fontSize: 15,
         fontWeight: "600",
         color: colors.dark,
-    },
-
-    // botão sair
-    botaoSair: {
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: 8,
-        backgroundColor: colors.danger,
-        borderRadius: 14,
-        paddingVertical: 15,
-    },
-
-    textoBotaoSair: {
-        color: colors.white,
-        fontSize: 15,
-        fontWeight: "700",
-    },
-
-    // modal (o formulário em si agora é o componente ModalFormulario —
-    // só o texto de aviso continua específico desta tela)
-    textoAvisoModal: {
-        fontSize: 13,
-        color: colors.gray,
-        marginBottom: 8,
     },
 });

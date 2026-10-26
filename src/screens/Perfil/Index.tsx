@@ -1,206 +1,239 @@
-import React from "react";
-import { View, Text, ScrollView, TouchableOpacity } from "react-native";
+import React, { useLayoutEffect, useState } from "react";
+import { View, Text, ScrollView, TouchableOpacity, Pressable } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import { styles } from "./styles";
 import { colors } from "../../global/colors";
 import CustomTextInput from "../../components/CustomTextInput/Index";
-import TelaCarregando from "../../components/TelaCarregando/Index";
-import ModalConfirmacao from "../../components/ModalConfirmacao/Index";
 import ModalFormulario from "../../components/ModalFormulario/Index";
+import TelaCarregando from "../../components/TelaCarregando/Index";
 import { usePerfil } from "../../hooks/usePerfil";
 
+// um número do consultório; tocar leva pra lista correspondente
+function Indicador({
+    icone,
+    cor,
+    numero,
+    rotulo,
+    onPress,
+}: {
+    icone: keyof typeof Ionicons.glyphMap;
+    cor: string;
+    numero: number;
+    rotulo: string;
+    onPress: () => void;
+}) {
+    return (
+        <TouchableOpacity style={styles.indicador} onPress={onPress} activeOpacity={0.7}>
+            <View style={[styles.iconeIndicador, { backgroundColor: cor + "1A" }]}>
+                <Ionicons name={icone} size={18} color={cor} />
+            </View>
+            <Text style={styles.numeroIndicador}>{numero}</Text>
+            <Text style={styles.rotuloIndicador}>{rotulo}</Text>
+        </TouchableOpacity>
+    );
+}
+
+// tela de perfil: quem está logado e como está o consultório
+// as opções da conta ficam no menu ☰ do canto de cima
 export default function Perfil() {
-    const {
-        usuario,
-        inicial,
-        consultasDoMes,
-        agendadas,
-        atrasadas,
-        totalPacientes,
-        taxaRetorno,
-        carregandoKpis,
+    const p = usePerfil();
+    const { usuario, dashboard } = p;
+    const navigation = useNavigation();
 
-        modalSairAberto,
-        setModalSairAberto,
-        sair,
+    // menuzinho do canto aberto ou fechado
+    const [menuAberto, setMenuAberto] = useState(false);
 
-        modalEditarAberto,
-        abrirModalEditar,
-        fecharModalEditar,
-        nome,
-        setNome,
-        email,
-        setEmail,
-        novaSenha,
-        setNovaSenha,
-        senhaVisivel,
-        confirmarEdicao,
-        editandoPerfil,
+    // coloca o botão ☰ no cabeçalho da tela
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            headerRight: () => (
+                <TouchableOpacity onPress={() => setMenuAberto(true)} style={styles.botaoMenu}>
+                    <Ionicons name="menu" size={26} color={colors.dark} />
+                </TouchableOpacity>
+            ),
+        });
+    }, [navigation]);
 
-        modalApagarAberto,
-        abrirModalApagar,
-        fecharModalApagar,
-        senhaConfirmacao,
-        setSenhaConfirmacao,
-        senhaConfirmacaoVisivel,
-        confirmarApagarConta,
-        modalConfirmarApagarAberto,
-        setModalConfirmarApagarAberto,
-        executarApagarConta,
-        apagandoConta,
-    } = usePerfil();
+    // opções do menu: fecha o menu e faz a ação
+    const opcoesMenu: { icone: keyof typeof Ionicons.glyphMap; texto: string; perigo?: boolean; acao: () => void }[] = [
+        { icone: "person-outline", texto: "Dados pessoais", acao: () => p.abrirModal("dados") },
+        { icone: "lock-closed-outline", texto: "Alterar senha", acao: () => p.abrirModal("senha") },
+        { icone: "log-out-outline", texto: "Sair da conta", perigo: true, acao: p.sair },
+        { icone: "trash-outline", texto: "Apagar conta", perigo: true, acao: () => p.abrirModal("apagar") },
+    ];
 
     return (
-        <ScrollView style={styles.containerTela} contentContainerStyle={styles.containerScroll}>
+        <View style={styles.container}>
+            <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
 
-            {/* cabeçalho: avatar + nome + email */}
-            <View style={styles.containerCabecalho}>
-                <View style={styles.avatar}>
-                    <Text style={styles.textoAvatar}>{inicial}</Text>
-                </View>
-                <Text style={styles.textoNome}>{usuario?.nm_usuario ?? "..."}</Text>
-                <Text style={styles.textoEmail}>{usuario?.email_usuario ?? ""}</Text>
-            </View>
-
-            {/* grid 2x2 dos KPIs simples */}
-            {carregandoKpis ? (
-                <TelaCarregando />
-            ) : (
-                <>
-                    <View style={styles.gridKpis}>
-                        <View style={styles.cardKpi}>
-                            <Text style={styles.numeroKpi}>{consultasDoMes}</Text>
-                            <Text style={styles.labelKpi}>Consultas{"\n"}este mês</Text>
-                        </View>
-
-                        <View style={styles.cardKpi}>
-                            <Text style={[styles.numeroKpi, { color: colors.bluePrimary }]}>{agendadas}</Text>
-                            <Text style={styles.labelKpi}>Agendadas</Text>
-                        </View>
-
-                        <View style={[styles.cardKpi, atrasadas > 0 && styles.cardKpiAlerta]}>
-                            <Text style={[styles.numeroKpi, { color: atrasadas > 0 ? colors.danger : colors.dark }]}>
-                                {atrasadas}
-                            </Text>
-                            <Text style={styles.labelKpi}>Atrasadas</Text>
-                        </View>
-
-                        <View style={styles.cardKpi}>
-                            <Text style={styles.numeroKpi}>{totalPacientes}</Text>
-                            <Text style={styles.labelKpi}>Pacientes{"\n"}cadastrados</Text>
-                        </View>
+                {/* ---------- cabeçalho com avatar, nome e e-mail ---------- */}
+                <View style={styles.cabecalho}>
+                    <View style={styles.avatar}>
+                        <Text style={styles.textoAvatar}>{usuario?.inicial_usuario ?? ""}</Text>
                     </View>
+                    <Text style={styles.nome}>{usuario?.nm_usuario ?? ""}</Text>
+                    <Text style={styles.email}>{usuario?.email_usuario ?? ""}</Text>
 
-                    {/* card de destaque: taxa de retorno */}
-                    <View style={styles.cardDestaque}>
-                        <View style={styles.containerDestaqueTexto}>
-                            <Text style={styles.numeroDestaque}>{taxaRetorno}%</Text>
-                            <Text style={styles.labelDestaque}>dos seus pacientes já retornaram para uma nova consulta</Text>
+                    <TouchableOpacity style={styles.botaoEditarPerfil} onPress={() => p.abrirModal("dados")}>
+                        <Ionicons name="pencil" size={14} color={colors.bluePrimary} />
+                        <Text style={styles.textoEditarPerfil}>Editar perfil</Text>
+                    </TouchableOpacity>
+                </View>
+
+                {/* ---------- números do consultório ---------- */}
+                <Text style={styles.tituloGrupo}>Seu consultório</Text>
+
+                {p.carregandoDashboard || !dashboard ? (
+                    <TelaCarregando />
+                ) : (
+                    <>
+                        {/* aviso de atrasadas (texto pronto do backend) */}
+                        {dashboard.aviso_atrasadas && (
+                            <TouchableOpacity style={styles.aviso} onPress={() => p.abrirConsultas("atrasadas")}>
+                                <Ionicons name="alert-circle" size={20} color={colors.danger} />
+                                <Text style={styles.textoAviso}>{dashboard.aviso_atrasadas}</Text>
+                                <Ionicons name="chevron-forward" size={18} color={colors.danger} />
+                            </TouchableOpacity>
+                        )}
+
+                        <View style={styles.gradeIndicadores}>
+                            <Indicador
+                                icone="checkmark-done"
+                                cor={colors.success}
+                                numero={dashboard.consultas_realizadas_mes}
+                                rotulo="Realizadas no mês"
+                                onPress={() => p.abrirConsultas("concluidas")}
+                            />
+                            <Indicador
+                                icone="calendar"
+                                cor={colors.bluePrimary}
+                                numero={dashboard.consultas_agendadas}
+                                rotulo="Agendadas"
+                                onPress={() => p.abrirConsultas("agendadas")}
+                            />
+                            <Indicador
+                                icone="alert-circle"
+                                cor={colors.danger}
+                                numero={dashboard.consultas_atrasadas}
+                                rotulo="Atrasadas"
+                                onPress={() => p.abrirConsultas("atrasadas")}
+                            />
+                            <Indicador
+                                icone="paw"
+                                cor={colors.purple}
+                                numero={dashboard.pacientes_cadastrados}
+                                rotulo="Pacientes"
+                                onPress={p.abrirPacientes}
+                            />
                         </View>
-                        <Ionicons name="trending-up" size={32} color={colors.white} />
+
+                        {/* taxa de retorno com barrinha de progresso */}
+                        <View style={styles.cartaoRetorno}>
+                            <View style={styles.linhaRetorno}>
+                                <Text style={styles.tituloRetorno}>Taxa de retorno</Text>
+                                <Text style={styles.valorRetorno}>{dashboard.taxa_retorno_exibicao}</Text>
+                            </View>
+                            <View style={styles.trilhaBarra}>
+                                <View style={[styles.barra, { width: `${dashboard.taxa_retorno_percentual}%` }]} />
+                            </View>
+                            <Text style={styles.descricaoRetorno}>{dashboard.taxa_retorno_descricao}</Text>
+                        </View>
+                    </>
+                )}
+
+                <Text style={styles.rodape}>Clyvo ELLV · gestão veterinária inteligente</Text>
+            </ScrollView>
+
+            {/* ---------- menu do canto: caixinha com as opções ---------- */}
+            {menuAberto && (
+                <>
+                    {/* tocar fora fecha o menu */}
+                    <Pressable style={styles.fundoMenu} onPress={() => setMenuAberto(false)} />
+
+                    <View style={styles.caixaMenu}>
+                        {opcoesMenu.map((opcao) => (
+                            <TouchableOpacity
+                                key={opcao.texto}
+                                style={styles.itemMenu}
+                                onPress={() => {
+                                    setMenuAberto(false);
+                                    opcao.acao();
+                                }}
+                            >
+                                <Ionicons name={opcao.icone} size={20} color={opcao.perigo ? colors.danger : colors.dark} />
+                                <Text style={[styles.textoItemMenu, opcao.perigo && { color: colors.danger }]}>{opcao.texto}</Text>
+                            </TouchableOpacity>
+                        ))}
                     </View>
                 </>
             )}
 
-            {/* menu de ações */}
-            <View style={styles.containerMenu}>
-                <TouchableOpacity style={styles.itemMenu} onPress={abrirModalEditar}>
-                    <Ionicons name="create-outline" size={22} color={colors.dark} />
-                    <Text style={styles.textoItemMenu}>Editar meus dados</Text>
-                    <Ionicons name="chevron-forward" size={20} color={colors.grayMedium} />
-                </TouchableOpacity>
-
-                <TouchableOpacity style={styles.itemMenu} onPress={abrirModalApagar}>
-                    <Ionicons name="trash-outline" size={22} color={colors.danger} />
-                    <Text style={[styles.textoItemMenu, { color: colors.danger }]}>Apagar conta</Text>
-                    <Ionicons name="chevron-forward" size={20} color={colors.grayMedium} />
-                </TouchableOpacity>
-            </View>
-
-            <TouchableOpacity style={styles.botaoSair} onPress={() => setModalSairAberto(true)}>
-                <Ionicons name="log-out-outline" size={20} color={colors.white} />
-                <Text style={styles.textoBotaoSair}>Sair da conta</Text>
-            </TouchableOpacity>
-
-            {/* modal: editar meus dados */}
+            {/* ---------- modal: dados pessoais ---------- */}
             <ModalFormulario
-                visivel={modalEditarAberto}
-                titulo="Editar meus dados"
-                onFechar={fecharModalEditar}
-                onSalvar={confirmarEdicao}
-                carregando={editandoPerfil}
-                labelSalvar="Salvar"
+                visivel={p.modal === "dados"}
+                titulo="Dados pessoais"
+                onFechar={p.fecharModal}
+                onSalvar={p.salvar}
+                carregando={p.salvando}
             >
-                <CustomTextInput
-                    title="Nome"
-                    value={nome}
-                    onChangeText={setNome}
-                    autoCapitalize="words"
-                />
+                <CustomTextInput title="Nome" leftIconName="person-outline" value={p.nome} onChangeText={p.setNome} />
                 <CustomTextInput
                     title="E-mail"
-                    value={email}
-                    onChangeText={setEmail}
+                    leftIconName="mail-outline"
                     keyboardType="email-address"
                     autoCapitalize="none"
-                />
-                <CustomTextInput
-                    title="Nova senha (opcional)"
-                    placeholder="Deixe em branco pra manter a atual"
-                    value={novaSenha}
-                    onChangeText={setNovaSenha}
-                    rightIconName={senhaVisivel.iconeNome}
-                    rightIconType="button"
-                    onRightIconPress={senhaVisivel.alternar}
-                    secureTextEntry={senhaVisivel.escondida}
+                    value={p.email}
+                    onChangeText={p.setEmail}
                 />
             </ModalFormulario>
 
-            {/* modal: apagar conta (pede senha primeiro) */}
+            {/* ---------- modal: alterar senha ---------- */}
             <ModalFormulario
-                visivel={modalApagarAberto}
-                titulo="Apagar conta"
-                onFechar={fecharModalApagar}
-                onSalvar={confirmarApagarConta}
-                carregando={apagandoConta}
-                labelSalvar="Apagar"
+                visivel={p.modal === "senha"}
+                titulo="Alterar senha"
+                onFechar={p.fecharModal}
+                onSalvar={p.salvar}
+                carregando={p.salvando}
             >
-                <Text style={styles.textoAvisoModal}>
-                    Digite sua senha atual pra confirmar. Essa ação não pode ser desfeita.
+                <Text style={styles.textoModal}>
+                    Use pelo menos 8 caracteres, com letra maiúscula, minúscula, número e símbolo.
                 </Text>
                 <CustomTextInput
-                    title="Senha atual"
-                    value={senhaConfirmacao}
-                    onChangeText={setSenhaConfirmacao}
-                    rightIconName={senhaConfirmacaoVisivel.iconeNome}
+                    title="Nova senha"
+                    leftIconName="lock-closed-outline"
+                    secureTextEntry={p.senhaVisivel.escondida}
+                    rightIconName={p.senhaVisivel.iconeNome}
                     rightIconType="button"
-                    onRightIconPress={senhaConfirmacaoVisivel.alternar}
-                    secureTextEntry={senhaConfirmacaoVisivel.escondida}
+                    onRightIconPress={p.senhaVisivel.alternar}
+                    value={p.senha}
+                    onChangeText={p.setSenha}
                 />
             </ModalFormulario>
 
-            {/* confirmação final de apagar conta (depois de digitar a senha) */}
-            <ModalConfirmacao
-                visivel={modalConfirmarApagarAberto}
+            {/* ---------- modal: apagar conta ---------- */}
+            <ModalFormulario
+                visivel={p.modal === "apagar"}
                 titulo="Apagar conta"
-                mensagem="Essa ação não pode ser desfeita. Todos os seus pacientes e consultas serão apagados junto. Tem certeza?"
-                labelConfirmar="Apagar"
-                perigoso
-                onConfirmar={executarApagarConta}
-                onCancelar={() => setModalConfirmarApagarAberto(false)}
-            />
-
-            {/* confirmação de sair */}
-            <ModalConfirmacao
-                visivel={modalSairAberto}
-                titulo="Sair"
-                mensagem="Tem certeza que quer sair da conta?"
-                labelConfirmar="Sair"
-                perigoso
-                onConfirmar={() => { setModalSairAberto(false); sair(); }}
-                onCancelar={() => setModalSairAberto(false)}
-            />
-
-        </ScrollView>
+                onFechar={p.fecharModal}
+                onSalvar={p.apagarConta}
+                carregando={p.apagando}
+                labelSalvar="Apagar"
+            >
+                <Text style={styles.textoModalPerigo}>
+                    Isso apaga sua conta e todos os pacientes e consultas cadastrados. Não dá pra desfazer.
+                </Text>
+                <CustomTextInput
+                    title="Digite sua senha para confirmar"
+                    leftIconName="lock-closed-outline"
+                    secureTextEntry={p.senhaVisivel.escondida}
+                    rightIconName={p.senhaVisivel.iconeNome}
+                    rightIconType="button"
+                    onRightIconPress={p.senhaVisivel.alternar}
+                    value={p.senha}
+                    onChangeText={p.setSenha}
+                />
+            </ModalFormulario>
+        </View>
     );
 }

@@ -1,7 +1,6 @@
 import api from "./api";
 import {
     AbaConsulta,
-    Consulta,
     ConsultaDetalhe,
     ConsultaResumo,
     DadosConsulta,
@@ -44,12 +43,6 @@ export const consultaService = {
     // remove só a consulta, o paciente continua cadastrado
     async remover(id: number): Promise<{ mensagem: string }> {
         const resposta = await api.delete(`/consultas/${id}`);
-        return resposta.data;
-    },
-
-    // (temporário) ainda usado pelos indicadores do Perfil, sai na feature do Perfil
-    async listar(): Promise<Consulta[]> {
-        const resposta = await api.get("/consultas");
         return resposta.data;
     },
 };
