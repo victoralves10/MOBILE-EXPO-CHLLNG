@@ -1,33 +1,40 @@
 import { StyleSheet } from "react-native";
-import { colors } from "../../global/colors";
+import { Cores } from "../../theme/paletas";
 
-export const styles = StyleSheet.create({
-    // caixa branca em volta do calendário
-    caixa: {
-        marginBottom: 16,
-        borderRadius: 14,
-        overflow: "hidden",
-        backgroundColor: colors.white,
-        borderWidth: 1,
-        borderColor: colors.grayLight,
-    },
+export const criarEstilos = (c: Cores) =>
+    StyleSheet.create({
+        // caixa em volta do calendário
+        caixa: {
+            marginTop: -6,
+            marginBottom: 16,
+            borderRadius: 18,
+            overflow: "hidden",
+            backgroundColor: c.superficie,
+            borderWidth: 1,
+            borderColor: c.borda,
+        },
 
-    // linha de cima com o ano e as setas
-    linhaAno: {
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: 24,
-        paddingTop: 10,
-    },
+        // linha de cima com o ano e as setas
+        linhaAno: {
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 20,
+            paddingTop: 12,
+        },
 
-    botaoAno: {
-        padding: 6,
-    },
+        botaoAno: {
+            width: 32,
+            height: 32,
+            borderRadius: 16,
+            backgroundColor: c.superficieAlt,
+            alignItems: "center",
+            justifyContent: "center",
+        },
 
-    textoAno: {
-        fontSize: 16,
-        fontWeight: "800",
-        color: colors.dark,
-    },
-});
+        textoAno: {
+            fontSize: 17,
+            fontWeight: "800",
+            color: c.texto,
+        },
+    });

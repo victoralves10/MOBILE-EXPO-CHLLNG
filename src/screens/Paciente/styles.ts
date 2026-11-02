@@ -1,297 +1,235 @@
 import { StyleSheet } from "react-native";
-import { colors } from "../../global/colors";
+import { Cores, transparente } from "../../theme/paletas";
 
-export const styles = StyleSheet.create({
+export const criarEstilos = (c: Cores) =>
+    StyleSheet.create({
+        container: {
+            flex: 1,
+            backgroundColor: c.fundo,
+        },
 
-    // ──────────────────────── COMPARTILHADO ────────────────────────
+        // ──────────────────────── LISTA ────────────────────────
 
-    // tela inteira com fundo cinza
-    container: {
-        flex: 1,
-        backgroundColor: colors.grayLight,
-    },
+        containerBusca: {
+            paddingHorizontal: 16,
+            paddingTop: 4,
+            paddingBottom: 12,
+        },
 
-    // quando os dados ainda não chegaram
-    containerVazio: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-    },
+        containerLista: {
+            flex: 1,
+            paddingHorizontal: 16,
+        },
 
-    // texto de "Carregando..." ou "Nenhum resultado"
-    textoVazio: {
-        textAlign: "center",
-        color: colors.gray,
-        fontSize: 15,
-        marginTop: 40,
-    },
+        // painel com cantos arredondados onde ficam as linhas da lista
+        painelLista: {
+            flex: 1,
+            backgroundColor: c.superficie,
+            borderTopLeftRadius: 24,
+            borderTopRightRadius: 24,
+            overflow: "hidden",
+        },
 
-    // card branco de cada seção (Animal, Responsável, Histórico)
-    secao: {
-        backgroundColor: colors.white,
-        borderRadius: 16,
-        padding: 16,
-        marginBottom: 16,
-        gap: 12,
-    },
+        containerVazio: {
+            alignItems: "center",
+            marginTop: 60,
+            gap: 12,
+        },
 
-    // título de cada seção
-    tituloSecao: {
-        fontSize: 16,
-        fontWeight: "700",
-        color: colors.dark,
-        marginBottom: 4,
-    },
+        circuloVazio: {
+            width: 76,
+            height: 76,
+            borderRadius: 38,
+            backgroundColor: transparente(c.pacientes, 0.14),
+            alignItems: "center",
+            justifyContent: "center",
+        },
 
-    // linha com ícone + texto
-    linha: {
-        flexDirection: "row",
-        alignItems: "center",
-        gap: 10,
-    },
+        textoVazio: {
+            textAlign: "center",
+            color: c.textoSecundario,
+            fontSize: 15,
+            lineHeight: 22,
+            paddingHorizontal: 24,
+        },
 
-    // texto ao lado do ícone em cada linha
-    textoLinha: {
-        fontSize: 14,
-        color: colors.dark,
-        flex: 1,
-    },
+        // ──────────────────────── FICHA ────────────────────────
 
-    // fundo escuro do modal
-    modalOverlay: {
-        flex: 1,
-        backgroundColor: "#00000060",
-        justifyContent: "flex-end",
-    },
+        scroll: {
+            padding: 16,
+            paddingBottom: 40,
+        },
 
-    // caixa branca do modal que sobe de baixo
-    modalContainer: {
-        backgroundColor: colors.white,
-        borderTopLeftRadius: 24,
-        borderTopRightRadius: 24,
-        padding: 24,
-        maxHeight: "90%",
-    },
+        // card do topo com o animal
+        destaque: {
+            backgroundColor: c.superficie,
+            borderRadius: 28,
+            padding: 20,
+            alignItems: "center",
+            borderWidth: 1,
+            borderColor: c.borda,
+        },
 
-    // título do modal
-    modalTitulo: {
-        fontSize: 20,
-        fontWeight: "700",
-        color: colors.dark,
-        marginBottom: 20,
-    },
+        avatarGrande: {
+            width: 80,
+            height: 80,
+            borderRadius: 40,
+            backgroundColor: transparente(c.pacientes, 0.15),
+            alignItems: "center",
+            justifyContent: "center",
+            marginBottom: 10,
+        },
 
-    // botões lado a lado do modal
-    containerBotoesModal: {
-        flexDirection: "row",
-        gap: 12,
-        marginTop: 8,
-    },
+        textoAvatarGrande: {
+            fontSize: 34,
+            fontWeight: "900",
+            color: c.pacientes,
+        },
 
-    // botão cinza de cancelar
-    botaoCancelar: {
-        flex: 1,
-        paddingVertical: 14,
-        borderRadius: 12,
-        borderWidth: 1,
-        borderColor: colors.grayMedium,
-        alignItems: "center",
-    },
+        nomeDestaque: {
+            fontSize: 24,
+            fontWeight: "900",
+            color: c.texto,
+        },
 
-    textoBotaoCancelar: {
-        color: colors.gray,
-        fontWeight: "600",
-        fontSize: 15,
-    },
+        subtituloDestaque: {
+            fontSize: 14,
+            color: c.textoSecundario,
+            marginTop: 2,
+        },
 
-    // botão azul de salvar
-    botaoSalvar: {
-        flex: 1,
-        paddingVertical: 14,
-        borderRadius: 12,
-        backgroundColor: colors.bluePrimary,
-        alignItems: "center",
-    },
+        // contador de consultas embaixo do nome
+        seloConsultas: {
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 6,
+            paddingHorizontal: 14,
+            paddingVertical: 6,
+            borderRadius: 20,
+            marginTop: 12,
+            backgroundColor: transparente(c.primaria, 0.12),
+        },
 
-    textoBotaoSalvar: {
-        color: colors.white,
-        fontWeight: "600",
-        fontSize: 15,
-    },
+        textoSeloConsultas: {
+            fontSize: 13,
+            fontWeight: "800",
+            color: c.primaria,
+        },
 
-    // ──────────────────────── INDEX (lista de pacientes) ────────────────────────
+        linhaAcoes: {
+            flexDirection: "row",
+            gap: 10,
+            marginTop: 14,
+        },
 
-    // barra de busca no topo com fundo branco e borda embaixo
-    containerBusca: {
-        backgroundColor: colors.white,
-        paddingHorizontal: 16,
-        paddingVertical: 12,
-        borderBottomWidth: 1,
-        borderBottomColor: colors.grayLight,
-    },
+        secao: {
+            backgroundColor: c.superficie,
+            borderRadius: 24,
+            padding: 18,
+            marginTop: 14,
+            gap: 14,
+            borderWidth: 1,
+            borderColor: c.borda,
+        },
 
-    // área onde a flatlist de pacientes fica
-    containerLista: {
-        flex: 1,
-        paddingHorizontal: 16,
-        paddingTop: 16,
-    },
+        tituloSecao: {
+            fontSize: 17,
+            fontWeight: "800",
+            color: c.texto,
+        },
 
-    // painel branco com cantos arredondados onde ficam as linhas da lista
-    painelLista: {
-        flex: 1,
-        backgroundColor: colors.white,
-        borderTopLeftRadius: 18,
-        borderTopRightRadius: 18,
-        overflow: "hidden",
-    },
+        textoSemConsulta: {
+            fontSize: 14,
+            color: c.textoSecundario,
+        },
 
-    // ──────────────────────── DETALHE PACIENTE ────────────────────────
+        // histórico dentro da seção (o ItemLista já tem padding próprio)
+        listaHistorico: {
+            marginHorizontal: -18,
+            marginBottom: -18,
+            borderBottomLeftRadius: 24,
+            borderBottomRightRadius: 24,
+            overflow: "hidden",
+        },
 
-    // scroll com padding interno
-    scroll: {
-        padding: 16,
-        paddingBottom: 40,
-    },
+        containerBotoes: {
+            flexDirection: "row",
+            gap: 12,
+            marginTop: 20,
+        },
 
-    // botão verde do whatsapp
-    botaoWhatsApp: {
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: 8,
-        backgroundColor: "#25D366",
-        paddingVertical: 12,
-        borderRadius: 12,
-        marginTop: 4,
-    },
+        botaoEditar: {
+            flex: 1,
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 8,
+            backgroundColor: c.primaria,
+            paddingVertical: 15,
+            borderRadius: 16,
+        },
 
-    textoBotaoWhatsApp: {
-        color: colors.white,
-        fontWeight: "700",
-        fontSize: 15,
-    },
+        textoBotaoEditar: {
+            color: c.textoSobreCor,
+            fontWeight: "800",
+            fontSize: 15,
+        },
 
-    // mensagem quando não tem consultas no histórico
-    textoSemConsulta: {
-        color: colors.gray,
-        fontSize: 14,
-        textAlign: "center",
-        paddingVertical: 8,
-    },
+        botaoRemover: {
+            flex: 1,
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 8,
+            backgroundColor: transparente(c.atrasado, 0.12),
+            paddingVertical: 15,
+            borderRadius: 16,
+        },
 
-    // card cinza de cada consulta no histórico (clicável)
-    cardConsulta: {
-        backgroundColor: colors.grayLight,
-        borderRadius: 12,
-        padding: 12,
-        gap: 6,
-    },
+        textoBotaoRemover: {
+            color: c.atrasado,
+            fontWeight: "800",
+            fontSize: 15,
+        },
 
-    // linha com motivo da consulta + badge de status
-    linhaConsulta: {
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "space-between",
-        gap: 8,
-    },
+        // ──────────────────────── MODAL DE EDIÇÃO ────────────────────────
 
-    textoConsultaMotivo: {
-        fontSize: 14,
-        fontWeight: "600",
-        color: colors.dark,
-        flex: 1,
-    },
+        secaoModal: {
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 10,
+            marginTop: 8,
+            marginBottom: 14,
+        },
 
-    textoConsultaData: {
-        fontSize: 12,
-        color: colors.gray,
-    },
+        iconeSecaoModal: {
+            width: 30,
+            height: 30,
+            borderRadius: 10,
+            alignItems: "center",
+            justifyContent: "center",
+        },
 
-    // "Ver detalhes >" no final de cada card de consulta
-    linhaVerDetalhes: {
-        flexDirection: "row",
-        alignItems: "center",
-        gap: 4,
-        marginTop: 2,
-    },
+        textoSecaoModal: {
+            fontSize: 17,
+            fontWeight: "800",
+            color: c.texto,
+        },
 
-    textoVerDetalhes: {
-        fontSize: 12,
-        color: colors.bluePrimary,
-        fontWeight: "600",
-    },
+        // caixinha amarela com o aviso do backend
+        avisoModal: {
+            flexDirection: "row",
+            gap: 10,
+            backgroundColor: transparente(c.aviso, 0.15),
+            borderRadius: 14,
+            padding: 12,
+            marginBottom: 16,
+        },
 
-    // badge colorido do status da consulta
-    tagStatus: {
-        paddingHorizontal: 10,
-        paddingVertical: 3,
-        borderRadius: 20,
-    },
-
-    textoStatus: {
-        fontSize: 11,
-        fontWeight: "600",
-    },
-
-    // botões de editar e remover no final da tela
-    containerBotoes: {
-        flexDirection: "row",
-        gap: 12,
-        marginTop: 8,
-    },
-
-    botaoEditar: {
-        flex: 1,
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: 8,
-        backgroundColor: colors.bluePrimary,
-        paddingVertical: 14,
-        borderRadius: 12,
-    },
-
-    botaoRemover: {
-        flex: 1,
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: 8,
-        backgroundColor: colors.danger,
-        paddingVertical: 14,
-        borderRadius: 12,
-    },
-
-    textoBotao: {
-        color: colors.white,
-        fontWeight: "700",
-        fontSize: 15,
-    },
-
-    // lista do histórico dentro da seção (o ItemLista já tem padding próprio)
-    listaHistorico: {
-        marginHorizontal: -16,
-    },
-
-    // título de cada parte do modal de edição
-    secaoModal: {
-        fontSize: 13,
-        fontWeight: "800",
-        color: colors.bluePrimary,
-        textTransform: "uppercase",
-        letterSpacing: 1,
-        marginTop: 8,
-        marginBottom: 12,
-    },
-
-    // caixinha amarela com o aviso do backend
-    avisoModal: {
-        fontSize: 13,
-        color: colors.dark,
-        backgroundColor: colors.orange + "26",
-        borderRadius: 12,
-        padding: 12,
-        marginBottom: 16,
-    },
-});
+        textoAvisoModal: {
+            flex: 1,
+            fontSize: 13,
+            color: c.texto,
+            lineHeight: 19,
+        },
+    });

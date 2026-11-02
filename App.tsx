@@ -1,17 +1,31 @@
 import { QueryClientProvider } from "@tanstack/react-query";
-import Toast from "react-native-toast-message";
+import { StatusBar } from "expo-status-bar";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 import Routes from "./src/navigation/index";
 import { AuthProvider } from "./src/context/AuthContext";
 import { queryClient } from "./src/services/queryClient";
+import { TemaProvider, useTema } from "./src/theme/TemaContext";
+import ToastTema from "./src/theme/ToastTema";
 
-// raiz do app: React Query por fora, sessão no meio e as rotas dentro
+// barra de status do celular (hora, bateria) clara ou escura conforme o tema
+function BarraDeStatus() {
+    const { escuro } = useTema();
+    return <StatusBar style={escuro ? "light" : "dark"} />;
+}
+
+// raiz do app: área segura da tela, tema, React Query, sessão e as rotas dentro
 export default function App() {
     return (
-        <QueryClientProvider client={queryClient}>
-            <AuthProvider>
-                <Routes />
-                <Toast />
-            </AuthProvider>
-        </QueryClientProvider>
+        <SafeAreaProvider>
+            <TemaProvider>
+                <QueryClientProvider client={queryClient}>
+                    <AuthProvider>
+                        <BarraDeStatus />
+                        <Routes />
+                        <ToastTema />
+                    </AuthProvider>
+                </QueryClientProvider>
+            </TemaProvider>
+        </SafeAreaProvider>
     );
 }

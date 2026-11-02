@@ -7,36 +7,53 @@ import CampoBusca from "../CampoBusca/Index";
 import SeletorCalendario from "../SeletorCalendario/Index";
 import SeletorNativo from "../SeletorNativo/Index";
 import SeletorOpcoes from "../SeletorOpcoes/Index";
-import { colors } from "../../global/colors";
+import { Ionicons } from "@expo/vector-icons";
 import { useNovaConsulta, Modo } from "../../hooks/useNovaConsulta";
 import { StatusConsulta } from "../../models/Consulta";
 import { mascararCpf, mascararPeso, mascararTelefone } from "../../utils/mascaras";
-import { styles } from "./styles";
+import { useEstilos } from "../../theme/useEstilos";
+import { useTema } from "../../theme/TemaContext";
+import { transparente } from "../../theme/paletas";
+import { criarEstilos } from "./styles";
 
 interface Props {
     visivel: boolean;
     onFechar: () => void;
 }
 
-// opções das abinhas do formulário
-const OPCOES_STATUS: { valor: StatusConsulta; label: string; cor: string }[] = [
-    { valor: "Agendado", label: "Agendar", cor: colors.bluePrimary },
-    { valor: "Concluido", label: "Já realizada", cor: colors.success },
-];
-const OPCOES_PACIENTE: { valor: Modo; label: string; cor: string }[] = [
-    { valor: "existente", label: "Paciente cadastrado", cor: colors.bluePrimary },
-    { valor: "novo", label: "Novo paciente", cor: colors.bluePrimary },
-];
-const OPCOES_RESPONSAVEL: { valor: Modo; label: string; cor: string }[] = [
-    { valor: "existente", label: "Responsável cadastrado", cor: colors.bluePrimary },
-    { valor: "novo", label: "Novo responsável", cor: colors.bluePrimary },
-];
-
 // modal de nova consulta com os 3 casos: paciente cadastrado, animal novo com
 // responsável cadastrado, ou os dois novos
 export default function ModalNovaConsulta({ visivel, onFechar }: Props) {
     const nc = useNovaConsulta(onFechar);
     const { form, mudar } = nc;
+    const styles = useEstilos(criarEstilos);
+    const { cores } = useTema();
+
+    // opções das abinhas do formulário
+    const opcoesStatus: { valor: StatusConsulta; label: string; cor: string; icone: keyof typeof Ionicons.glyphMap }[] = [
+        { valor: "Agendado", label: "Agendar", cor: cores.agendado, icone: "calendar" },
+        { valor: "Concluido", label: "Já realizada", cor: cores.concluido, icone: "checkmark-done" },
+    ];
+    const opcoesPaciente: { valor: Modo; label: string; cor: string; icone: keyof typeof Ionicons.glyphMap }[] = [
+        { valor: "existente", label: "Cadastrado", cor: cores.pacientes, icone: "search" },
+        { valor: "novo", label: "Novo paciente", cor: cores.pacientes, icone: "add-circle" },
+    ];
+    const opcoesResponsavel: { valor: Modo; label: string; cor: string; icone: keyof typeof Ionicons.glyphMap }[] = [
+        { valor: "existente", label: "Cadastrado", cor: cores.rosa, icone: "search" },
+        { valor: "novo", label: "Novo responsável", cor: cores.rosa, icone: "person-add" },
+    ];
+
+    // título de cada parte, com ícone colorido
+    function Secao({ icone, cor, texto }: { icone: keyof typeof Ionicons.glyphMap; cor: string; texto: string }) {
+        return (
+            <View style={styles.secao}>
+                <View style={[styles.iconeSecao, { backgroundColor: transparente(cor, 0.15) }]}>
+                    <Ionicons name={icone} size={16} color={cor} />
+                </View>
+                <Text style={styles.textoSecao}>{texto}</Text>
+            </View>
+        );
+    }
 
     // fechar sem salvar também limpa o formulário
     function fechar() {
@@ -47,13 +64,13 @@ export default function ModalNovaConsulta({ visivel, onFechar }: Props) {
     return (
         <ModalFormulario
             visivel={visivel}
-            titulo="Nova Consulta"
+            titulo="Nova consulta"
             onFechar={fechar}
             onSalvar={nc.salvar}
             carregando={nc.salvando}
         >
             {/* ---------- consulta ---------- */}
-            <Text style={styles.secao}>Consulta</Text>
+            <Secao icone="medkit" cor={cores.primaria} texto="Consulta" />
 
             <CustomTextInput
                 title="Motivo da consulta *"
@@ -66,14 +83,14 @@ export default function ModalNovaConsulta({ visivel, onFechar }: Props) {
 
             <Text style={styles.rotulo}>Situação</Text>
             <View style={styles.abas}>
-                <FiltroTabs opcoes={OPCOES_STATUS} valorSelecionado={form.st_consulta} onSelecionar={mudar("st_consulta")} />
+                <FiltroTabs opcoes={opcoesStatus} valorSelecionado={form.st_consulta} onSelecionar={mudar("st_consulta")} />
             </View>
             <Text style={styles.dica}>Se a data já passou e não foi realizada, o sistema marca como atrasada sozinho.</Text>
 
             {/* ---------- paciente ---------- */}
-            <Text style={styles.secao}>Paciente</Text>
+            <Secao icone="paw" cor={cores.pacientes} texto="Paciente" />
             <View style={styles.abas}>
-                <FiltroTabs opcoes={OPCOES_PACIENTE} valorSelecionado={nc.modoPaciente} onSelecionar={nc.setModoPaciente} />
+                <FiltroTabs opcoes={opcoesPaciente} valorSelecionado={nc.modoPaciente} onSelecionar={nc.setModoPaciente} />
             </View>
 
             {nc.modoPaciente === "existente" ? (
@@ -125,9 +142,9 @@ export default function ModalNovaConsulta({ visivel, onFechar }: Props) {
                     />
 
                     {/* ---------- responsável ---------- */}
-                    <Text style={styles.secao}>Responsável</Text>
+                    <Secao icone="person" cor={cores.rosa} texto="Responsável" />
                     <View style={styles.abas}>
-                        <FiltroTabs opcoes={OPCOES_RESPONSAVEL} valorSelecionado={nc.modoResponsavel} onSelecionar={nc.setModoResponsavel} />
+                        <FiltroTabs opcoes={opcoesResponsavel} valorSelecionado={nc.modoResponsavel} onSelecionar={nc.setModoResponsavel} />
                     </View>
 
                     {nc.modoResponsavel === "existente" ? (

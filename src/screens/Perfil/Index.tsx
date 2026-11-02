@@ -1,74 +1,81 @@
 import React, { useLayoutEffect, useState } from "react";
-import { View, Text, ScrollView, TouchableOpacity, Pressable } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity, Pressable, Modal } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
-import { styles } from "./styles";
-import { colors } from "../../global/colors";
+import { LinearGradient } from "expo-linear-gradient";
+import { criarEstilos } from "./styles";
+import { useEstilos } from "../../theme/useEstilos";
+import { useTema, PreferenciaTema } from "../../theme/TemaContext";
+import { transparente } from "../../theme/paletas";
 import CustomTextInput from "../../components/CustomTextInput/Index";
 import ModalFormulario from "../../components/ModalFormulario/Index";
 import TelaCarregando from "../../components/TelaCarregando/Index";
 import { usePerfil } from "../../hooks/usePerfil";
 
-// um número do consultório; tocar leva pra lista correspondente
-function Indicador({
-    icone,
-    cor,
-    numero,
-    rotulo,
-    onPress,
-}: {
-    icone: keyof typeof Ionicons.glyphMap;
-    cor: string;
-    numero: number;
-    rotulo: string;
-    onPress: () => void;
-}) {
-    return (
-        <TouchableOpacity style={styles.indicador} onPress={onPress} activeOpacity={0.7}>
-            <View style={[styles.iconeIndicador, { backgroundColor: cor + "1A" }]}>
-                <Ionicons name={icone} size={18} color={cor} />
-            </View>
-            <Text style={styles.numeroIndicador}>{numero}</Text>
-            <Text style={styles.rotuloIndicador}>{rotulo}</Text>
-        </TouchableOpacity>
-    );
-}
+type NomeIcone = keyof typeof Ionicons.glyphMap;
 
 // tela de perfil: quem está logado e como está o consultório
 // as opções da conta ficam no menu ☰ do canto de cima
 export default function Perfil() {
+    const styles = useEstilos(criarEstilos);
+    const { cores, preferencia, mudarPreferencia } = useTema();
     const p = usePerfil();
     const { usuario, dashboard } = p;
     const navigation = useNavigation();
 
-    // menuzinho do canto aberto ou fechado
+    // menuzinho do canto e modal de aparência
     const [menuAberto, setMenuAberto] = useState(false);
+    const [aparenciaAberta, setAparenciaAberta] = useState(false);
 
     // coloca o botão ☰ no cabeçalho da tela
     useLayoutEffect(() => {
         navigation.setOptions({
             headerRight: () => (
                 <TouchableOpacity onPress={() => setMenuAberto(true)} style={styles.botaoMenu}>
-                    <Ionicons name="menu" size={26} color={colors.dark} />
+                    <Ionicons name="menu" size={22} color={cores.texto} />
                 </TouchableOpacity>
             ),
         });
-    }, [navigation]);
+    }, [navigation, styles, cores]);
 
     // opções do menu: fecha o menu e faz a ação
-    const opcoesMenu: { icone: keyof typeof Ionicons.glyphMap; texto: string; perigo?: boolean; acao: () => void }[] = [
-        { icone: "person-outline", texto: "Dados pessoais", acao: () => p.abrirModal("dados") },
-        { icone: "lock-closed-outline", texto: "Alterar senha", acao: () => p.abrirModal("senha") },
-        { icone: "log-out-outline", texto: "Sair da conta", perigo: true, acao: p.sair },
-        { icone: "trash-outline", texto: "Apagar conta", perigo: true, acao: () => p.abrirModal("apagar") },
+    const opcoesMenu: { icone: NomeIcone; texto: string; cor: string; acao: () => void }[] = [
+        { icone: "person", texto: "Dados pessoais", cor: cores.primaria, acao: () => p.abrirModal("dados") },
+        { icone: "lock-closed", texto: "Alterar senha", cor: cores.ceu, acao: () => p.abrirModal("senha") },
+        { icone: "color-palette", texto: "Aparência", cor: cores.rosa, acao: () => setAparenciaAberta(true) },
+        { icone: "log-out", texto: "Sair da conta", cor: cores.laranja, acao: p.sair },
+        { icone: "trash", texto: "Apagar conta", cor: cores.atrasado, acao: () => p.abrirModal("apagar") },
     ];
+
+    // as 3 opções de tema
+    const opcoesTema: { valor: PreferenciaTema; titulo: string; descricao: string; icone: NomeIcone; cor: string }[] = [
+        { valor: "automatico", titulo: "Automático", descricao: "Segue o tema do celular", icone: "phone-portrait", cor: cores.primaria },
+        { valor: "claro", titulo: "Claro", descricao: "Fundo claro o tempo todo", icone: "sunny", cor: cores.aviso },
+        { valor: "escuro", titulo: "Escuro", descricao: "Mais confortável à noite", icone: "moon", cor: cores.ceu },
+    ];
+
+    // os 4 números do consultório; cada um leva pra lista certa
+    const indicadores = dashboard
+        ? [
+              { icone: "checkmark-done" as NomeIcone, cor: cores.concluido, numero: dashboard.consultas_realizadas_mes, rotulo: "Realizadas no mês", acao: () => p.abrirConsultas("concluidas") },
+              { icone: "calendar" as NomeIcone, cor: cores.agendado, numero: dashboard.consultas_agendadas, rotulo: "Agendadas", acao: () => p.abrirConsultas("agendadas") },
+              { icone: "alert-circle" as NomeIcone, cor: cores.atrasado, numero: dashboard.consultas_atrasadas, rotulo: "Atrasadas", acao: () => p.abrirConsultas("atrasadas") },
+              { icone: "paw" as NomeIcone, cor: cores.pacientes, numero: dashboard.pacientes_cadastrados, rotulo: "Pacientes", acao: p.abrirPacientes },
+          ]
+        : [];
 
     return (
         <View style={styles.container}>
             <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
 
-                {/* ---------- cabeçalho com avatar, nome e e-mail ---------- */}
+                {/* ---------- cabeçalho: faixa colorida, avatar, nome e e-mail ---------- */}
                 <View style={styles.cabecalho}>
+                    <LinearGradient
+                        colors={[cores.primaria, cores.secundaria]}
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 1, y: 1 }}
+                        style={styles.faixa}
+                    />
                     <View style={styles.avatar}>
                         <Text style={styles.textoAvatar}>{usuario?.inicial_usuario ?? ""}</Text>
                     </View>
@@ -76,7 +83,7 @@ export default function Perfil() {
                     <Text style={styles.email}>{usuario?.email_usuario ?? ""}</Text>
 
                     <TouchableOpacity style={styles.botaoEditarPerfil} onPress={() => p.abrirModal("dados")}>
-                        <Ionicons name="pencil" size={14} color={colors.bluePrimary} />
+                        <Ionicons name="pencil" size={14} color={cores.primaria} />
                         <Text style={styles.textoEditarPerfil}>Editar perfil</Text>
                     </TouchableOpacity>
                 </View>
@@ -91,51 +98,40 @@ export default function Perfil() {
                         {/* aviso de atrasadas (texto pronto do backend) */}
                         {dashboard.aviso_atrasadas && (
                             <TouchableOpacity style={styles.aviso} onPress={() => p.abrirConsultas("atrasadas")}>
-                                <Ionicons name="alert-circle" size={20} color={colors.danger} />
+                                <Ionicons name="alert-circle" size={22} color={cores.atrasado} />
                                 <Text style={styles.textoAviso}>{dashboard.aviso_atrasadas}</Text>
-                                <Ionicons name="chevron-forward" size={18} color={colors.danger} />
+                                <Ionicons name="chevron-forward" size={18} color={cores.atrasado} />
                             </TouchableOpacity>
                         )}
 
                         <View style={styles.gradeIndicadores}>
-                            <Indicador
-                                icone="checkmark-done"
-                                cor={colors.success}
-                                numero={dashboard.consultas_realizadas_mes}
-                                rotulo="Realizadas no mês"
-                                onPress={() => p.abrirConsultas("concluidas")}
-                            />
-                            <Indicador
-                                icone="calendar"
-                                cor={colors.bluePrimary}
-                                numero={dashboard.consultas_agendadas}
-                                rotulo="Agendadas"
-                                onPress={() => p.abrirConsultas("agendadas")}
-                            />
-                            <Indicador
-                                icone="alert-circle"
-                                cor={colors.danger}
-                                numero={dashboard.consultas_atrasadas}
-                                rotulo="Atrasadas"
-                                onPress={() => p.abrirConsultas("atrasadas")}
-                            />
-                            <Indicador
-                                icone="paw"
-                                cor={colors.purple}
-                                numero={dashboard.pacientes_cadastrados}
-                                rotulo="Pacientes"
-                                onPress={p.abrirPacientes}
-                            />
+                            {indicadores.map((i) => (
+                                <TouchableOpacity key={i.rotulo} style={styles.indicador} onPress={i.acao} activeOpacity={0.8}>
+                                    <View style={[styles.iconeIndicador, { backgroundColor: transparente(i.cor, 0.15) }]}>
+                                        <Ionicons name={i.icone} size={20} color={i.cor} />
+                                    </View>
+                                    <Text style={styles.numeroIndicador}>{i.numero}</Text>
+                                    <Text style={styles.rotuloIndicador}>{i.rotulo}</Text>
+                                </TouchableOpacity>
+                            ))}
                         </View>
 
-                        {/* taxa de retorno com barrinha de progresso */}
+                        {/* taxa de retorno com barrinha de progresso em degradê */}
                         <View style={styles.cartaoRetorno}>
                             <View style={styles.linhaRetorno}>
-                                <Text style={styles.tituloRetorno}>Taxa de retorno</Text>
+                                <View style={styles.tituloComIcone}>
+                                    <Ionicons name="trending-up" size={18} color={cores.secundaria} />
+                                    <Text style={styles.tituloRetorno}>Taxa de retorno</Text>
+                                </View>
                                 <Text style={styles.valorRetorno}>{dashboard.taxa_retorno_exibicao}</Text>
                             </View>
                             <View style={styles.trilhaBarra}>
-                                <View style={[styles.barra, { width: `${dashboard.taxa_retorno_percentual}%` }]} />
+                                <LinearGradient
+                                    colors={[cores.secundaria, cores.primaria]}
+                                    start={{ x: 0, y: 0 }}
+                                    end={{ x: 1, y: 0 }}
+                                    style={[styles.barra, { width: `${dashboard.taxa_retorno_percentual}%` }]}
+                                />
                             </View>
                             <Text style={styles.descricaoRetorno}>{dashboard.taxa_retorno_descricao}</Text>
                         </View>
@@ -161,13 +157,57 @@ export default function Perfil() {
                                     opcao.acao();
                                 }}
                             >
-                                <Ionicons name={opcao.icone} size={20} color={opcao.perigo ? colors.danger : colors.dark} />
-                                <Text style={[styles.textoItemMenu, opcao.perigo && { color: colors.danger }]}>{opcao.texto}</Text>
+                                <View style={[styles.iconeItemMenu, { backgroundColor: transparente(opcao.cor, 0.15) }]}>
+                                    <Ionicons name={opcao.icone} size={17} color={opcao.cor} />
+                                </View>
+                                <Text style={styles.textoItemMenu}>{opcao.texto}</Text>
                             </TouchableOpacity>
                         ))}
                     </View>
                 </>
             )}
+
+            {/* ---------- modal: aparência (claro, escuro ou automático) ---------- */}
+            <Modal visible={aparenciaAberta} transparent animationType="fade" onRequestClose={() => setAparenciaAberta(false)}>
+                <View style={styles.fundoAparencia}>
+                    <Pressable style={styles.fundoMenu} onPress={() => setAparenciaAberta(false)} />
+
+                    <View style={styles.cardAparencia}>
+                        <View style={styles.cabecalhoAparencia}>
+                            <Text style={styles.tituloAparencia}>Aparência</Text>
+                            <TouchableOpacity style={styles.botaoFechar} onPress={() => setAparenciaAberta(false)}>
+                                <Ionicons name="close" size={20} color={cores.textoSecundario} />
+                            </TouchableOpacity>
+                        </View>
+
+                        {/* tocar numa opção já troca o tema na hora */}
+                        {opcoesTema.map((opcao) => {
+                            const ativa = preferencia === opcao.valor;
+                            return (
+                                <TouchableOpacity
+                                    key={opcao.valor}
+                                    style={[styles.opcaoTema, ativa && { borderColor: opcao.cor, backgroundColor: transparente(opcao.cor, 0.08) }]}
+                                    onPress={() => mudarPreferencia(opcao.valor)}
+                                    activeOpacity={0.8}
+                                >
+                                    <View style={[styles.iconeTema, { backgroundColor: transparente(opcao.cor, 0.16) }]}>
+                                        <Ionicons name={opcao.icone} size={22} color={opcao.cor} />
+                                    </View>
+                                    <View style={{ flex: 1 }}>
+                                        <Text style={styles.tituloTema}>{opcao.titulo}</Text>
+                                        <Text style={styles.descricaoTema}>{opcao.descricao}</Text>
+                                    </View>
+                                    <Ionicons
+                                        name={ativa ? "radio-button-on" : "radio-button-off"}
+                                        size={22}
+                                        color={ativa ? opcao.cor : cores.textoSuave}
+                                    />
+                                </TouchableOpacity>
+                            );
+                        })}
+                    </View>
+                </View>
+            </Modal>
 
             {/* ---------- modal: dados pessoais ---------- */}
             <ModalFormulario
@@ -196,9 +236,12 @@ export default function Perfil() {
                 onSalvar={p.salvar}
                 carregando={p.salvando}
             >
-                <Text style={styles.textoModal}>
-                    Use pelo menos 8 caracteres, com letra maiúscula, minúscula, número e símbolo.
-                </Text>
+                <View style={styles.caixaDica}>
+                    <Ionicons name="shield-checkmark" size={20} color={cores.ceu} />
+                    <Text style={styles.textoDica}>
+                        Use pelo menos 8 caracteres, com letra maiúscula, minúscula, número e símbolo.
+                    </Text>
+                </View>
                 <CustomTextInput
                     title="Nova senha"
                     leftIconName="lock-closed-outline"
@@ -219,10 +262,14 @@ export default function Perfil() {
                 onSalvar={p.apagarConta}
                 carregando={p.apagando}
                 labelSalvar="Apagar"
+                perigoso
             >
-                <Text style={styles.textoModalPerigo}>
-                    Isso apaga sua conta e todos os pacientes e consultas cadastrados. Não dá pra desfazer.
-                </Text>
+                <View style={styles.caixaPerigo}>
+                    <Ionicons name="warning" size={20} color={cores.atrasado} />
+                    <Text style={styles.textoPerigo}>
+                        Isso apaga sua conta e todos os pacientes e consultas cadastrados. Não dá pra desfazer.
+                    </Text>
+                </View>
                 <CustomTextInput
                     title="Digite sua senha para confirmar"
                     leftIconName="lock-closed-outline"

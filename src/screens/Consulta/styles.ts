@@ -1,379 +1,209 @@
 import { StyleSheet } from "react-native";
-import { colors } from "../../global/colors";
+import { Cores, transparente } from "../../theme/paletas";
 
-export const styles = StyleSheet.create({
+export const criarEstilos = (c: Cores) =>
+    StyleSheet.create({
+        container: {
+            flex: 1,
+            backgroundColor: c.fundo,
+        },
 
-    // ──────────────────────── COMPARTILHADO ────────────────────────
+        // ──────────────────────── LISTA ────────────────────────
 
-    // tela inteira com fundo cinza
-    container: {
-        flex: 1,
-        backgroundColor: colors.grayLight,
-    },
+        containerBusca: {
+            paddingHorizontal: 16,
+            paddingTop: 4,
+            paddingBottom: 12,
+        },
 
-    // quando os dados ainda não chegaram
-    containerVazio: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-    },
+        containerLista: {
+            flex: 1,
+            paddingHorizontal: 16,
+        },
 
-    // texto de "Carregando..." ou "Nenhum resultado"
-    textoVazio: {
-        textAlign: "center",
-        color: colors.gray,
-        fontSize: 15,
-        marginTop: 40,
-    },
+        // painel com cantos arredondados onde ficam as linhas da lista
+        painelLista: {
+            flex: 1,
+            backgroundColor: c.superficie,
+            borderTopLeftRadius: 24,
+            borderTopRightRadius: 24,
+            overflow: "hidden",
+        },
 
-    // card branco de cada seção
-    secao: {
-        backgroundColor: colors.white,
-        borderRadius: 16,
-        padding: 16,
-        marginBottom: 16,
-        gap: 12,
-    },
+        containerVazio: {
+            alignItems: "center",
+            marginTop: 60,
+            gap: 12,
+        },
 
-    // título de cada seção
-    tituloSecao: {
-        fontSize: 16,
-        fontWeight: "700",
-        color: colors.dark,
-        marginBottom: 4,
-    },
+        circuloVazio: {
+            width: 76,
+            height: 76,
+            borderRadius: 38,
+            backgroundColor: transparente(c.primaria, 0.12),
+            alignItems: "center",
+            justifyContent: "center",
+        },
 
-    // linha com ícone + texto
-    linha: {
-        flexDirection: "row",
-        alignItems: "center",
-        gap: 10,
-    },
+        textoVazio: {
+            textAlign: "center",
+            color: c.textoSecundario,
+            fontSize: 15,
+            paddingHorizontal: 24,
+        },
 
-    // texto ao lado do ícone em cada linha
-    textoLinha: {
-        fontSize: 14,
-        color: colors.dark,
-        flex: 1,
-    },
+        // botão "+" flutuante no canto
+        botaoAdicionar: {
+            position: "absolute",
+            right: 20,
+            bottom: 24,
+            width: 62,
+            height: 62,
+            borderRadius: 22,
+            backgroundColor: c.primaria,
+            alignItems: "center",
+            justifyContent: "center",
+            elevation: 8,
+            shadowColor: c.primaria,
+            shadowOffset: { width: 0, height: 6 },
+            shadowOpacity: 0.4,
+            shadowRadius: 12,
+        },
 
-    // fundo escuro do modal de filtro
-    modalFundo: {
-        flex: 1,
-        backgroundColor: "#00000060",
-        justifyContent: "flex-end",
-    },
+        // ──────────────────────── DETALHE ────────────────────────
 
-    // fundo escuro do modal de nova consulta
-    modalOverlay: {
-        flex: 1,
-        backgroundColor: "#00000060",
-        justifyContent: "flex-end",
-    },
+        scroll: {
+            padding: 16,
+            paddingBottom: 40,
+        },
 
-    // caixa branca do modal que sobe de baixo
-    modalContainer: {
-        backgroundColor: colors.white,
-        borderTopLeftRadius: 24,
-        borderTopRightRadius: 24,
-        padding: 24,
-        maxHeight: "90%",
-    },
+        // card do topo com o animal e o status
+        destaque: {
+            backgroundColor: c.superficie,
+            borderRadius: 28,
+            padding: 20,
+            alignItems: "center",
+            borderWidth: 1,
+            borderColor: c.borda,
+        },
 
-    // título do modal
-    modalTitulo: {
-        fontSize: 20,
-        fontWeight: "700",
-        color: colors.dark,
-        marginBottom: 16,
-    },
+        avatarGrande: {
+            width: 76,
+            height: 76,
+            borderRadius: 38,
+            alignItems: "center",
+            justifyContent: "center",
+            marginBottom: 10,
+        },
 
-    // botões lado a lado (cancelar + salvar / limpar + aplicar)
-    containerBotoes: {
-        flexDirection: "row",
-        gap: 12,
-        marginTop: 16,
-    },
+        textoAvatarGrande: {
+            fontSize: 32,
+            fontWeight: "900",
+        },
 
-    // botão cinza de cancelar ou limpar
-    botaoCancelar: {
-        flex: 1,
-        paddingVertical: 14,
-        borderRadius: 12,
-        borderWidth: 1,
-        borderColor: colors.grayMedium,
-        alignItems: "center",
-    },
+        nomeDestaque: {
+            fontSize: 24,
+            fontWeight: "900",
+            color: c.texto,
+        },
 
-    textoBotaoCancelar: {
-        color: colors.gray,
-        fontWeight: "600",
-        fontSize: 15,
-    },
+        subtituloDestaque: {
+            fontSize: 14,
+            color: c.textoSecundario,
+            marginTop: 2,
+        },
 
-    // botão azul de salvar ou aplicar
-    botaoSalvar: {
-        flex: 1,
-        paddingVertical: 14,
-        borderRadius: 12,
-        backgroundColor: colors.bluePrimary,
-        alignItems: "center",
-    },
+        seloStatus: {
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 6,
+            paddingHorizontal: 14,
+            paddingVertical: 6,
+            borderRadius: 20,
+            marginTop: 12,
+        },
 
-    textoBotaoSalvar: {
-        color: colors.white,
-        fontWeight: "600",
-        fontSize: 15,
-    },
+        textoSeloStatus: {
+            fontSize: 13,
+            fontWeight: "800",
+        },
 
-    // seletor de status
-    containerStatus: {
-        marginBottom: 16,
-    },
+        // linha com os 3 botões de ação
+        linhaAcoes: {
+            flexDirection: "row",
+            gap: 10,
+            marginTop: 14,
+        },
 
-    // label acima do seletor de status
-    labelStatus: {
-        fontSize: 14,
-        fontWeight: "600",
-        color: colors.dark,
-        marginBottom: 8,
-    },
+        // card de cada seção
+        secao: {
+            backgroundColor: c.superficie,
+            borderRadius: 24,
+            padding: 18,
+            marginTop: 14,
+            gap: 14,
+            borderWidth: 1,
+            borderColor: c.borda,
+        },
 
-    // linha dos botões de status
-    containerOpcoes: {
-        flexDirection: "row",
-        flexWrap: "wrap",
-        gap: 8,
-    },
+        tituloSecao: {
+            fontSize: 17,
+            fontWeight: "800",
+            color: c.texto,
+        },
 
-    // botão individual de status (inativo)
-    opcaoStatus: {
-        paddingHorizontal: 14,
-        paddingVertical: 8,
-        borderRadius: 20,
-        borderWidth: 1,
-        borderColor: colors.grayMedium,
-        alignItems: "center",
-    },
+        // editar e remover lado a lado
+        containerBotoes: {
+            flexDirection: "row",
+            gap: 12,
+            marginTop: 20,
+        },
 
-    // botão de status quando está selecionado
-    opcaoStatusAtiva: {
-        borderColor: colors.bluePrimary,
-        backgroundColor: colors.bluePrimary,
-    },
+        botaoEditar: {
+            flex: 1,
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 8,
+            backgroundColor: c.primaria,
+            paddingVertical: 15,
+            borderRadius: 16,
+        },
 
-    // texto do botão de status inativo
-    textoOpcaoStatus: {
-        fontSize: 13,
-        color: colors.gray,
-        fontWeight: "500",
-    },
+        textoBotaoEditar: {
+            color: c.textoSobreCor,
+            fontWeight: "800",
+            fontSize: 15,
+        },
 
-    // texto do botão de status ativo
-    textoOpcaoStatusAtiva: {
-        color: colors.white,
-        fontWeight: "700",
-    },
+        botaoRemover: {
+            flex: 1,
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 8,
+            backgroundColor: transparente(c.atrasado, 0.12),
+            paddingVertical: 15,
+            borderRadius: 16,
+        },
 
-    // ──────────────────────── INDEX ────────────────────────
+        textoBotaoRemover: {
+            color: c.atrasado,
+            fontWeight: "800",
+            fontSize: 15,
+        },
 
-    // barra de busca no topo
-    containerBusca: {
-        backgroundColor: colors.white,
-        paddingHorizontal: 16,
-        paddingVertical: 12,
-        borderBottomWidth: 1,
-        borderBottomColor: colors.grayLight,
-        gap: 8,
-    },
+        // ──────────────────────── MODAL DE EDIÇÃO ────────────────────────
 
-    // tags dos filtros ativos abaixo da busca
-    containerTagsFiltro: {
-        flexDirection: "row",
-        flexWrap: "wrap",
-        gap: 8,
-    },
+        labelStatus: {
+            fontSize: 13,
+            fontWeight: "700",
+            color: c.textoSecundario,
+            marginBottom: 8,
+            marginLeft: 2,
+        },
 
-    // tag individual de filtro ativo
-    tagFiltroAtivo: {
-        flexDirection: "row",
-        alignItems: "center",
-        gap: 4,
-        backgroundColor: colors.bluePrimary,
-        paddingHorizontal: 10,
-        paddingVertical: 4,
-        borderRadius: 20,
-    },
-
-    // texto dentro da tag de filtro
-    textoTagFiltro: {
-        color: colors.white,
-        fontSize: 12,
-        fontWeight: "600",
-    },
-
-    // área onde a flatlist de consultas fica
-    containerLista: {
-        flex: 1,
-        paddingHorizontal: 16,
-        paddingTop: 16,
-    },
-
-    // painel branco com cantos arredondados onde ficam as linhas da lista
-    painelLista: {
-        flex: 1,
-        backgroundColor: colors.white,
-        borderTopLeftRadius: 18,
-        borderTopRightRadius: 18,
-        overflow: "hidden",
-    },
-
-    // botão "+" flutuante no canto inferior direito
-    botaoAdicionar: {
-        position: "absolute",
-        bottom: 24,
-        right: 24,
-        width: 56,
-        height: 56,
-        borderRadius: 28,
-        backgroundColor: colors.bluePrimary,
-        alignItems: "center",
-        justifyContent: "center",
-        elevation: 5,
-        shadowColor: colors.black,
-        shadowOffset: { width: 0, height: 3 },
-        shadowOpacity: 0.2,
-        shadowRadius: 5,
-    },
-
-    // label acima do calendário e seletor de status no modal de filtro
-    labelFiltro: {
-        fontSize: 14,
-        fontWeight: "600",
-        color: colors.dark,
-        marginBottom: 8,
-    },
-
-    // calendário com borda arredondada
-    calendario: {
-        borderRadius: 12,
-        overflow: "hidden",
-        borderWidth: 1,
-        borderColor: colors.grayLight,
-    },
-
-    // ──────────────────────── DETALHE CONSULTA ────────────────────────
-
-    // scroll com padding interno
-    scroll: {
-        padding: 16,
-        paddingBottom: 40,
-    },
-
-    // badge colorido do status no topo da tela
-    tagStatus: {
-        alignSelf: "flex-start",
-        paddingHorizontal: 14,
-        paddingVertical: 5,
-        borderRadius: 20,
-        marginBottom: 16,
-    },
-
-    // texto do badge de status
-    textoStatus: {
-        fontSize: 13,
-        fontWeight: "700",
-    },
-
-    // botão azul de iniciar consulta online
-    botaoOnline: {
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: 8,
-        backgroundColor: colors.bluePrimary,
-        paddingVertical: 12,
-        borderRadius: 12,
-        marginTop: 4,
-    },
-
-    textoBotaoOnline: {
-        color: colors.white,
-        fontWeight: "700",
-        fontSize: 15,
-    },
-
-    // botão azul de editar
-    botaoEditar: {
-        flex: 1,
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: 8,
-        backgroundColor: colors.bluePrimary,
-        paddingVertical: 14,
-        borderRadius: 12,
-    },
-
-    // botão vermelho de remover
-    botaoRemover: {
-        flex: 1,
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: 8,
-        backgroundColor: colors.danger,
-        paddingVertical: 14,
-        borderRadius: 12,
-    },
-
-    // texto dos botões de editar e remover
-    textoBotao: {
-        color: colors.white,
-        fontWeight: "700",
-        fontSize: 15,
-    },
-
-    // botões lado a lado do modal de edição
-    containerBotoesModal: {
-        flexDirection: "row",
-        gap: 12,
-        marginTop: 8,
-    },
-
-    // botão branco com borda azul (ver ficha do paciente)
-    botaoContorno: {
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: 8,
-        borderWidth: 1.5,
-        borderColor: colors.bluePrimary,
-        paddingVertical: 11,
-        borderRadius: 12,
-        marginTop: 4,
-    },
-
-    textoBotaoContorno: {
-        color: colors.bluePrimary,
-        fontWeight: "700",
-        fontSize: 15,
-    },
-
-    // botão verde do WhatsApp
-    botaoWhatsapp: {
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: 8,
-        backgroundColor: "#25D366",
-        paddingVertical: 12,
-        borderRadius: 12,
-        marginTop: 4,
-    },
-
-    // espaço embaixo das abinhas de situação no modal
-    containerAbasModal: {
-        marginBottom: 16,
-    },
-});
+        containerAbasModal: {
+            marginBottom: 16,
+        },
+    });

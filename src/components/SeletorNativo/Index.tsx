@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { View } from "react-native";
 import DateTimePicker, { DateTimePickerEvent } from "@react-native-community/datetimepicker";
 import CampoSelecao from "../CampoSelecao/Index";
+import { useTema } from "../../theme/TemaContext";
 
 interface Props {
     titulo: string;
@@ -24,6 +25,7 @@ function paraDate(valor: string): Date {
 // campo que abre o relógio do próprio celular pra escolher o horário
 export default function SeletorNativo({ titulo, valor, onChange }: Props) {
     const [aberto, setAberto] = useState(false);
+    const { escuro } = useTema();
 
     // usuário confirmou: guarda no formato HH:MM, que é o que o backend recebe
     function aoEscolher(evento: DateTimePickerEvent, data?: Date) {
@@ -39,10 +41,17 @@ export default function SeletorNativo({ titulo, valor, onChange }: Props) {
                 texto={valor}
                 placeholder="Escolha o horário"
                 icone="time-outline"
+                aberto={aberto}
                 onPress={() => setAberto(true)}
             />
 
-            {aberto && <DateTimePicker value={paraDate(valor)} mode="time" is24Hour onChange={aoEscolher} />}
+            {aberto && <DateTimePicker
+                    value={paraDate(valor)}
+                    mode="time"
+                    is24Hour
+                    themeVariant={escuro ? "dark" : "light"}
+                    onChange={aoEscolher}
+                />}
         </View>
     );
 }

@@ -1,93 +1,187 @@
 import { StyleSheet, Dimensions } from "react-native";
-import { colors } from "../../global/colors";
+import { Cores, transparente } from "../../theme/paletas";
 
 const { width } = Dimensions.get("window");
 
-export const styles = StyleSheet.create({
+export const criarEstilos = (c: Cores) =>
+    StyleSheet.create({
+        container: {
+            flex: 1,
+            backgroundColor: c.fundo,
+        },
 
-    container: {
-        flex: 1,
-        backgroundColor: colors.grayLight,
-    },
+        scroll: {
+            paddingBottom: 32,
+        },
 
-    containerCarrossel: {
-        backgroundColor: colors.white,
-        paddingVertical: 16,
-        borderBottomWidth: 1,
-        borderBottomColor: colors.grayLight,
-    },
+        // ---------- saudação ----------
 
-    // agrupa o título + o badge com o contador
-    containerTitulo: {
-        flexDirection: "row",
-        alignItems: "center",
-        gap: 8,
-        paddingHorizontal: 16,
-        marginBottom: 12,
-    },
+        saudacao: {
+            margin: 16,
+            borderRadius: 28,
+            padding: 22,
+            overflow: "hidden",
+        },
 
-    tituloSecao: {
-        fontSize: 16,
-        fontWeight: "700",
-        color: colors.dark,
-    },
+        // bolhas translúcidas de enfeite dentro do card
+        bolha1: {
+            position: "absolute",
+            width: 180,
+            height: 180,
+            borderRadius: 90,
+            top: -60,
+            right: -40,
+            backgroundColor: transparente(c.textoSobreCor, 0.12),
+        },
 
-    // bolinha azul com o número de consultas agendadas
-    badgeContador: {
-        backgroundColor: colors.bluePrimary,
-        borderRadius: 10,
-        minWidth: 20,
-        height: 20,
-        paddingHorizontal: 6,
-        alignItems: "center",
-        justifyContent: "center",
-    },
+        bolha2: {
+            position: "absolute",
+            width: 120,
+            height: 120,
+            borderRadius: 60,
+            bottom: -50,
+            left: 40,
+            backgroundColor: transparente(c.textoSobreCor, 0.08),
+        },
 
-    textoBadgeContador: {
-        color: colors.white,
-        fontSize: 11,
-        fontWeight: "700",
-    },
+        linhaSaudacao: {
+            flexDirection: "row",
+            alignItems: "center",
+        },
 
-    flatListCarrossel: {
-        paddingHorizontal: 16,
-    },
+        textoOla: {
+            fontSize: 16,
+            color: transparente(c.textoSobreCor, 0.85),
+            fontWeight: "600",
+        },
 
-    cardCarrossel: {
-        width: width * 0.75,
-        marginRight: 12,
-    },
+        textoNome: {
+            fontSize: 26,
+            fontWeight: "900",
+            color: c.textoSobreCor,
+        },
 
-    // estado vazio, com ícone acima do texto
-    containerVazio: {
-        alignItems: "center",
-        paddingHorizontal: 16,
-        paddingVertical: 20,
-        gap: 8,
-    },
+        circuloPata: {
+            width: 52,
+            height: 52,
+            borderRadius: 26,
+            backgroundColor: transparente(c.textoSobreCor, 0.2),
+            alignItems: "center",
+            justifyContent: "center",
+        },
 
-    textoVazioCarrossel: {
-        color: colors.gray,
-        fontSize: 14,
-        textAlign: "center",
-    },
+        textoResumo: {
+            fontSize: 14,
+            color: transparente(c.textoSobreCor, 0.9),
+            marginTop: 14,
+        },
 
-    containerDestaque: {
-        flex: 1,
-        padding: 16,
-    },
+        // ---------- atalhos ----------
 
-    tituloDestaque: {
-        fontSize: 16,
-        fontWeight: "700",
-        color: colors.dark,
-        marginBottom: 12,
-    },
+        linhaAtalhos: {
+            flexDirection: "row",
+            gap: 12,
+            paddingHorizontal: 16,
+        },
 
-    imagemDestaque: {
-        flex: 1,
-        width: "100%",
-        borderRadius: 16,
-        overflow: "hidden",
-    },
-});
+        atalho: {
+            flex: 1,
+            backgroundColor: c.superficie,
+            borderRadius: 20,
+            paddingVertical: 16,
+            alignItems: "center",
+            gap: 8,
+            borderWidth: 1,
+            borderColor: c.borda,
+        },
+
+        iconeAtalho: {
+            width: 48,
+            height: 48,
+            borderRadius: 16,
+            alignItems: "center",
+            justifyContent: "center",
+        },
+
+        textoAtalho: {
+            fontSize: 12,
+            fontWeight: "700",
+            color: c.texto,
+        },
+
+        // ---------- seções ----------
+
+        // título + bolinha com o contador
+        containerTitulo: {
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 8,
+            paddingHorizontal: 20,
+            marginTop: 26,
+            marginBottom: 12,
+        },
+
+        tituloSecao: {
+            fontSize: 19,
+            fontWeight: "800",
+            color: c.texto,
+        },
+
+        badgeContador: {
+            backgroundColor: c.primaria,
+            borderRadius: 12,
+            minWidth: 24,
+            height: 24,
+            paddingHorizontal: 7,
+            alignItems: "center",
+            justifyContent: "center",
+        },
+
+        textoBadgeContador: {
+            color: c.textoSobreCor,
+            fontSize: 12,
+            fontWeight: "800",
+        },
+
+        flatListCarrossel: {
+            paddingHorizontal: 16,
+        },
+
+        cardCarrossel: {
+            width: width * 0.8,
+            marginRight: 12,
+        },
+
+        containerVazio: {
+            alignItems: "center",
+            gap: 8,
+            marginHorizontal: 16,
+            paddingVertical: 28,
+            backgroundColor: c.superficie,
+            borderRadius: 20,
+        },
+
+        textoVazio: {
+            fontSize: 14,
+            color: c.textoSecundario,
+        },
+
+        // ---------- destaque ----------
+
+        cartaoDestaque: {
+            marginHorizontal: 16,
+            borderRadius: 24,
+            overflow: "hidden",
+            backgroundColor: c.superficie,
+            elevation: 3,
+            shadowColor: c.sombra,
+            shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: 0.1,
+            shadowRadius: 12,
+        },
+
+        imagemDestaque: {
+            width: "100%",
+            height: 200,
+        },
+    });

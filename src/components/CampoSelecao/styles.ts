@@ -1,37 +1,46 @@
 import { StyleSheet } from "react-native";
-import { colors } from "../../global/colors";
+import { Cores } from "../../theme/paletas";
 
-export const styles = StyleSheet.create({
-    container: {
-        marginBottom: 16,
-        width: "100%",
-    },
+export const criarEstilos = (c: Cores) =>
+    StyleSheet.create({
+        container: {
+            marginBottom: 16,
+            width: "100%",
+        },
 
-    titulo: {
-        fontSize: 14,
-        fontWeight: "600",
-        color: colors.dark,
-        marginBottom: 8,
-    },
+        titulo: {
+            fontSize: 13,
+            fontWeight: "700",
+            color: c.textoSecundario,
+            marginBottom: 8,
+            marginLeft: 2,
+        },
 
-    // mesmo visual do CustomTextInput
-    campo: {
-        flexDirection: "row",
-        alignItems: "center",
-        gap: 8,
-        backgroundColor: colors.grayLight,
-        borderRadius: 14,
-        paddingHorizontal: 16,
-        height: 54,
-    },
+        // mesmo visual do CustomTextInput
+        campo: {
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 10,
+            backgroundColor: c.superficieAlt,
+            borderRadius: 16,
+            borderWidth: 1.5,
+            borderColor: "transparent",
+            paddingHorizontal: 16,
+            height: 54,
+        },
 
-    texto: {
-        flex: 1,
-        fontSize: 16,
-        color: colors.dark,
-    },
+        campoAberto: {
+            borderColor: c.primaria,
+            backgroundColor: c.superficie,
+        },
 
-    placeholder: {
-        color: "#999",
-    },
-});
+        texto: {
+            flex: 1,
+            fontSize: 16,
+            color: c.texto,
+        },
+
+        placeholder: {
+            color: c.textoSuave,
+        },
+    });

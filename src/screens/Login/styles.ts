@@ -1,116 +1,99 @@
 import { StyleSheet } from "react-native";
-import { colors } from "../../global/colors";
+import { Cores, transparente } from "../../theme/paletas";
 
-export const styles = StyleSheet.create({
-  // Fundo da tela toda
-  containerTela: {
-    flex: 1,
-    backgroundColor: colors.white,
-  },
+export const criarEstilos = (c: Cores) =>
+    StyleSheet.create({
+        containerTela: {
+            flex: 1,
+            backgroundColor: c.fundo,
+        },
 
-  // Área que pode rolar quando o teclado aparece
-  containerScroll: {
-    flexGrow: 1,
-    justifyContent: "center",
-    paddingHorizontal: 28,
-    paddingVertical: 24,
-  },
+        // bolhas coloridas de enfeite no fundo
+        bolhaRoxa: {
+            position: "absolute",
+            width: 320,
+            height: 320,
+            borderRadius: 160,
+            top: -120,
+            right: -100,
+            backgroundColor: transparente(c.primaria, 0.16),
+        },
 
-  // Card onde fica o formulário de login
-  containerFormulario: {
-    backgroundColor: colors.white,
-    borderRadius: 24,
-    borderWidth: 1,
-    borderColor: colors.grayLight,
-    padding: 24,
-    elevation: 4,
-    shadowColor: colors.black,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.06,
-    shadowRadius: 12,
-  },
+        bolhaVerde: {
+            position: "absolute",
+            width: 240,
+            height: 240,
+            borderRadius: 120,
+            bottom: -80,
+            left: -90,
+            backgroundColor: transparente(c.secundaria, 0.14),
+        },
 
-  // Junta o título e o subtítulo
-  containerTextos: {
-    alignItems: "center",
-    marginBottom: 24,
-  },
+        containerScroll: {
+            flexGrow: 1,
+            justifyContent: "center",
+            paddingHorizontal: 22,
+            paddingVertical: 32,
+        },
 
-  // Título de boas-vindas
-  textoTitulo: {
-    fontSize: 24,
-    fontWeight: "800",
-    color: colors.dark,
-  },
+        // card do formulário
+        containerFormulario: {
+            backgroundColor: c.superficie,
+            borderRadius: 28,
+            padding: 24,
+            borderWidth: 1,
+            borderColor: c.borda,
+            elevation: 4,
+            shadowColor: c.sombra,
+            shadowOffset: { width: 0, height: 8 },
+            shadowOpacity: 0.08,
+            shadowRadius: 20,
+        },
 
-  // Texto abaixo do título
-  textoSubtitulo: {
-    fontSize: 14,
-    color: colors.gray,
-    marginTop: 4,
-  },
+        containerTextos: {
+            marginBottom: 22,
+        },
 
-  // Espaço entre os campos de texto
-  containerInputs: {
-    gap: 4,
-  },
+        textoTitulo: {
+            fontSize: 26,
+            fontWeight: "800",
+            color: c.texto,
+        },
 
-  // Posição do botão de esquecer senha
-  botaoEsqueceuSenha: {
-    alignSelf: "center",
-    marginTop: 4,
-    marginBottom: 8,
-  },
+        textoSubtitulo: {
+            fontSize: 15,
+            color: c.textoSecundario,
+            marginTop: 4,
+        },
 
-  // Texto do botão de esquecer senha
-  textoEsqueceuSenha: {
-    color: colors.gray,
-    fontSize: 13,
-  },
+        containerInputs: {
+            marginBottom: 8,
+        },
 
-  // Botão que faz o login
-  botaoEntrar: {
-    backgroundColor: colors.bluePrimary,
-    paddingVertical: 16,
-    borderRadius: 14,
-    alignItems: "center",
-    justifyContent: "center",
-    flexDirection: "row",
-    gap: 8,
-    marginTop: 8,
-    elevation: 4,
-    shadowColor: colors.bluePrimary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-  },
+        botaoEsqueceuSenha: {
+            alignSelf: "flex-end",
+            marginTop: -6,
+            marginBottom: 14,
+        },
 
-  // Texto dentro do botão de entrar
-  textoBotaoEntrar: {
-    color: colors.white,
-    fontSize: 16,
-    fontWeight: "700",
-    letterSpacing: 0.3,
-  },
+        textoEsqueceuSenha: {
+            fontSize: 13,
+            fontWeight: "700",
+            color: c.primaria,
+        },
 
-  // Área para ir até a tela de cadastro
-  botaoCadastro: {
-    alignItems: "center",
-    marginTop: 20,
-    paddingTop: 20,
-    borderTopWidth: 1,
-    borderTopColor: colors.grayLight,
-  },
+        botaoCadastro: {
+            marginTop: 20,
+            alignItems: "center",
+        },
 
-  // Texto normal da mensagem de cadastro
-  textoCadastro: {
-    fontSize: 14,
-    color: colors.gray,
-  },
+        textoCadastro: {
+            fontSize: 14,
+            color: c.textoSecundario,
+        },
 
-  // Parte azul do “Cadastre-se”
-  textoCadastroDestaque: {
-    color: colors.bluePrimary,
-    fontWeight: "700",
-  },
-});
+        textoCadastroDestaque: {
+            fontWeight: "800",
+            color: c.primaria,
+        },
+    });

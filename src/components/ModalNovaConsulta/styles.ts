@@ -1,35 +1,50 @@
 import { StyleSheet } from "react-native";
-import { colors } from "../../global/colors";
+import { Cores } from "../../theme/paletas";
 
-export const styles = StyleSheet.create({
-    // título de cada parte do formulário (Consulta, Paciente, Responsável)
-    secao: {
-        fontSize: 13,
-        fontWeight: "800",
-        color: colors.bluePrimary,
-        textTransform: "uppercase",
-        letterSpacing: 1,
-        marginTop: 12,
-        marginBottom: 12,
-    },
+export const criarEstilos = (c: Cores) =>
+    StyleSheet.create({
+        // título de cada parte do formulário (Consulta, Paciente, Responsável)
+        secao: {
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 10,
+            marginTop: 8,
+            marginBottom: 14,
+        },
 
-    rotulo: {
-        fontSize: 14,
-        fontWeight: "600",
-        color: colors.dark,
-        marginBottom: 8,
-    },
+        iconeSecao: {
+            width: 30,
+            height: 30,
+            borderRadius: 10,
+            alignItems: "center",
+            justifyContent: "center",
+        },
 
-    // espaço embaixo das abinhas
-    abas: {
-        marginBottom: 16,
-    },
+        textoSecao: {
+            fontSize: 17,
+            fontWeight: "800",
+            color: c.texto,
+        },
 
-    // textinho de ajuda embaixo da situação
-    dica: {
-        fontSize: 12,
-        color: colors.gray,
-        marginTop: -8,
-        marginBottom: 16,
-    },
-});
+        rotulo: {
+            fontSize: 13,
+            fontWeight: "700",
+            color: c.textoSecundario,
+            marginBottom: 8,
+            marginLeft: 2,
+        },
+
+        // espaço embaixo das abinhas
+        abas: {
+            marginBottom: 16,
+        },
+
+        // textinho de ajuda embaixo da situação
+        dica: {
+            fontSize: 12,
+            color: c.textoSuave,
+            marginTop: -8,
+            marginBottom: 16,
+            marginLeft: 2,
+        },
+    });

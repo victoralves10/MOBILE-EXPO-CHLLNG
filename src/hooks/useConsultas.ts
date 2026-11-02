@@ -16,10 +16,20 @@ export function useConsultas() {
     const [busca, setBusca] = useState("");
 
     // quando outra tela manda abrir uma aba (ex: Perfil → "Atrasadas"), troca pra ela
+    // e limpa o pedido, pra funcionar de novo da próxima vez
     const abaPedida: AbaConsulta | undefined = route.params?.aba;
     useEffect(() => {
-        if (abaPedida) setAba(abaPedida);
-    }, [abaPedida]);
+        if (abaPedida) {
+            setAba(abaPedida);
+            navigation.setParams({ aba: undefined });
+        }
+    }, [abaPedida, navigation]);
+
+    // a Home pode pedir pra já abrir o modal de nova consulta
+    const novaConsultaPedida: boolean = route.params?.novaConsulta === true;
+    function limparPedidoNovaConsulta() {
+        navigation.setParams({ novaConsulta: undefined });
+    }
 
     // só manda a busca pro backend quando o usuário para de digitar
     const buscaDebounced = useDebounce(busca.trim(), 500);
@@ -53,5 +63,7 @@ export function useConsultas() {
         carregando: consultasQuery.isLoading,
         erro: consultasQuery.isError ? mensagemDeErro(consultasQuery.error) : null,
         abrirDetalheConsulta,
+        novaConsultaPedida,
+        limparPedidoNovaConsulta,
     };
 }

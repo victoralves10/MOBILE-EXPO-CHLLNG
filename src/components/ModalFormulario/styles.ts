@@ -1,72 +1,99 @@
 import { StyleSheet } from "react-native";
-import { colors } from "../../global/colors";
+import { Cores } from "../../theme/paletas";
 
-export const styles = StyleSheet.create({
-    fundo: {
-        flex: 1,
-        backgroundColor: "rgba(0, 0, 0, 0.5)",
-        justifyContent: "flex-end",
-    },
+export const criarEstilos = (c: Cores) =>
+    StyleSheet.create({
+        fundo: {
+            flex: 1,
+            backgroundColor: c.fundoModal,
+            justifyContent: "flex-end",
+        },
 
-    card: {
-        backgroundColor: colors.white,
-        borderTopLeftRadius: 24,
-        borderTopRightRadius: 24,
-        maxHeight: "85%",
-    },
+        areaFora: {
+            position: "absolute",
+            top: 0,
+            right: 0,
+            bottom: 0,
+            left: 0,
+        },
 
-    barraArrasto: {
-        width: 40,
-        height: 4,
-        borderRadius: 2,
-        backgroundColor: colors.grayMedium,
-        alignSelf: "center",
-        marginTop: 12,
-    },
+        card: {
+            backgroundColor: c.superficie,
+            borderTopLeftRadius: 28,
+            borderTopRightRadius: 28,
+            maxHeight: "88%",
+        },
 
-    scrollConteudo: {
-        padding: 24,
-        gap: 4,
-    },
+        barraArrasto: {
+            width: 44,
+            height: 5,
+            borderRadius: 3,
+            backgroundColor: c.borda,
+            alignSelf: "center",
+            marginTop: 10,
+        },
 
-    titulo: {
-        fontSize: 18,
-        fontWeight: "800",
-        color: colors.dark,
-        marginBottom: 8,
-    },
+        cabecalho: {
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+            paddingHorizontal: 24,
+            paddingTop: 14,
+            paddingBottom: 6,
+        },
 
-    containerBotoes: {
-        flexDirection: "row",
-        gap: 12,
-        marginTop: 16,
-    },
+        titulo: {
+            fontSize: 20,
+            fontWeight: "800",
+            color: c.texto,
+        },
 
-    botaoCancelar: {
-        flex: 1,
-        paddingVertical: 14,
-        borderRadius: 12,
-        alignItems: "center",
-        backgroundColor: colors.grayLight,
-    },
+        botaoFechar: {
+            width: 34,
+            height: 34,
+            borderRadius: 17,
+            backgroundColor: c.superficieAlt,
+            alignItems: "center",
+            justifyContent: "center",
+        },
 
-    textoBotaoCancelar: {
-        fontSize: 15,
-        fontWeight: "600",
-        color: colors.dark,
-    },
+        scrollConteudo: {
+            paddingHorizontal: 24,
+            paddingTop: 12,
+            paddingBottom: 32,
+        },
 
-    botaoSalvar: {
-        flex: 1,
-        paddingVertical: 14,
-        borderRadius: 12,
-        alignItems: "center",
-        backgroundColor: colors.bluePrimary,
-    },
+        containerBotoes: {
+            flexDirection: "row",
+            gap: 12,
+            marginTop: 12,
+        },
 
-    textoBotaoSalvar: {
-        fontSize: 15,
-        fontWeight: "700",
-        color: colors.white,
-    },
-});
+        botaoCancelar: {
+            flex: 1,
+            paddingVertical: 15,
+            borderRadius: 16,
+            alignItems: "center",
+            backgroundColor: c.superficieAlt,
+        },
+
+        textoBotaoCancelar: {
+            fontSize: 15,
+            fontWeight: "700",
+            color: c.texto,
+        },
+
+        botaoSalvar: {
+            flex: 1,
+            paddingVertical: 15,
+            borderRadius: 16,
+            alignItems: "center",
+            backgroundColor: c.primaria,
+        },
+
+        textoBotaoSalvar: {
+            fontSize: 15,
+            fontWeight: "800",
+            color: c.textoSobreCor,
+        },
+    });

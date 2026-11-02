@@ -1,6 +1,9 @@
 import React from "react";
 import { View, Text, TouchableOpacity } from "react-native";
-import { styles } from "./styles";
+import { Ionicons } from "@expo/vector-icons";
+import { criarEstilos } from "./styles";
+import { useEstilos } from "../../theme/useEstilos";
+import { useTema } from "../../theme/TemaContext";
 
 interface Opcao<T> {
     valor: T;
@@ -16,6 +19,9 @@ interface Props<T> {
 
 // lista de etiquetas pra escolher uma opção (tocar de novo desmarca)
 export default function SeletorOpcoes<T extends string | number>({ titulo, opcoes, selecionado, onSelecionar }: Props<T>) {
+    const styles = useEstilos(criarEstilos);
+    const { cores } = useTema();
+
     return (
         <View style={styles.container}>
             <Text style={styles.titulo}>{titulo}</Text>
@@ -28,6 +34,7 @@ export default function SeletorOpcoes<T extends string | number>({ titulo, opcoe
                             style={[styles.etiqueta, ativa && styles.etiquetaAtiva]}
                             onPress={() => onSelecionar(ativa ? null : opcao.valor)}
                         >
+                            {ativa && <Ionicons name="checkmark" size={14} color={cores.textoSobreCor} />}
                             <Text style={[styles.texto, ativa && styles.textoAtivo]}>{opcao.rotulo}</Text>
                         </TouchableOpacity>
                     );

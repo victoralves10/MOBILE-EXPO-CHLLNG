@@ -1,10 +1,13 @@
+import React from "react";
 import { ActivityIndicator, View } from "react-native";
-import { NavigationContainer } from "@react-navigation/native";
+import { NavigationContainer, DefaultTheme, DarkTheme, Theme } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
-import { colors } from "../global/colors";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAuth } from "../context/AuthContext";
+import { useTema } from "../theme/TemaContext";
+import { transparente } from "../theme/paletas";
 
 import Login from "../screens/Login/Index";
 import Cadastro from "../screens/Cadastro/Index";
@@ -18,44 +21,74 @@ import Perfil from "../screens/Perfil/Index";
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
+type NomeIcone = keyof typeof Ionicons.glyphMap;
+
+// ícone de cada aba: cheio quando está ativa, contorno quando não está
+const ICONES_ABAS: Record<string, { ativo: NomeIcone; inativo: NomeIcone }> = {
+    Home: { ativo: "home", inativo: "home-outline" },
+    Consultas: { ativo: "calendar", inativo: "calendar-outline" },
+    Pacientes: { ativo: "paw", inativo: "paw-outline" },
+    Perfil: { ativo: "person-circle", inativo: "person-circle-outline" },
+};
+
+// as 4 abas de baixo
 function TabRoutes() {
+    const { cores } = useTema();
+
+    // espaço dos botões do sistema (Android) ou da barrinha do iPhone embaixo da tela
+    const { bottom } = useSafeAreaInsets();
+
     return (
         <Tab.Navigator
             screenOptions={({ route }) => ({
                 headerShown: true,
                 headerTitleAlign: "left",
-                tabBarShowLabel: false,
-                headerStyle: {
-                    backgroundColor: colors.white,
-                    elevation: 0,
-                    shadowOpacity: 0,
-                },
-                headerTitleStyle: {
-                    color: colors.bluePrimary,
-                    fontWeight: "700",
-                    fontSize: 26,
-                },
-                tabBarActiveTintColor: colors.bluePrimary,
-                tabBarInactiveTintColor: colors.grayMedium,
+                headerShadowVisible: false,
+                headerStyle: { backgroundColor: cores.fundo },
+                headerTitleStyle: { color: cores.texto, fontWeight: "800", fontSize: 26 },
+                sceneStyle: { backgroundColor: cores.fundo },
+
+                tabBarActiveTintColor: cores.primaria,
+                tabBarInactiveTintColor: cores.textoSuave,
+                tabBarLabelStyle: { fontSize: 11, fontWeight: "700", marginTop: 2 },
+                tabBarIconStyle: { width: 56, height: 30 },
+                // altura = ícone + texto + o espaço dos botões do sistema, pra nada ficar embaixo deles
                 tabBarStyle: {
-                    height: 60,
-                    paddingBottom: 5,
-                    paddingTop: 5,
-                    borderTopWidth: 1,
-                    borderTopColor: colors.grayLight,
-                    backgroundColor: colors.white,
+                    height: 66 + bottom,
+                    paddingTop: 6,
+                    paddingBottom: bottom + 6,
+                    backgroundColor: cores.superficie,
+                    borderTopWidth: 0,
+                    elevation: 12,
+                    shadowColor: cores.sombra,
+                    shadowOffset: { width: 0, height: -4 },
+                    shadowOpacity: 0.06,
+                    shadowRadius: 12,
                 },
-                tabBarIcon: ({ color }) => {
-                    let iconName: any;
-                    if (route.name === "Home") iconName = "home";
-                    else if (route.name === "Consultas") iconName = "calendar-outline";
-                    else if (route.name === "Pacientes") iconName = "people-outline";
-                    else if (route.name === "Perfil") iconName = "person-circle-outline";
-                    return <Ionicons name={iconName} size={28} color={color} />;
-                },
+
+                // ícone dentro de uma "pílula" colorida quando a aba está ativa
+                tabBarIcon: ({ focused, color }) => (
+                    <View
+                        style={{
+                            width: 56,
+                            height: 30,
+                            alignItems: "center",
+                            justifyContent: "center",
+                            borderRadius: 15,
+                            backgroundColor: focused ? transparente(cores.primaria, 0.14) : "transparent",
+                        }}
+                    >
+                        <Ionicons
+                            name={focused ? ICONES_ABAS[route.name].ativo : ICONES_ABAS[route.name].inativo}
+                            size={22}
+                            color={color}
+                        />
+                    </View>
+                ),
             })}
         >
-            <Tab.Screen name="Home" component={Home} options={{ title: "Clínica Veterinária" }} />
+            {/* a Home desenha o próprio cabeçalho (saudação colorida) */}
+            <Tab.Screen name="Home" component={Home} options={{ title: "Início", headerShown: false }} />
             <Tab.Screen name="Consultas" component={Consulta} options={{ title: "Consultas" }} />
             <Tab.Screen name="Pacientes" component={Paciente} options={{ title: "Pacientes" }} />
             <Tab.Screen name="Perfil" component={Perfil} options={{ title: "Perfil" }} />
@@ -63,46 +96,58 @@ function TabRoutes() {
     );
 }
 
+// rotas do app: as telas internas só existem quando o usuário está logado
 export default function Routes() {
     const { logado, carregando } = useAuth();
+    const { cores, escuro } = useTema();
+
+    // tema da navegação acompanhando o nosso (fundo das telas, cabeçalhos, animações)
+    const base = escuro ? DarkTheme : DefaultTheme;
+    const temaNavegacao: Theme = {
+        ...base,
+        colors: {
+            ...base.colors,
+            primary: cores.primaria,
+            background: cores.fundo,
+            card: cores.superficie,
+            text: cores.texto,
+            border: cores.borda,
+            notification: cores.atrasado,
+        },
+    };
+
+    // estilo dos cabeçalhos das telas de detalhe
+    const cabecalhoDetalhe = {
+        headerShown: true,
+        headerShadowVisible: false,
+        headerTintColor: cores.primaria,
+        headerStyle: { backgroundColor: cores.fundo },
+        headerTitleStyle: { color: cores.texto, fontWeight: "800" as const },
+    };
 
     if (carregando) {
         return (
-            <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-                <ActivityIndicator size="large" color={colors.bluePrimary} />
+            <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: cores.fundo }}>
+                <ActivityIndicator size="large" color={cores.primaria} />
             </View>
         );
     }
 
     return (
-        <NavigationContainer>
-            <Stack.Navigator screenOptions={{ headerShown: false }}>
-
-                {/* rotas só existem quando o usuário está logado */}
+        <NavigationContainer theme={temaNavegacao}>
+            <Stack.Navigator screenOptions={{ headerShown: false, contentStyle: { backgroundColor: cores.fundo } }}>
                 {logado ? (
                     <Stack.Group>
                         <Stack.Screen name="App" component={TabRoutes} />
-
                         <Stack.Screen
                             name="DetalheConsulta"
                             component={DetalheConsulta}
-                            options={{
-                                headerShown: true,
-                                headerTitle: "Detalhes da Consulta",
-                                headerTintColor: colors.bluePrimary,
-                                headerStyle: { backgroundColor: colors.white },
-                            }}
+                            options={{ ...cabecalhoDetalhe, headerTitle: "Detalhes da consulta" }}
                         />
-
                         <Stack.Screen
                             name="DetalhePaciente"
                             component={DetalhePaciente}
-                            options={{
-                                headerShown: true,
-                                headerTitle: "Ficha do Paciente",
-                                headerTintColor: colors.bluePrimary,
-                                headerStyle: { backgroundColor: colors.white },
-                            }}
+                            options={{ ...cabecalhoDetalhe, headerTitle: "Ficha do paciente" }}
                         />
                     </Stack.Group>
                 ) : (
@@ -111,7 +156,6 @@ export default function Routes() {
                         <Stack.Screen name="Cadastro" component={Cadastro} />
                     </Stack.Group>
                 )}
-
             </Stack.Navigator>
         </NavigationContainer>
     );

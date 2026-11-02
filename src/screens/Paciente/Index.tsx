@@ -1,6 +1,9 @@
 import React from "react";
 import { View, Text, FlatList } from "react-native";
-import { styles } from "./styles";
+import { Ionicons } from "@expo/vector-icons";
+import { criarEstilos } from "./styles";
+import { useEstilos } from "../../theme/useEstilos";
+import { useTema } from "../../theme/TemaContext";
 import CustomTextInput from "../../components/CustomTextInput/Index";
 import PacienteCard from "../../components/PacienteCard/Index";
 import TelaCarregando from "../../components/TelaCarregando/Index";
@@ -8,12 +11,13 @@ import { usePacientes } from "../../hooks/usePacientes";
 
 // tela de pacientes: busca e lista, no mesmo estilo da tela de consultas
 export default function Paciente() {
+    const styles = useEstilos(criarEstilos);
+    const { cores } = useTema();
     const { busca, setBusca, pacientes, carregando, erro, abrirDetalhePaciente } = usePacientes();
 
     return (
         <View style={styles.container}>
-
-            {/* barra de busca no topo */}
+            {/* busca */}
             <View style={styles.containerBusca}>
                 <CustomTextInput
                     placeholder="Buscar por animal ou responsável..."
@@ -24,14 +28,19 @@ export default function Paciente() {
                 />
             </View>
 
-            {/* lista de pacientes num painel branco tipo lista de contatos */}
+            {/* lista num painel tipo lista de contatos */}
             <View style={styles.containerLista}>
                 {carregando ? (
                     <TelaCarregando telaCheia />
                 ) : pacientes.length === 0 ? (
-                    <Text style={styles.textoVazio}>
-                        {erro ?? "Nenhum paciente encontrado.\nCrie uma consulta para cadastrar um paciente."}
-                    </Text>
+                    <View style={styles.containerVazio}>
+                        <View style={styles.circuloVazio}>
+                            <Ionicons name="paw-outline" size={34} color={cores.pacientes} />
+                        </View>
+                        <Text style={styles.textoVazio}>
+                            {erro ?? "Nenhum paciente encontrado.\nCrie uma consulta para cadastrar um paciente."}
+                        </Text>
+                    </View>
                 ) : (
                     <View style={styles.painelLista}>
                         <FlatList
@@ -46,7 +55,6 @@ export default function Paciente() {
                     </View>
                 )}
             </View>
-
         </View>
     );
 }

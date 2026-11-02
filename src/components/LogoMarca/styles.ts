@@ -1,60 +1,47 @@
 import { StyleSheet } from "react-native";
-import { colors } from "../../global/colors";
+import { Cores } from "../../theme/paletas";
 
-export const styles = StyleSheet.create({
-    // Agrupa ícone + nome + linha decorativa + subtítulo do logo
-    containerLogo: {
-        alignItems: "center",
-        marginBottom: 36,
-        gap: 8,
-    },
+export const criarEstilos = (c: Cores) =>
+    StyleSheet.create({
+        // agrupa ícone + nome + subtítulo
+        containerLogo: {
+            alignItems: "center",
+            marginBottom: 28,
+            gap: 6,
+        },
 
-    // Círculo azul atrás do ícone de pata — sombra colorida pra dar
-    // um leve efeito de destaque, sem exagerar
-    circuloLogo: {
-        width: 88,
-        height: 88,
-        borderRadius: 24,
-        backgroundColor: colors.bluePrimary,
-        alignItems: "center",
-        justifyContent: "center",
-        marginBottom: 4,
+        // quadrado arredondado com degradê e sombra colorida
+        circuloLogo: {
+            width: 92,
+            height: 92,
+            borderRadius: 28,
+            alignItems: "center",
+            justifyContent: "center",
+            marginBottom: 8,
+            elevation: 10,
+            shadowColor: c.primaria,
+            shadowOffset: { width: 0, height: 8 },
+            shadowOpacity: 0.4,
+            shadowRadius: 16,
+        },
 
-        elevation: 8,
-        shadowColor: colors.bluePrimary,
-        shadowOffset: { width: 0, height: 6 },
-        shadowOpacity: 0.35,
-        shadowRadius: 12,
-    },
+        textoMarca: {
+            fontSize: 32,
+            fontWeight: "800",
+            color: c.texto,
+            letterSpacing: 0.5,
+        },
 
-    // Nome da marca
-    textoMarca: {
-        fontSize: 30,
-        fontWeight: "800",
-        color: colors.blueDark,
-        letterSpacing: 1,
-    },
+        // "ELLV" na cor da marca
+        textoMarcaDestaque: {
+            fontWeight: "900",
+            color: c.primaria,
+        },
 
-    // Parte "ELLV" com peso ainda maior, pra ficar levemente destacada
-    textoMarcaDestaque: {
-        fontWeight: "900",
-        color: colors.bluePrimary,
-    },
-
-    // Linha decorativa curta, abaixo do nome
-    linhaDecorativa: {
-        width: 48,
-        height: 3,
-        backgroundColor: colors.bluePrimary,
-        borderRadius: 2,
-        marginTop: 4,
-    },
-
-    // Subtítulo pequeno, em caixa alta com espaçamento entre letras
-    textoMarcaSub: {
-        fontSize: 11,
-        color: colors.gray,
-        letterSpacing: 2,
-        textTransform: "uppercase",
-    },
-});
+        textoMarcaSub: {
+            fontSize: 11,
+            color: c.textoSecundario,
+            letterSpacing: 2.5,
+            textTransform: "uppercase",
+        },
+    });

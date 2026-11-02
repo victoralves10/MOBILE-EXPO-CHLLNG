@@ -3,9 +3,10 @@ import { View, Text, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Calendar, LocaleConfig } from "react-native-calendars";
 import CampoSelecao from "../CampoSelecao/Index";
-import { colors } from "../../global/colors";
+import { criarEstilos } from "./styles";
+import { useEstilos } from "../../theme/useEstilos";
+import { useTema } from "../../theme/TemaContext";
 import { dataParaTela } from "../../utils/mascaras";
-import { styles } from "./styles";
 
 // deixa o calendário em português
 LocaleConfig.locales["pt-br"] = {
@@ -23,8 +24,8 @@ interface Props {
     onChange: (valor: string) => void;
 }
 
-// hoje no formato AAAA-MM-DD, só pra saber em qual mês o calendário abre
-function hoje() {
+// mês atual no formato AAAA-MM-01, só pra saber em qual mês o calendário abre
+function mesAtual() {
     const d = new Date();
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-01`;
 }
@@ -32,8 +33,10 @@ function hoje() {
 // campo de data que abre um calendário em português embaixo dele
 // tem botões pra pular de ano em ano (ajuda muito na data de nascimento)
 export default function SeletorCalendario({ titulo, valor, onChange }: Props) {
+    const styles = useEstilos(criarEstilos);
+    const { cores, escuro } = useTema();
     const [aberto, setAberto] = useState(false);
-    const [mesVisivel, setMesVisivel] = useState(valor || hoje());
+    const [mesVisivel, setMesVisivel] = useState(valor || mesAtual());
 
     // pula um ano pra frente ou pra trás, mantendo o mês
     function mudarAno(quanto: number) {
@@ -48,6 +51,7 @@ export default function SeletorCalendario({ titulo, valor, onChange }: Props) {
                 texto={dataParaTela(valor)}
                 placeholder="Escolha a data"
                 icone="calendar-outline"
+                aberto={aberto}
                 onPress={() => setAberto(!aberto)}
             />
 
@@ -56,25 +60,35 @@ export default function SeletorCalendario({ titulo, valor, onChange }: Props) {
                     {/* troca de ano */}
                     <View style={styles.linhaAno}>
                         <TouchableOpacity onPress={() => mudarAno(-1)} style={styles.botaoAno}>
-                            <Ionicons name="play-back" size={16} color={colors.bluePrimary} />
+                            <Ionicons name="chevron-back" size={18} color={cores.primaria} />
                         </TouchableOpacity>
                         <Text style={styles.textoAno}>{mesVisivel.slice(0, 4)}</Text>
                         <TouchableOpacity onPress={() => mudarAno(1)} style={styles.botaoAno}>
-                            <Ionicons name="play-forward" size={16} color={colors.bluePrimary} />
+                            <Ionicons name="chevron-forward" size={18} color={cores.primaria} />
                         </TouchableOpacity>
                     </View>
 
-                    {/* key faz o calendário ir pro mês certo quando troca o ano */}
+                    {/* key faz o calendário ir pro mês certo e trocar de cor junto com o tema */}
                     <Calendar
-                        key={mesVisivel}
+                        key={`${mesVisivel}-${escuro}`}
                         current={mesVisivel}
                         onMonthChange={(mes) => setMesVisivel(`${mes.dateString.slice(0, 7)}-01`)}
-                        markedDates={valor ? { [valor]: { selected: true, selectedColor: colors.bluePrimary } } : {}}
+                        markedDates={valor ? { [valor]: { selected: true, selectedColor: cores.primaria } } : {}}
                         onDayPress={(dia) => {
                             onChange(dia.dateString);
                             setAberto(false);
                         }}
-                        theme={{ todayTextColor: colors.bluePrimary, arrowColor: colors.bluePrimary }}
+                        theme={{
+                            calendarBackground: cores.superficie,
+                            dayTextColor: cores.texto,
+                            monthTextColor: cores.texto,
+                            textSectionTitleColor: cores.textoSuave,
+                            textDisabledColor: cores.textoSuave,
+                            todayTextColor: cores.primaria,
+                            arrowColor: cores.primaria,
+                            selectedDayTextColor: cores.textoSobreCor,
+                            textMonthFontWeight: "800",
+                        }}
                     />
                 </View>
             )}

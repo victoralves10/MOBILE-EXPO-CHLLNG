@@ -2,8 +2,10 @@ import React from "react";
 import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
 import CustomTextInput from "../CustomTextInput/Index";
 import ItemLista from "../ItemLista/Index";
-import { colors } from "../../global/colors";
-import { styles } from "./styles";
+import { criarEstilos } from "./styles";
+import { useEstilos } from "../../theme/useEstilos";
+import { useTema } from "../../theme/TemaContext";
+import { Ionicons } from "@expo/vector-icons";
 
 // um resultado da busca, já do jeito que vai aparecer
 export interface ResultadoBusca {
@@ -37,12 +39,16 @@ export default function CampoBusca({
     onSelecionar,
     onTrocar,
 }: Props) {
+    const styles = useEstilos(criarEstilos);
+    const { cores } = useTema();
+
     // já escolheu: mostra o escolhido e a opção de trocar
     if (selecionado) {
         return (
             <View style={styles.container}>
                 <Text style={styles.titulo}>{titulo}</Text>
                 <View style={styles.escolhido}>
+                    <Ionicons name="checkmark-circle" size={24} color={cores.primaria} />
                     <View style={styles.escolhidoTextos}>
                         <Text style={styles.escolhidoTitulo}>{selecionado.titulo}</Text>
                         <Text style={styles.escolhidoSubtitulo}>{selecionado.subtitulo}</Text>
@@ -67,7 +73,7 @@ export default function CampoBusca({
                 containerStyle={{ marginBottom: 8 }}
             />
 
-            {carregando && <ActivityIndicator color={colors.bluePrimary} style={{ marginVertical: 8 }} />}
+            {carregando && <ActivityIndicator color={cores.primaria} style={{ marginVertical: 8 }} />}
 
             {!carregando && busca.trim() !== "" && resultados.length === 0 && (
                 <Text style={styles.vazio}>Nenhum resultado.</Text>
@@ -78,7 +84,7 @@ export default function CampoBusca({
                     <ItemLista
                         key={item.id}
                         inicial={item.inicial}
-                        cor={colors.bluePrimary}
+                        cor={cores.primaria}
                         titulo={item.titulo}
                         subtitulo={item.subtitulo}
                         onPress={() => onSelecionar(item.id)}

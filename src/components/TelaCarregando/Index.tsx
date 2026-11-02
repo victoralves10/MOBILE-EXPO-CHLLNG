@@ -1,13 +1,15 @@
 import React from "react";
 import { View, ActivityIndicator } from "react-native";
-import { colors } from "../../global/colors";
+import { useTema } from "../../theme/TemaContext";
 
 interface Props {
     telaCheia?: boolean; // ocupa a tela inteira se true; senão, só um espaço menor
 }
 
-// spinner de carregamento — usado sempre que uma tela/seção está buscando dados
+// spinner de carregamento, usado sempre que uma tela/seção está buscando dados
 export default function TelaCarregando({ telaCheia = false }: Props) {
+    const { cores } = useTema();
+
     return (
         <View
             style={{
@@ -15,10 +17,10 @@ export default function TelaCarregando({ telaCheia = false }: Props) {
                 justifyContent: "center",
                 alignItems: "center",
                 paddingVertical: telaCheia ? 0 : 24,
-                backgroundColor: telaCheia ? colors.white : "transparent",
+                backgroundColor: telaCheia ? cores.fundo : "transparent",
             }}
         >
-            <ActivityIndicator color={colors.bluePrimary} size="large" />
+            <ActivityIndicator color={cores.primaria} size="large" />
         </View>
     );
 }

@@ -1,61 +1,53 @@
-import { StyleSheet } from 'react-native';
-import { colors } from '../../global/colors';
+import { StyleSheet } from "react-native";
+import { Cores } from "../../theme/paletas";
 
-export default StyleSheet.create({
+export const criarEstilos = (c: Cores) =>
+    StyleSheet.create({
+        container: {
+            marginBottom: 16,
+            width: "100%",
+        },
 
-    // espaço externo do input com largura total
-    container: {
-        marginBottom: 16,
-        width: '100%',
-    },
+        title: {
+            fontSize: 13,
+            fontWeight: "700",
+            color: c.textoSecundario,
+            marginBottom: 8,
+            marginLeft: 2,
+        },
 
-    // título acima do campo
-    title: {
-        fontSize: 14,
-        fontWeight: '600',
-        color: colors.dark,
-        marginBottom: 8,
-    },
+        // caixa do campo
+        inputContainer: {
+            flexDirection: "row",
+            alignItems: "center",
+            backgroundColor: c.superficieAlt,
+            borderRadius: 16,
+            borderWidth: 1.5,
+            borderColor: "transparent",
+            paddingHorizontal: 16,
+            height: 54,
+        },
 
-    // linha branca com borda que envolve ícone + input + ícone.
-    // Fundo levemente acinzentado em vez de branco puro — separa visualmente
-    // o campo do resto da tela sem precisar de uma borda mais escura.
-    inputContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: colors.grayLight,
-        borderRadius: 14,
-        borderWidth: 1.5,
-        borderColor: 'transparent',
-        paddingHorizontal: 16,
-        height: 54,
-    },
+        // borda colorida quando o campo está selecionado
+        inputFocado: {
+            borderColor: c.primaria,
+            backgroundColor: c.superficie,
+        },
 
-    // campo de texto ocupa todo o espaço disponível
-    input: {
-        flex: 1,
-        fontSize: 16,
-        color: colors.dark,
-        paddingVertical: 0,
-    },
+        input: {
+            flex: 1,
+            minWidth: 0,
+            fontSize: 16,
+            color: c.texto,
+            paddingVertical: 0,
+        },
 
-    // margem extra quando tem ícone à esquerda
-    inputWithLeftIcon: {
-        marginLeft: 8,
-    },
+        leftIcon: {
+            marginRight: 10,
+        },
 
-    // ícone da esquerda com espaço à direita
-    leftIcon: {
-        marginRight: 8,
-    },
-
-    // container do ícone direito
-    rightIconContainer: {
-        marginLeft: 8,
-    },
-
-    // padding extra quando o ícone direito é um botão clicável
-    rightIconButton: {
-        padding: 4,
-    },
-});
+        rightIconContainer: {
+            marginLeft: 8,
+            padding: 4,
+        },
+    });

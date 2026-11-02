@@ -1,43 +1,49 @@
 import { StyleSheet } from "react-native";
-import { colors } from "../../global/colors";
+import { Cores } from "../../theme/paletas";
 
-export const styles = StyleSheet.create({
-    container: {
-        marginBottom: 16,
-    },
+export const criarEstilos = (c: Cores) =>
+    StyleSheet.create({
+        container: {
+            marginBottom: 16,
+        },
 
-    titulo: {
-        fontSize: 14,
-        fontWeight: "600",
-        color: colors.dark,
-        marginBottom: 8,
-    },
+        titulo: {
+            fontSize: 13,
+            fontWeight: "700",
+            color: c.textoSecundario,
+            marginBottom: 8,
+            marginLeft: 2,
+        },
 
-    // etiquetas quebram linha sozinhas
-    linha: {
-        flexDirection: "row",
-        flexWrap: "wrap",
-        gap: 8,
-    },
+        // etiquetas quebram linha sozinhas
+        linha: {
+            flexDirection: "row",
+            flexWrap: "wrap",
+            gap: 8,
+        },
 
-    etiqueta: {
-        paddingHorizontal: 14,
-        paddingVertical: 8,
-        borderRadius: 20,
-        backgroundColor: colors.grayLight,
-    },
+        etiqueta: {
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 4,
+            paddingHorizontal: 14,
+            paddingVertical: 9,
+            borderRadius: 20,
+            backgroundColor: c.superficieAlt,
+        },
 
-    etiquetaAtiva: {
-        backgroundColor: colors.bluePrimary,
-    },
+        etiquetaAtiva: {
+            backgroundColor: c.secundaria,
+        },
 
-    texto: {
-        fontSize: 13,
-        color: colors.dark,
-        fontWeight: "600",
-    },
+        texto: {
+            fontSize: 13,
+            color: c.texto,
+            fontWeight: "600",
+        },
 
-    textoAtivo: {
-        color: colors.white,
-    },
-});
+        textoAtivo: {
+            color: c.textoSobreCor,
+            fontWeight: "800",
+        },
+    });
