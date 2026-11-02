@@ -1,5 +1,5 @@
 import React, { useLayoutEffect, useState } from "react";
-import { View, Text, ScrollView, TouchableOpacity, Pressable, Modal } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity, Pressable, Modal, Switch } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
@@ -11,6 +11,7 @@ import CustomTextInput from "../../components/CustomTextInput/Index";
 import ModalFormulario from "../../components/ModalFormulario/Index";
 import TelaCarregando from "../../components/TelaCarregando/Index";
 import { usePerfil } from "../../hooks/usePerfil";
+import { useConfigNotificacoes } from "../../hooks/useConfigNotificacoes";
 
 type NomeIcone = keyof typeof Ionicons.glyphMap;
 
@@ -26,6 +27,8 @@ export default function Perfil() {
     // menuzinho do canto e modal de aparência
     const [menuAberto, setMenuAberto] = useState(false);
     const [aparenciaAberta, setAparenciaAberta] = useState(false);
+    const [notificacoesAberta, setNotificacoesAberta] = useState(false);
+    const notif = useConfigNotificacoes(notificacoesAberta);
 
     // coloca o botão ☰ no cabeçalho da tela
     useLayoutEffect(() => {
@@ -42,6 +45,7 @@ export default function Perfil() {
     const opcoesMenu: { icone: NomeIcone; texto: string; cor: string; acao: () => void }[] = [
         { icone: "person", texto: "Dados pessoais", cor: cores.primaria, acao: () => p.abrirModal("dados") },
         { icone: "lock-closed", texto: "Alterar senha", cor: cores.ceu, acao: () => p.abrirModal("senha") },
+        { icone: "notifications", texto: "Notificações", cor: cores.aviso, acao: () => setNotificacoesAberta(true) },
         { icone: "color-palette", texto: "Aparência", cor: cores.rosa, acao: () => setAparenciaAberta(true) },
         { icone: "log-out", texto: "Sair da conta", cor: cores.laranja, acao: p.sair },
         { icone: "trash", texto: "Apagar conta", cor: cores.atrasado, acao: () => p.abrirModal("apagar") },
@@ -205,6 +209,56 @@ export default function Perfil() {
                                 </TouchableOpacity>
                             );
                         })}
+                    </View>
+                </View>
+            </Modal>
+
+            {/* ---------- modal: notificações ---------- */}
+            <Modal visible={notificacoesAberta} transparent animationType="fade" onRequestClose={() => setNotificacoesAberta(false)}>
+                <View style={styles.fundoAparencia}>
+                    <Pressable style={styles.fundoMenu} onPress={() => setNotificacoesAberta(false)} />
+
+                    <View style={styles.cardAparencia}>
+                        <View style={styles.cabecalhoAparencia}>
+                            <Text style={styles.tituloAparencia}>Notificações</Text>
+                            <TouchableOpacity style={styles.botaoFechar} onPress={() => setNotificacoesAberta(false)}>
+                                <Ionicons name="close" size={20} color={cores.textoSecundario} />
+                            </TouchableOpacity>
+                        </View>
+
+                        {/* liga e desliga os lembretes */}
+                        <View style={styles.opcaoTema}>
+                            <View style={[styles.iconeTema, { backgroundColor: transparente(cores.aviso, 0.16) }]}>
+                                <Ionicons name="alarm" size={22} color={cores.aviso} />
+                            </View>
+                            <View style={{ flex: 1 }}>
+                                <Text style={styles.tituloTema}>Lembretes de consulta</Text>
+                                <Text style={styles.descricaoTema}>Aviso no celular antes de cada consulta agendada</Text>
+                            </View>
+                            <Switch
+                                value={notif.ativos}
+                                onValueChange={notif.alternar}
+                                trackColor={{ false: cores.borda, true: cores.primaria }}
+                                thumbColor={cores.superficie}
+                            />
+                        </View>
+
+                        {/* quantos avisos estão agendados neste celular */}
+                        <View style={styles.opcaoTema}>
+                            <View style={[styles.iconeTema, { backgroundColor: transparente(cores.primaria, 0.16) }]}>
+                                <Ionicons name="calendar" size={22} color={cores.primaria} />
+                            </View>
+                            <View style={{ flex: 1 }}>
+                                <Text style={styles.tituloTema}>{notif.agendados} agendado(s)</Text>
+                                <Text style={styles.descricaoTema}>Avisos já programados neste celular</Text>
+                            </View>
+                        </View>
+
+                        {/* notificação de exemplo */}
+                        <TouchableOpacity style={styles.botaoTeste} onPress={notif.testar}>
+                            <Ionicons name="paper-plane" size={18} color={cores.textoSobreCor} />
+                            <Text style={styles.textoBotaoTeste}>Enviar notificação de teste</Text>
+                        </TouchableOpacity>
                     </View>
                 </View>
             </Modal>

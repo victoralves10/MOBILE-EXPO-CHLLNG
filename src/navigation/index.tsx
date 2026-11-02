@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { ActivityIndicator, View } from "react-native";
-import { NavigationContainer, DefaultTheme, DarkTheme, Theme } from "@react-navigation/native";
+import { NavigationContainer, DefaultTheme, DarkTheme, Theme, createNavigationContainerRef } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
@@ -8,6 +8,8 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAuth } from "../context/AuthContext";
 import { useTema } from "../theme/TemaContext";
 import { transparente } from "../theme/paletas";
+import { aoTocarNotificacao } from "../services/notificacoes";
+import { useSincronizarLembretes } from "../hooks/useSincronizarLembretes";
 
 import Login from "../screens/Login/Index";
 import Cadastro from "../screens/Cadastro/Index";
@@ -19,6 +21,9 @@ import DetalhePaciente from "../screens/Paciente/DetalhesPaciente";
 import Perfil from "../screens/Perfil/Index";
 
 const Stack = createNativeStackNavigator();
+
+// referência da navegação, pra conseguir abrir uma tela de fora dela (ex: ao tocar na notificação)
+const navegacao = createNavigationContainerRef<any>();
 const Tab = createBottomTabNavigator();
 
 type NomeIcone = keyof typeof Ionicons.glyphMap;
@@ -101,6 +106,20 @@ export default function Routes() {
     const { logado, carregando } = useAuth();
     const { cores, escuro } = useTema();
 
+    // logado: mantém os lembretes do celular em dia com o backend
+    useSincronizarLembretes(logado);
+
+    // tocou na notificação: abre o detalhe daquela consulta
+    useEffect(() => {
+        if (!logado) return;
+        return aoTocarNotificacao((idConsulta) => {
+            const abrir = () => navegacao.navigate("DetalheConsulta", { id_consulta: idConsulta });
+            // se o app acabou de abrir, espera a navegação ficar pronta
+            if (navegacao.isReady()) abrir();
+            else setTimeout(abrir, 600);
+        });
+    }, [logado]);
+
     // tema da navegação acompanhando o nosso (fundo das telas, cabeçalhos, animações)
     const base = escuro ? DarkTheme : DefaultTheme;
     const temaNavegacao: Theme = {
@@ -134,7 +153,7 @@ export default function Routes() {
     }
 
     return (
-        <NavigationContainer theme={temaNavegacao}>
+        <NavigationContainer ref={navegacao} theme={temaNavegacao}>
             <Stack.Navigator screenOptions={{ headerShown: false, contentStyle: { backgroundColor: cores.fundo } }}>
                 {logado ? (
                     <Stack.Group>

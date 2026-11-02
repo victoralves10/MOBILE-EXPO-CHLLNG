@@ -7,6 +7,7 @@ import * as tokenStorage from "../storage/tokenStorage";
 import { RespostaSessao } from "../models/User";
 import { toastAviso } from "../utils/toast";
 import { log } from "../utils/log";
+import { cancelarTodos } from "../services/notificacoes";
 
 // o que o contexto entrega pras telas: se tá logado e as duas funções de sessão
 interface AuthContextData {
@@ -18,10 +19,11 @@ interface AuthContextData {
 
 const AuthContext = createContext<AuthContextData | undefined>(undefined);
 
-// apaga o token e limpa o cache, pra não sobrar dado do usuário anterior
+// apaga o token, limpa o cache e os lembretes, pra não sobrar nada do usuário anterior
 async function limparSessaoLocal() {
     await tokenStorage.removerToken();
     queryClient.clear();
+    await cancelarTodos(); // os lembretes eram desse usuário
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {

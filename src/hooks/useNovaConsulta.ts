@@ -6,6 +6,7 @@ import { pacienteService } from "../services/pacienteService";
 import { responsavelService } from "../services/responsavelService";
 import { catalogoService } from "../services/catalogoService";
 import { mensagemDeErro } from "../services/api";
+import { reagendarConsulta } from "../services/notificacoes";
 import { useDebounce } from "./useDebounce";
 import { NovaConsulta, StatusConsulta } from "../models/Consulta";
 import { PacienteItem, ResponsavelItem } from "../models/Paciente";
@@ -151,6 +152,8 @@ export function useNovaConsulta(aoSalvar: () => void) {
         mutationFn: () => consultaService.criar(montarCorpo()),
         onSuccess: (resposta) => {
             toastSucesso(resposta.mensagem);
+            // o backend já manda os lembretes prontos (antes e na hora)
+            reagendarConsulta(resposta.consulta.id_consulta, resposta.lembretes);
             queryClient.invalidateQueries({ queryKey: ["consultas"] });
             queryClient.invalidateQueries({ queryKey: ["pacientes"] });
             limpar();

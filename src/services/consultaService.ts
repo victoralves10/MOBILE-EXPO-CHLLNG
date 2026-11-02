@@ -4,6 +4,7 @@ import {
     ConsultaDetalhe,
     ConsultaResumo,
     DadosConsulta,
+    Lembrete,
     NovaConsulta,
     RespostaConsultaSalva,
 } from "../models/Consulta";
@@ -19,6 +20,12 @@ export const consultaService = {
     // próximas consultas pro carrossel da Home
     async listarProximas(): Promise<ConsultaResumo[]> {
         const resposta = await api.get("/consultas/proximas");
+        return resposta.data;
+    },
+
+    // lembretes de todas as consultas agendadas que ainda vão acontecer
+    async listarLembretes(): Promise<Lembrete[]> {
+        const resposta = await api.get("/consultas/lembretes");
         return resposta.data;
     },
 

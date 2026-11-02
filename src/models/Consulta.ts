@@ -80,9 +80,21 @@ export interface DadosConsulta {
     st_consulta: StatusConsulta;
 }
 
-// o que volta depois de criar ou editar (o lembrete é usado na feature de notificações)
+// lembrete de uma consulta: o backend já diz quando avisar e o texto da notificação
+// cada consulta tem até 2: "antes" (com antecedência) e "inicio" (na hora exata)
+export interface Lembrete {
+    id_lembrete: string; // ex: "consulta-12-antes", vira o id da notificação no celular
+    id_consulta: number;
+    tipo: "antes" | "inicio";
+    disparar_em: string; // ex: "2026-11-25T08:15:00-03:00"
+    titulo: string;
+    mensagem: string;
+}
+
+// o que volta depois de criar ou editar
+// lembretes vazio = não precisa avisar (concluída, atrasada...), então o app cancela os avisos
 export interface RespostaConsultaSalva {
     mensagem: string;
     consulta: ConsultaDetalhe;
-    lembrete: unknown;
+    lembretes: Lembrete[];
 }

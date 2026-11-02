@@ -3,6 +3,7 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { consultaService } from "../services/consultaService";
 import { mensagemDeErro } from "../services/api";
+import { reagendarConsulta, cancelarLembrete } from "../services/notificacoes";
 import { DadosConsulta } from "../models/Consulta";
 import { toastErro, toastSucesso } from "../utils/toast";
 
@@ -61,6 +62,8 @@ export function useDetalheConsulta() {
         onSuccess: (resposta) => {
             toastSucesso(resposta.mensagem);
             queryClient.setQueryData(["consultas", "detalhe", id_consulta], resposta.consulta);
+            // troca os avisos pelos do horário novo (lista vazia = cancela, ex: virou concluída)
+            reagendarConsulta(id_consulta, resposta.lembretes);
             recarregarListas();
             setModalEditarAberto(false);
         },
@@ -77,6 +80,7 @@ export function useDetalheConsulta() {
         mutationFn: () => consultaService.remover(id_consulta),
         onSuccess: (resposta) => {
             toastSucesso(resposta.mensagem);
+            cancelarLembrete(id_consulta);
             recarregarListas();
             navigation.goBack();
         },

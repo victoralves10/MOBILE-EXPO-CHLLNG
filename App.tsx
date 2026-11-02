@@ -6,6 +6,10 @@ import { AuthProvider } from "./src/context/AuthContext";
 import { queryClient } from "./src/services/queryClient";
 import { TemaProvider, useTema } from "./src/theme/TemaContext";
 import ToastTema from "./src/theme/ToastTema";
+import { configurarNotificacoes } from "./src/services/notificacoes";
+
+// deixa as notificações prontas assim que o app abre
+configurarNotificacoes();
 
 // barra de status do celular (hora, bateria) clara ou escura conforme o tema
 function BarraDeStatus() {

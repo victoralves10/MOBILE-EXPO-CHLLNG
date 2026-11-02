@@ -10,4 +10,5 @@ function escrever(origem: string, mensagem: string) {
 export const log = {
     api: (mensagem: string) => escrever("API", mensagem),
     sessao: (mensagem: string) => escrever("Sessão", mensagem),
+    notificacao: (mensagem: string) => escrever("Notificação", mensagem),
 };

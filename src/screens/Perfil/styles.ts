@@ -336,6 +336,24 @@ export const criarEstilos = (c: Cores) =>
             marginTop: 1,
         },
 
+        // botão de notificação de teste
+        botaoTeste: {
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 8,
+            backgroundColor: c.primaria,
+            paddingVertical: 14,
+            borderRadius: 16,
+            marginTop: 4,
+        },
+
+        textoBotaoTeste: {
+            fontSize: 15,
+            fontWeight: "800",
+            color: c.textoSobreCor,
+        },
+
         // ---------- caixinhas dos modais ----------
 
         caixaDica: {

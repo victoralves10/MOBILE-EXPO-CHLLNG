@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { pacienteService } from "../services/pacienteService";
 import { catalogoService } from "../services/catalogoService";
 import { mensagemDeErro } from "../services/api";
+import { cancelarLembrete } from "../services/notificacoes";
 import { toastErro, toastSucesso } from "../utils/toast";
 
 // todos os campos do modal de edição num objeto só
@@ -116,6 +117,8 @@ export function useDetalhePaciente() {
         mutationFn: () => pacienteService.remover(id_animal),
         onSuccess: (resposta) => {
             toastSucesso(resposta.mensagem);
+            // as consultas dele foram apagadas: cancela os avisos delas
+            resposta.consultas_removidas.forEach(cancelarLembrete);
             recarregarListas();
             navigation.goBack();
         },
