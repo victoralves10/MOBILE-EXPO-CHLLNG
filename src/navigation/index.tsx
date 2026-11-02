@@ -26,6 +26,14 @@ const Stack = createNativeStackNavigator();
 const navegacao = createNavigationContainerRef<any>();
 const Tab = createBottomTabNavigator();
 
+function abrirConsulta(idConsulta: number, tentativas = 20) {
+    if (navegacao.isReady()) {
+        navegacao.navigate("DetalheConsulta", { id_consulta: idConsulta });
+        return;
+    }
+    if (tentativas > 0) setTimeout(() => abrirConsulta(idConsulta, tentativas - 1), 300);
+}
+
 type NomeIcone = keyof typeof Ionicons.glyphMap;
 
 // ícone de cada aba: cheio quando está ativa, contorno quando não está
@@ -112,12 +120,7 @@ export default function Routes() {
     // tocou na notificação: abre o detalhe daquela consulta
     useEffect(() => {
         if (!logado) return;
-        return aoTocarNotificacao((idConsulta) => {
-            const abrir = () => navegacao.navigate("DetalheConsulta", { id_consulta: idConsulta });
-            // se o app acabou de abrir, espera a navegação ficar pronta
-            if (navegacao.isReady()) abrir();
-            else setTimeout(abrir, 600);
-        });
+        return aoTocarNotificacao((idConsulta) => abrirConsulta(idConsulta));
     }, [logado]);
 
     // tema da navegação acompanhando o nosso (fundo das telas, cabeçalhos, animações)

@@ -1,6 +1,7 @@
 import * as Notifications from "expo-notifications";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Lembrete } from "../models/Consulta";
+import { Aviso } from "../models/Painel";
 import { log } from "../utils/log";
 
 // tudo que mexe com as notificações do celular fica aqui
@@ -94,6 +95,22 @@ export async function sincronizarLembretes(lembretes: Lembrete[]) {
     log.notificacao(`${lembretes.length} lembrete(s) sincronizado(s) com o backend`);
 }
 
+// mostra um aviso do backend na hora (sem agendar pra depois)
+export async function mostrarAgora(aviso: Aviso) {
+    if (!(await pedirPermissao())) return;
+    await Notifications.scheduleNotificationAsync({
+        identifier: aviso.id_aviso,
+        content: {
+            title: aviso.titulo,
+            body: aviso.mensagem,
+            data: aviso.id_consulta ? { id_consulta: aviso.id_consulta } : {},
+            sound: true,
+        },
+        trigger: null, // null = aparece agora
+    });
+    log.notificacao(`aviso mostrado: ${aviso.titulo}`);
+}
+
 // quantos avisos estão agendados neste celular (aparece no Perfil)
 export async function contarAgendados(): Promise<number> {
     const agendados = await Notifications.getAllScheduledNotificationsAsync();
@@ -117,12 +134,20 @@ export async function enviarTeste(): Promise<boolean> {
 // quando o usuário toca numa notificação, devolve o id da consulta (se tiver)
 export function aoTocarNotificacao(callback: (idConsulta: number) => void) {
     const tratar = (resposta: Notifications.NotificationResponse | null) => {
-        const id = resposta?.notification.request.content.data?.id_consulta;
-        if (typeof id === "number") callback(id);
+        if (!resposta) return;
+        const dados = resposta.notification.request.content.data;
+        log.notificacao(`tocou: ${resposta.notification.request.content.title} | dados: ${JSON.stringify(dados)}`);
+
+        // limpa pra essa mesma notificação não abrir de novo quando o app voltar
+        Notifications.clearLastNotificationResponse();
+
+        // às vezes o id volta como texto, então converte pra número
+        const id = Number(dados?.id_consulta);
+        if (Number.isFinite(id) && id > 0) callback(id);
     };
 
-    // app fechado: abriu pela notificação
-    Notifications.getLastNotificationResponseAsync().then(tratar).catch(() => {});
+    // app estava fechado e foi aberto pela notificação
+    tratar(Notifications.getLastNotificationResponse());
 
     // app aberto ou em segundo plano
     const inscricao = Notifications.addNotificationResponseReceivedListener(tratar);
