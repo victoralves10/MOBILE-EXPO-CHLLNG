@@ -166,22 +166,12 @@ export const criarEstilos = (c: Cores) =>
             color: c.textoSecundario,
         },
 
-        // ---------- destaque ----------
-
-        cartaoDestaque: {
-            marginHorizontal: 16,
-            borderRadius: 24,
-            overflow: "hidden",
-            backgroundColor: c.superficie,
-            elevation: 3,
-            shadowColor: c.sombra,
-            shadowOffset: { width: 0, height: 4 },
-            shadowOpacity: 0.1,
-            shadowRadius: 12,
-        },
-
-        imagemDestaque: {
-            width: "100%",
-            height: 200,
+        // linha cinza embaixo do título do mapa
+        subtituloSecao: {
+            fontSize: 13,
+            color: c.textoSecundario,
+            paddingHorizontal: 20,
+            marginTop: -6,
+            marginBottom: 12,
         },
     });

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { consultaService } from "../services/consultaService";
+import { catalogoService } from "../services/catalogoService";
 import { mensagemDeErro } from "../services/api";
 import { reagendarConsulta, cancelarLembrete } from "../services/notificacoes";
 import { DadosConsulta } from "../models/Consulta";
@@ -22,6 +23,9 @@ export function useDetalheConsulta() {
     });
     const consulta = consultaQuery.data ?? null;
 
+    // lista de doenças do backend pro campo de diagnóstico (carrega uma vez só)
+    const doencasQuery = useQuery({ queryKey: ["catalogo", "doencas"], queryFn: catalogoService.doencas, staleTime: Infinity });
+
     // depois de editar ou remover, recarrega as listas que mostram essa consulta
     function recarregarListas() {
         queryClient.invalidateQueries({ queryKey: ["consultas"] });
@@ -36,6 +40,7 @@ export function useDetalheConsulta() {
         dt_consulta: "",
         hr_consulta: "",
         st_consulta: "Agendado",
+        ds_doenca: null,
     });
 
     // atalho pra atualizar um campo: mudar("hr_consulta")("09:30")
@@ -52,6 +57,7 @@ export function useDetalheConsulta() {
             dt_consulta: consulta.dt_consulta,
             hr_consulta: consulta.hr_consulta,
             st_consulta: consulta.st_consulta === "Concluido" ? "Concluido" : "Agendado",
+            ds_doenca: consulta.ds_doenca,
         });
         setModalEditarAberto(true);
     }
@@ -108,6 +114,7 @@ export function useDetalheConsulta() {
         fecharModalEditar: () => setModalEditarAberto(false),
         form,
         mudar,
+        doencas: doencasQuery.data ?? [],
         salvar: () => mutationAtualizar.mutate(),
         salvando: mutationAtualizar.isPending,
 

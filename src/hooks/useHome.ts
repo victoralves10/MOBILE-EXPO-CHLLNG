@@ -3,6 +3,7 @@ import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { useQuery } from "@tanstack/react-query";
 import { consultaService } from "../services/consultaService";
 import { authService } from "../services/authService";
+import { painelService } from "../services/painelService";
 
 // lógica da Home: as próximas consultas já vêm prontas e ordenadas do backend
 export function useHome() {
@@ -19,10 +20,17 @@ export function useHome() {
         queryFn: () => consultaService.listarProximas(),
     });
 
+    // mapa das regiões; a chave começa com "consultas" pra recarregar sozinho quando uma consulta muda
+    const mapaQuery = useQuery({
+        queryKey: ["consultas", "mapa"],
+        queryFn: () => painelService.mapa(),
+    });
+
     // recarrega sempre que volta pra Home
     useFocusEffect(
         useCallback(() => {
             proximasQuery.refetch();
+            mapaQuery.refetch();
             // eslint-disable-next-line react-hooks/exhaustive-deps
         }, [])
     );
@@ -42,6 +50,8 @@ export function useHome() {
         usuario: usuarioQuery.data ?? null,
         proximas: proximasQuery.data ?? [],
         carregando: proximasQuery.isLoading,
+        mapa: mapaQuery.data ?? null,
+        carregandoMapa: mapaQuery.isLoading,
         abrirDetalheConsulta,
         atalhos,
     };

@@ -78,6 +78,7 @@ export interface DadosConsulta {
     dt_consulta: string;
     hr_consulta: string;
     st_consulta: StatusConsulta;
+    ds_doenca: string | null; // diagnóstico/suspeita (opcional), alimenta o mapa
 }
 
 // lembrete de uma consulta: o backend já diz quando avisar e o texto da notificação

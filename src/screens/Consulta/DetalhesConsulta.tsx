@@ -13,6 +13,7 @@ import ModalFormulario from "../../components/ModalFormulario/Index";
 import ModalConfirmacao from "../../components/ModalConfirmacao/Index";
 import SeletorCalendario from "../../components/SeletorCalendario/Index";
 import SeletorNativo from "../../components/SeletorNativo/Index";
+import SeletorOpcoes from "../../components/SeletorOpcoes/Index";
 import TelaCarregando from "../../components/TelaCarregando/Index";
 import { useDetalheConsulta } from "../../hooks/useDetalheConsulta";
 import { StatusConsulta } from "../../models/Consulta";
@@ -79,6 +80,10 @@ export default function DetalheConsulta() {
                     <Text style={styles.tituloSecao}>Consulta</Text>
                     <LinhaInfo icone="document-text" cor={cores.primaria} rotulo="Motivo" valor={consulta.historico_consulta} />
                     <LinhaInfo icone="calendar" cor={cores.ceu} rotulo="Data e horário" valor={consulta.data_hora_exibicao} />
+                    {/* só aparece quando tem diagnóstico registrado */}
+                    {consulta.ds_doenca && (
+                        <LinhaInfo icone="medkit" cor={cores.atrasado} rotulo="Diagnóstico / suspeita" valor={consulta.ds_doenca_exibicao} />
+                    )}
                 </View>
 
                 {/* animal */}
@@ -144,6 +149,14 @@ export default function DetalheConsulta() {
                 <View style={styles.containerAbasModal}>
                     <FiltroTabs opcoes={opcoesStatus} valorSelecionado={d.form.st_consulta} onSelecionar={d.mudar("st_consulta")} />
                 </View>
+
+                {/* opcional: o que o animal tem; entra no mapa de ocorrências da Home */}
+                <SeletorOpcoes
+                    titulo="Diagnóstico / suspeita (opcional)"
+                    opcoes={d.doencas.map((doenca) => ({ valor: doenca, rotulo: doenca }))}
+                    selecionado={d.form.ds_doenca}
+                    onSelecionar={d.mudar("ds_doenca")}
+                />
             </ModalFormulario>
 
             {/* confirmação antes de remover */}

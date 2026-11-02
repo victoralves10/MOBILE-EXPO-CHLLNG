@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, FlatList, Image, ScrollView, TouchableOpacity } from "react-native";
+import { View, Text, FlatList, ScrollView, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
@@ -9,13 +9,14 @@ import { useTema } from "../../theme/TemaContext";
 import { transparente } from "../../theme/paletas";
 import ConsultaCard from "../../components/ConsultaCard/Index";
 import TelaCarregando from "../../components/TelaCarregando/Index";
+import MapaRegioes from "../../components/MapaRegioes/Index";
 import { useHome } from "../../hooks/useHome";
 
-// tela inicial: saudação, atalhos, próximas consultas e o destaque
+// tela inicial: saudação, atalhos, próximas consultas e o mapa das regiões
 export default function Home() {
     const styles = useEstilos(criarEstilos);
     const { cores } = useTema();
-    const { usuario, proximas, carregando, abrirDetalheConsulta, atalhos } = useHome();
+    const { usuario, proximas, carregando, abrirDetalheConsulta, atalhos, mapa, carregandoMapa } = useHome();
 
     // os 3 atalhos coloridos
     const botoesAtalho: { icone: keyof typeof Ionicons.glyphMap; texto: string; cor: string; acao: () => void }[] = [
@@ -100,17 +101,18 @@ export default function Home() {
                     />
                 )}
 
-                {/* destaque: controle sanitário */}
+                {/* mapa: onde estão os pacientes, consultas atrasadas e possíveis surtos */}
                 <View style={styles.containerTitulo}>
-                    <Text style={styles.tituloSecao}>Destaque</Text>
+                    <Text style={styles.tituloSecao}>{mapa?.titulo ?? "Mapa"}</Text>
+                    {mapa?.possui_surto && (
+                        <View style={[styles.badgeContador, { backgroundColor: cores.atrasado }]}>
+                            <Ionicons name="warning" size={13} color={cores.textoSobreCor} />
+                        </View>
+                    )}
                 </View>
-                <View style={styles.cartaoDestaque}>
-                    <Image
-                        source={require("../../../assets/controle-sanitario.png")}
-                        style={styles.imagemDestaque}
-                        resizeMode="cover"
-                    />
-                </View>
+                {mapa?.resumo_geral && <Text style={styles.subtituloSecao}>{mapa.resumo_geral}</Text>}
+
+                {carregandoMapa ? <TelaCarregando /> : mapa && <MapaRegioes mapa={mapa} />}
             </ScrollView>
         </SafeAreaView>
     );
