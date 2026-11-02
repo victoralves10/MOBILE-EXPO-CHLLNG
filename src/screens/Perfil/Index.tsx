@@ -22,7 +22,7 @@ export default function Perfil() {
     const { cores, preferencia, mudarPreferencia } = useTema();
     const p = usePerfil();
     const { usuario, dashboard } = p;
-    const navigation = useNavigation();
+    const navigation = useNavigation<any>();
 
     // menuzinho do canto e modal de aparência
     const [menuAberto, setMenuAberto] = useState(false);
@@ -47,6 +47,7 @@ export default function Perfil() {
         { icone: "lock-closed", texto: "Alterar senha", cor: cores.ceu, acao: () => p.abrirModal("senha") },
         { icone: "notifications", texto: "Notificações", cor: cores.aviso, acao: () => setNotificacoesAberta(true) },
         { icone: "color-palette", texto: "Aparência", cor: cores.rosa, acao: () => setAparenciaAberta(true) },
+        { icone: "information-circle", texto: "Sobre o app", cor: cores.concluido, acao: () => navigation.navigate("SobreApp") },
         { icone: "log-out", texto: "Sair da conta", cor: cores.laranja, acao: p.sair },
         { icone: "trash", texto: "Apagar conta", cor: cores.atrasado, acao: () => p.abrirModal("apagar") },
     ];

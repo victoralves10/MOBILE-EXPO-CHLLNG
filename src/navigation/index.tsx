@@ -19,6 +19,7 @@ import DetalheConsulta from "../screens/Consulta/DetalhesConsulta";
 import Paciente from "../screens/Paciente/Index";
 import DetalhePaciente from "../screens/Paciente/DetalhesPaciente";
 import Perfil from "../screens/Perfil/Index";
+import SobreApp from "../screens/SobreApp/Index";
 
 const Stack = createNativeStackNavigator();
 
@@ -26,6 +27,7 @@ const Stack = createNativeStackNavigator();
 const navegacao = createNavigationContainerRef<any>();
 const Tab = createBottomTabNavigator();
 
+// abre o detalhe da consulta; se a navegação ainda não montou (app acabou de abrir), tenta de novo
 function abrirConsulta(idConsulta: number, tentativas = 20) {
     if (navegacao.isReady()) {
         navegacao.navigate("DetalheConsulta", { id_consulta: idConsulta });
@@ -170,6 +172,11 @@ export default function Routes() {
                             name="DetalhePaciente"
                             component={DetalhePaciente}
                             options={{ ...cabecalhoDetalhe, headerTitle: "Ficha do paciente" }}
+                        />
+                        <Stack.Screen
+                            name="SobreApp"
+                            component={SobreApp}
+                            options={{ ...cabecalhoDetalhe, headerTitle: "Sobre o app" }}
                         />
                     </Stack.Group>
                 ) : (
