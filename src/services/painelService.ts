@@ -1,15 +1,15 @@
 import api from "./api";
-import { Aviso, Dashboard, Mapa } from "../models/Painel";
+import { Aviso, Dashboard, ResumoRegioes } from "../models/Painel";
 
-// números do consultório, mapa e avisos
+// números do consultório, regiões e avisos
 export const painelService = {
     async dashboard(): Promise<Dashboard> {
         const resposta = await api.get("/dashboard");
         return resposta.data;
     },
 
-    async mapa(): Promise<Mapa> {
-        const resposta = await api.get("/mapa/ocorrencias");
+    async regioes(): Promise<ResumoRegioes> {
+        const resposta = await api.get("/regioes/resumo");
         return resposta.data;
     },
 

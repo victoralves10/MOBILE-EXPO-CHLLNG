@@ -21,7 +21,7 @@ export interface Aviso {
     id_consulta: number | null;
 }
 
-// ---------- mapa da Home ----------
+// ---------- regiões da Home ----------
 
 export type NivelRegiao = "normal" | "atencao" | "surto";
 
@@ -32,12 +32,10 @@ export interface DoencaRegiao {
     descricao: string;
 }
 
-// região no mapa
-export interface RegiaoMapa {
+// resumo de uma região
+export interface RegiaoResumo {
     id_regiao: number;
     nm_regiao: string;
-    latitude: number;
-    longitude: number;
     total_consultas: number;
     total_pacientes: number;
     consultas_agendadas: number;
@@ -46,16 +44,15 @@ export interface RegiaoMapa {
     possivel_surto: boolean;
     nivel: NivelRegiao;
     rotulo_nivel: string;
-    raio_metros: number;
+    percentual_barra: number;
     resumo: string;
     aviso_atrasadas: string | null;
     resumo_doencas: string | null;
     doencas: DoencaRegiao[];
 }
 
-// mapa
-export interface Mapa {
-    centro: { latitude: number; longitude: number; latitude_delta: number; longitude_delta: number };
+// GET /regioes/resumo
+export interface ResumoRegioes {
     titulo: string;
     resumo_geral: string | null;
     periodo_exibicao: string;
@@ -64,5 +61,5 @@ export interface Mapa {
     total_regioes: number;
     possui_surto: boolean;
     mensagem_vazio: string | null;
-    regioes: RegiaoMapa[];
+    regioes: RegiaoResumo[];
 }

@@ -9,14 +9,14 @@ import { useTema } from "../../theme/TemaContext";
 import { transparente } from "../../theme/paletas";
 import ConsultaCard from "../../components/ConsultaCard/Index";
 import TelaCarregando from "../../components/TelaCarregando/Index";
-import MapaRegioes from "../../components/MapaRegioes/Index";
+import PainelRegioes from "../../components/PainelRegioes/Index";
 import { useHome } from "../../hooks/useHome";
 
 // tela inicial
 export default function Home() {
     const styles = useEstilos(criarEstilos);
     const { cores } = useTema();
-    const { usuario, resumo, proximas, carregando, abrirDetalheConsulta, atalhos, mapa, carregandoMapa } = useHome();
+    const { usuario, resumo, proximas, carregando, abrirDetalheConsulta, atalhos, regioes, carregandoRegioes } = useHome();
 
     // atalhos
     const botoesAtalho: { icone: keyof typeof Ionicons.glyphMap; texto: string; cor: string; acao: () => void }[] = [
@@ -97,18 +97,18 @@ export default function Home() {
                     />
                 )}
 
-                {/* mapa */}
+                {/* regiões */}
                 <View style={styles.containerTitulo}>
-                    <Text style={styles.tituloSecao}>{mapa?.titulo ?? "Mapa"}</Text>
-                    {mapa?.possui_surto && (
+                    <Text style={styles.tituloSecao}>{regioes?.titulo ?? "Suas regiões"}</Text>
+                    {regioes?.possui_surto && (
                         <View style={[styles.badgeContador, { backgroundColor: cores.atrasado }]}>
                             <Ionicons name="warning" size={13} color={cores.textoSobreCor} />
                         </View>
                     )}
                 </View>
-                {mapa?.resumo_geral && <Text style={styles.subtituloSecao}>{mapa.resumo_geral}</Text>}
+                {regioes?.resumo_geral && <Text style={styles.subtituloSecao}>{regioes.resumo_geral}</Text>}
 
-                {carregandoMapa ? <TelaCarregando /> : mapa && <MapaRegioes mapa={mapa} />}
+                {carregandoRegioes ? <TelaCarregando /> : regioes && <PainelRegioes resumo={regioes} />}
             </ScrollView>
         </SafeAreaView>
     );

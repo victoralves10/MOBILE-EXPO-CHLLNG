@@ -12,14 +12,14 @@ export function useHome() {
     const usuarioQuery = useQuery({ queryKey: ["usuario"], queryFn: authService.perfil });
     const dashboardQuery = useQuery({ queryKey: ["consultas", "dashboard"], queryFn: painelService.dashboard });
     const proximasQuery = useQuery({ queryKey: ["consultas", "proximas"], queryFn: consultaService.listarProximas });
-    const mapaQuery = useQuery({ queryKey: ["consultas", "mapa"], queryFn: painelService.mapa });
+    const regioesQuery = useQuery({ queryKey: ["consultas", "regioes"], queryFn: painelService.regioes });
 
     // recarrega ao voltar pra Home
     useFocusEffect(
         useCallback(() => {
             dashboardQuery.refetch();
             proximasQuery.refetch();
-            mapaQuery.refetch();
+            regioesQuery.refetch();
             // eslint-disable-next-line react-hooks/exhaustive-deps
         }, [])
     );
@@ -29,8 +29,8 @@ export function useHome() {
         resumo: dashboardQuery.data?.resumo_home ?? "",
         proximas: proximasQuery.data ?? [],
         carregando: proximasQuery.isLoading,
-        mapa: mapaQuery.data ?? null,
-        carregandoMapa: mapaQuery.isLoading,
+        regioes: regioesQuery.data ?? null,
+        carregandoRegioes: regioesQuery.isLoading,
         abrirDetalheConsulta: (id_consulta: number) => navigation.navigate("DetalheConsulta", { id_consulta }),
         atalhos: {
             novaConsulta: () => navigation.navigate("Consultas", { novaConsulta: true }),
