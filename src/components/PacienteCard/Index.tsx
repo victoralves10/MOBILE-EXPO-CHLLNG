@@ -4,7 +4,7 @@ import ItemLista from "../ItemLista/Index";
 import { useTema } from "../../theme/TemaContext";
 import { PacienteCardProps } from "./types";
 
-// card de paciente: mesmo visual do card de consulta, com o botão do WhatsApp do responsável
+// card de paciente
 export default function PacienteCard({ paciente, onPress }: PacienteCardProps) {
     const { cores } = useTema();
 

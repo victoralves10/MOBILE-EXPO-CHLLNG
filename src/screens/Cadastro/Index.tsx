@@ -17,7 +17,7 @@ import LogoMarca from "../../components/LogoMarca/Index";
 import BotaoGradiente from "../../components/BotaoGradiente/Index";
 import { useCadastro } from "../../hooks/useCadastro";
 
-// tela de cadastro (mesmo visual do login)
+// tela de cadastro
 export default function Cadastro() {
     const styles = useEstilos(criarEstilos);
     const {
@@ -38,7 +38,7 @@ export default function Cadastro() {
 
     return (
         <SafeAreaView style={styles.containerTela}>
-            {/* enfeites coloridos no fundo */}
+            {/* enfeites */}
             <View style={styles.bolhaRoxa} />
             <View style={styles.bolhaVerde} />
 
@@ -52,7 +52,7 @@ export default function Cadastro() {
                         <View>
                             <LogoMarca />
 
-                            {/* card do formulário */}
+                            {/* formulário */}
                             <View style={styles.containerFormulario}>
                                 <View style={styles.containerTextos}>
                                     <Text style={styles.textoTitulo}>Criar conta ✨</Text>

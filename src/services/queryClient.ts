@@ -1,7 +1,6 @@
 import { QueryClient } from "@tanstack/react-query";
 
-// cliente do React Query usado no app inteiro
-// fica num arquivo separado pra o logout conseguir limpar o cache dele
+// cache do React Query
 export const queryClient = new QueryClient({
     defaultOptions: {
         queries: { retry: 1, staleTime: 30_000 },

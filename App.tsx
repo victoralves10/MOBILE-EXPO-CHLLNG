@@ -8,16 +8,14 @@ import { TemaProvider, useTema } from "./src/theme/TemaContext";
 import ToastTema from "./src/theme/ToastTema";
 import { configurarNotificacoes } from "./src/services/notificacoes";
 
-// deixa as notificações prontas assim que o app abre
 configurarNotificacoes();
 
-// barra de status do celular (hora, bateria) clara ou escura conforme o tema
+// barra de status do celular acompanhando o tema
 function BarraDeStatus() {
     const { escuro } = useTema();
     return <StatusBar style={escuro ? "light" : "dark"} />;
 }
 
-// raiz do app: área segura da tela, tema, React Query, sessão e as rotas dentro
 export default function App() {
     return (
         <SafeAreaProvider>

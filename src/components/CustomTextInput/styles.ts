@@ -16,7 +16,6 @@ export const criarEstilos = (c: Cores) =>
             marginLeft: 2,
         },
 
-        // caixa do campo
         inputContainer: {
             flexDirection: "row",
             alignItems: "center",
@@ -28,7 +27,6 @@ export const criarEstilos = (c: Cores) =>
             height: 54,
         },
 
-        // borda colorida quando o campo está selecionado
         inputFocado: {
             borderColor: c.primaria,
             backgroundColor: c.superficie,

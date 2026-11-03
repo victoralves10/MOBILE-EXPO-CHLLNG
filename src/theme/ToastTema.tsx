@@ -5,12 +5,11 @@ import { Ionicons } from "@expo/vector-icons";
 import { useTema } from "./TemaContext";
 import { transparente } from "./paletas";
 
-// um Toast com o visual do app (claro ou escuro, com ícone e faixa colorida)
-// é usado no App.tsx e dentro do ModalFormulario
+// toast com o visual do app
 export default function ToastTema() {
     const { cores } = useTema();
 
-    // monta um tipo de toast com a cor e o ícone dele
+    // modelo de toast
     function modelo(cor: string, icone: keyof typeof Ionicons.glyphMap) {
         return ({ text1 }: { text1?: string }) => (
             <View style={[estilos.caixa, { backgroundColor: cores.superficie, borderColor: cores.borda, shadowColor: cores.sombra }]}>

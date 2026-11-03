@@ -1,4 +1,4 @@
-// usuário do jeito que o backend devolve
+// usuário logado
 export interface User {
     id_usuario: number;
     nm_usuario: string;
@@ -6,7 +6,7 @@ export interface User {
     inicial_usuario: string;
 }
 
-// o que volta do login e do cadastro
+// resposta do login e do cadastro
 export interface RespostaSessao {
     mensagem: string;
     token: string;

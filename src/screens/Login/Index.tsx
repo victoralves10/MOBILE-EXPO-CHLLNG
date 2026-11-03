@@ -25,7 +25,7 @@ export default function Login() {
 
     return (
         <SafeAreaView style={styles.containerTela}>
-            {/* enfeites coloridos no fundo */}
+            {/* enfeites */}
             <View style={styles.bolhaRoxa} />
             <View style={styles.bolhaVerde} />
 
@@ -39,7 +39,7 @@ export default function Login() {
                         <View>
                             <LogoMarca />
 
-                            {/* card do formulário */}
+                            {/* formulário */}
                             <View style={styles.containerFormulario}>
                                 <View style={styles.containerTextos}>
                                     <Text style={styles.textoTitulo}>Bem-vindo de volta 👋</Text>

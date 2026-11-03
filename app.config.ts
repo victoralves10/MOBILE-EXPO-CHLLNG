@@ -2,16 +2,15 @@
 import { ExpoConfig, ConfigContext } from "expo/config";
 import { execSync } from "child_process";
 
-// esse arquivo roda no computador (ou no servidor do EAS) na hora de iniciar/buildar o app
-// ele pega tudo do app.json e só acrescenta o commit e a data do build, pra tela "Sobre o App"
+// configuração do app com o commit e a data do build
 
-// hash curto do commit atual (ex: "a1b2c3d")
+// commit atual
 function lerCommit(): string {
-    // no build do EAS o próprio EAS já manda o commit nessa variável
+    // build no EAS
     const doEas = process.env.EAS_BUILD_GIT_COMMIT_HASH;
     if (doEas) return doEas.slice(0, 7);
 
-    // rodando local: pergunta pro git
+    // rodando no computador
     try {
         return execSync("git rev-parse --short HEAD").toString().trim();
     } catch {
@@ -19,7 +18,7 @@ function lerCommit(): string {
     }
 }
 
-// data e hora do build já no formato brasileiro (ex: "02/11/2026 18:40")
+// data do build
 function dataDoBuild(): string {
     return new Date().toLocaleString("pt-BR", {
         timeZone: "America/Sao_Paulo",

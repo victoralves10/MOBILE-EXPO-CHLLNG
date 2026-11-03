@@ -9,7 +9,7 @@ import PacienteCard from "../../components/PacienteCard/Index";
 import TelaCarregando from "../../components/TelaCarregando/Index";
 import { usePacientes } from "../../hooks/usePacientes";
 
-// tela de pacientes: busca e lista, no mesmo estilo da tela de consultas
+// tela de pacientes
 export default function Paciente() {
     const styles = useEstilos(criarEstilos);
     const { cores } = useTema();
@@ -28,7 +28,7 @@ export default function Paciente() {
                 />
             </View>
 
-            {/* lista num painel tipo lista de contatos */}
+            {/* lista */}
             <View style={styles.containerLista}>
                 {carregando ? (
                     <TelaCarregando telaCheia />

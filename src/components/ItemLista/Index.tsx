@@ -6,8 +6,7 @@ import { useEstilos } from "../../theme/useEstilos";
 import { transparente } from "../../theme/paletas";
 import { ItemListaProps } from "./types";
 
-// item de lista no estilo lista de contatos do WhatsApp
-// é a base visual dos cards de consulta e de paciente, assim o app fica com um padrão só
+// item de lista (base dos cards)
 export default function ItemLista({
     inicial,
     cor,
@@ -28,13 +27,13 @@ export default function ItemLista({
             onPress={onPress}
             activeOpacity={0.7}
         >
-            {/* bolinha com a inicial e o pontinho de status */}
+            {/* avatar */}
             <View style={[styles.avatar, { backgroundColor: transparente(cor, 0.14) }]}>
                 <Text style={[styles.textoAvatar, { color: cor }]}>{inicial}</Text>
                 <View style={[styles.ponto, { backgroundColor: cor }]} />
             </View>
 
-            {/* textos: título e data em cima, subtítulo e selo embaixo */}
+            {/* textos */}
             <View style={styles.conteudo}>
                 <View style={styles.linhaTexto}>
                     <Text style={styles.titulo} numberOfLines={1}>{titulo}</Text>
@@ -55,7 +54,7 @@ export default function ItemLista({
                 {detalhe && <Text style={styles.detalhe} numberOfLines={1}>{detalhe}</Text>}
             </View>
 
-            {/* botão redondo da direita, se a tela mandou um */}
+            {/* botão da direita */}
             {acao && (
                 <TouchableOpacity
                     style={[styles.botaoAcao, { backgroundColor: transparente(acao.cor, 0.14) }]}
@@ -65,7 +64,7 @@ export default function ItemLista({
                 </TouchableOpacity>
             )}
 
-            {/* divisória só aparece na versão lista */}
+            {/* divisória */}
             {variante === "lista" && <View style={styles.divisoria} />}
         </TouchableOpacity>
     );

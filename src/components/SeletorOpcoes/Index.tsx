@@ -17,7 +17,7 @@ interface Props<T> {
     onSelecionar: (valor: T | null) => void;
 }
 
-// lista de etiquetas pra escolher uma opção (tocar de novo desmarca)
+// seletor de opções
 export default function SeletorOpcoes<T extends string | number>({ titulo, opcoes, selecionado, onSelecionar }: Props<T>) {
     const styles = useEstilos(criarEstilos);
     const { cores } = useTema();

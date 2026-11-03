@@ -7,14 +7,14 @@ import { useTema } from "../../theme/TemaContext";
 
 interface Props {
     titulo: string;
-    texto: string; // o que já foi escolhido
+    texto: string;
     placeholder: string;
     icone: keyof typeof Ionicons.glyphMap;
-    aberto?: boolean; // deixa a borda colorida enquanto o seletor está aberto
+    aberto?: boolean;
     onPress: () => void;
 }
 
-// campo com a mesma cara do CustomTextInput, mas que abre um seletor em vez do teclado
+// campo que abre um seletor
 export default function CampoSelecao({ titulo, texto, placeholder, icone, aberto = false, onPress }: Props) {
     const styles = useEstilos(criarEstilos);
     const { cores } = useTema();

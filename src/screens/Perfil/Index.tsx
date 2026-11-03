@@ -15,8 +15,7 @@ import { useConfigNotificacoes } from "../../hooks/useConfigNotificacoes";
 
 type NomeIcone = keyof typeof Ionicons.glyphMap;
 
-// tela de perfil: quem está logado e como está o consultório
-// as opções da conta ficam no menu ☰ do canto de cima
+// tela de perfil
 export default function Perfil() {
     const styles = useEstilos(criarEstilos);
     const { cores, preferencia, mudarPreferencia } = useTema();
@@ -24,13 +23,13 @@ export default function Perfil() {
     const { usuario, dashboard } = p;
     const navigation = useNavigation<any>();
 
-    // menuzinho do canto e modal de aparência
+    // menu e modais
     const [menuAberto, setMenuAberto] = useState(false);
     const [aparenciaAberta, setAparenciaAberta] = useState(false);
     const [notificacoesAberta, setNotificacoesAberta] = useState(false);
     const notif = useConfigNotificacoes(notificacoesAberta);
 
-    // coloca o botão ☰ no cabeçalho da tela
+    // botão de menu no cabeçalho
     useLayoutEffect(() => {
         navigation.setOptions({
             headerRight: () => (
@@ -41,25 +40,25 @@ export default function Perfil() {
         });
     }, [navigation, styles, cores]);
 
-    // opções do menu: fecha o menu e faz a ação
+    // opções do menu
     const opcoesMenu: { icone: NomeIcone; texto: string; cor: string; acao: () => void }[] = [
         { icone: "person", texto: "Dados pessoais", cor: cores.primaria, acao: () => p.abrirModal("dados") },
         { icone: "lock-closed", texto: "Alterar senha", cor: cores.ceu, acao: () => p.abrirModal("senha") },
         { icone: "notifications", texto: "Notificações", cor: cores.aviso, acao: () => setNotificacoesAberta(true) },
         { icone: "color-palette", texto: "Aparência", cor: cores.rosa, acao: () => setAparenciaAberta(true) },
-        { icone: "information-circle", texto: "Sobre o app", cor: cores.concluido, acao: () => navigation.navigate("SobreApp") },
+        { icone: "information-circle", texto: "Sobre o app", cor: cores.concluido, acao: p.abrirSobre },
         { icone: "log-out", texto: "Sair da conta", cor: cores.laranja, acao: p.sair },
         { icone: "trash", texto: "Apagar conta", cor: cores.atrasado, acao: () => p.abrirModal("apagar") },
     ];
 
-    // as 3 opções de tema
+    // opções de tema
     const opcoesTema: { valor: PreferenciaTema; titulo: string; descricao: string; icone: NomeIcone; cor: string }[] = [
         { valor: "automatico", titulo: "Automático", descricao: "Segue o tema do celular", icone: "phone-portrait", cor: cores.primaria },
         { valor: "claro", titulo: "Claro", descricao: "Fundo claro o tempo todo", icone: "sunny", cor: cores.aviso },
         { valor: "escuro", titulo: "Escuro", descricao: "Mais confortável à noite", icone: "moon", cor: cores.ceu },
     ];
 
-    // os 4 números do consultório; cada um leva pra lista certa
+    // indicadores
     const indicadores = dashboard
         ? [
               { icone: "checkmark-done" as NomeIcone, cor: cores.concluido, numero: dashboard.consultas_realizadas_mes, rotulo: "Realizadas no mês", acao: () => p.abrirConsultas("concluidas") },
@@ -73,7 +72,7 @@ export default function Perfil() {
         <View style={styles.container}>
             <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
 
-                {/* ---------- cabeçalho: faixa colorida, avatar, nome e e-mail ---------- */}
+                {/* ---------- cabeçalho ---------- */}
                 <View style={styles.cabecalho}>
                     <LinearGradient
                         colors={[cores.primaria, cores.secundaria]}
@@ -100,7 +99,7 @@ export default function Perfil() {
                     <TelaCarregando />
                 ) : (
                     <>
-                        {/* aviso de atrasadas (texto pronto do backend) */}
+                        {/* aviso de atrasadas */}
                         {dashboard.aviso_atrasadas && (
                             <TouchableOpacity style={styles.aviso} onPress={() => p.abrirConsultas("atrasadas")}>
                                 <Ionicons name="alert-circle" size={22} color={cores.atrasado} />
@@ -121,7 +120,7 @@ export default function Perfil() {
                             ))}
                         </View>
 
-                        {/* taxa de retorno com barrinha de progresso em degradê */}
+                        {/* taxa de retorno */}
                         <View style={styles.cartaoRetorno}>
                             <View style={styles.linhaRetorno}>
                                 <View style={styles.tituloComIcone}>
@@ -146,10 +145,10 @@ export default function Perfil() {
                 <Text style={styles.rodape}>Clyvo ELLV · gestão veterinária inteligente</Text>
             </ScrollView>
 
-            {/* ---------- menu do canto: caixinha com as opções ---------- */}
+            {/* ---------- menu ---------- */}
             {menuAberto && (
                 <>
-                    {/* tocar fora fecha o menu */}
+                    {/* fundo: tocar fecha */}
                     <Pressable style={styles.fundoMenu} onPress={() => setMenuAberto(false)} />
 
                     <View style={styles.caixaMenu}>
@@ -172,7 +171,7 @@ export default function Perfil() {
                 </>
             )}
 
-            {/* ---------- modal: aparência (claro, escuro ou automático) ---------- */}
+            {/* ---------- modal: aparência ---------- */}
             <Modal visible={aparenciaAberta} transparent animationType="fade" onRequestClose={() => setAparenciaAberta(false)}>
                 <View style={styles.fundoAparencia}>
                     <Pressable style={styles.fundoMenu} onPress={() => setAparenciaAberta(false)} />
@@ -185,7 +184,7 @@ export default function Perfil() {
                             </TouchableOpacity>
                         </View>
 
-                        {/* tocar numa opção já troca o tema na hora */}
+                        {/* opções de tema */}
                         {opcoesTema.map((opcao) => {
                             const ativa = preferencia === opcao.valor;
                             return (
@@ -227,7 +226,7 @@ export default function Perfil() {
                             </TouchableOpacity>
                         </View>
 
-                        {/* liga e desliga os lembretes */}
+                        {/* ligar lembretes */}
                         <View style={styles.opcaoTema}>
                             <View style={[styles.iconeTema, { backgroundColor: transparente(cores.aviso, 0.16) }]}>
                                 <Ionicons name="alarm" size={22} color={cores.aviso} />
@@ -244,7 +243,7 @@ export default function Perfil() {
                             />
                         </View>
 
-                        {/* quantos avisos estão agendados neste celular */}
+                        {/* lembretes agendados */}
                         <View style={styles.opcaoTema}>
                             <View style={[styles.iconeTema, { backgroundColor: transparente(cores.primaria, 0.16) }]}>
                                 <Ionicons name="calendar" size={22} color={cores.primaria} />
@@ -255,7 +254,7 @@ export default function Perfil() {
                             </View>
                         </View>
 
-                        {/* notificação de exemplo */}
+                        {/* teste */}
                         <TouchableOpacity style={styles.botaoTeste} onPress={notif.testar}>
                             <Ionicons name="paper-plane" size={18} color={cores.textoSobreCor} />
                             <Text style={styles.textoBotaoTeste}>Enviar notificação de teste</Text>

@@ -2,19 +2,18 @@ import { AnimalCompleto, ResponsavelCompleto } from "./Paciente";
 
 export type StatusConsulta = "Agendado" | "Concluido" | "Atrasado";
 
-// as 3 abas da tela de consultas, cada uma é um endpoint do backend
 export type AbaConsulta = "agendadas" | "atrasadas" | "concluidas";
 
-// resumo do animal que vem junto em cada card
 export interface AnimalResumo {
     id_animal: number;
     nm_animal: string;
     inicial_animal: string;
     especie_animal: string;
     raca_animal_exibicao: string;
+    especie_raca_exibicao: string;
 }
 
-// card de consulta do jeito que o backend devolve, já com tudo formatado
+// card de consulta
 export interface ConsultaResumo {
     id_consulta: number;
     historico_consulta: string;
@@ -28,7 +27,7 @@ export interface ConsultaResumo {
     animal: AnimalResumo;
 }
 
-// o que o app manda no POST /consultas (os 3 casos da especificação)
+// corpo do POST /consultas (os 3 casos)
 export interface NovaConsulta {
     consulta: {
         historico_consulta: string;
@@ -38,7 +37,7 @@ export interface NovaConsulta {
         ds_doenca: string | null;
     };
     paciente:
-        | { id_animal: number | null } // caso 1: paciente já cadastrado
+        | { id_animal: number | null }
         | {
               novo: {
                   nm_animal: string;
@@ -49,13 +48,22 @@ export interface NovaConsulta {
                   rg_animal: string;
                   nr_microchip_animal: string;
                   responsavel:
-                      | { id_responsavel: number | null } // caso 2: responsável já cadastrado
-                      | { novo: { nm_responsavel: string; cpf_responsavel: string; nr_telefone_responsavel: string; id_regiao: number | null } }; // caso 3
+                      | { id_responsavel: number | null }
+                      | { novo: { nm_responsavel: string; cpf_responsavel: string; nr_telefone_responsavel: string; id_regiao: number | null } };
               };
           };
 }
 
-// detalhe completo: consulta + animal + responsável, tudo formatado pelo backend
+// corpo do PUT /consultas/:id
+export interface DadosConsulta {
+    historico_consulta: string;
+    dt_consulta: string;
+    hr_consulta: string;
+    st_consulta: StatusConsulta;
+    ds_doenca: string | null;
+}
+
+// detalhe da consulta
 export interface ConsultaDetalhe {
     id_consulta: number;
     historico_consulta: string;
@@ -70,30 +78,20 @@ export interface ConsultaDetalhe {
     link_consulta_online: string;
     animal: AnimalCompleto;
     responsavel: ResponsavelCompleto;
+    formulario: DadosConsulta;
 }
 
-// o que o app manda no PUT /consultas/:id
-export interface DadosConsulta {
-    historico_consulta: string;
-    dt_consulta: string;
-    hr_consulta: string;
-    st_consulta: StatusConsulta;
-    ds_doenca: string | null; // diagnóstico/suspeita (opcional), alimenta o mapa
-}
-
-// lembrete de uma consulta: o backend já diz quando avisar e o texto da notificação
-// cada consulta tem até 2: "antes" (com antecedência) e "inicio" (na hora exata)
+// lembrete de uma consulta
 export interface Lembrete {
-    id_lembrete: string; // ex: "consulta-12-antes", vira o id da notificação no celular
+    id_lembrete: string;
     id_consulta: number;
     tipo: "antes" | "inicio";
-    disparar_em: string; // ex: "2026-11-25T08:15:00-03:00"
+    disparar_em: string;
     titulo: string;
     mensagem: string;
 }
 
-// o que volta depois de criar ou editar
-// lembretes vazio = não precisa avisar (concluída, atrasada...), então o app cancela os avisos
+// resposta de criar ou editar
 export interface RespostaConsultaSalva {
     mensagem: string;
     consulta: ConsultaDetalhe;

@@ -3,7 +3,7 @@ import { View, Text, FlatList, ScrollView, TouchableOpacity } from "react-native
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import { criarEstilos } from "./style";
+import { criarEstilos } from "./styles";
 import { useEstilos } from "../../theme/useEstilos";
 import { useTema } from "../../theme/TemaContext";
 import { transparente } from "../../theme/paletas";
@@ -12,13 +12,13 @@ import TelaCarregando from "../../components/TelaCarregando/Index";
 import MapaRegioes from "../../components/MapaRegioes/Index";
 import { useHome } from "../../hooks/useHome";
 
-// tela inicial: saudação, atalhos, próximas consultas e o mapa das regiões
+// tela inicial
 export default function Home() {
     const styles = useEstilos(criarEstilos);
     const { cores } = useTema();
-    const { usuario, proximas, carregando, abrirDetalheConsulta, atalhos, mapa, carregandoMapa } = useHome();
+    const { usuario, resumo, proximas, carregando, abrirDetalheConsulta, atalhos, mapa, carregandoMapa } = useHome();
 
-    // os 3 atalhos coloridos
+    // atalhos
     const botoesAtalho: { icone: keyof typeof Ionicons.glyphMap; texto: string; cor: string; acao: () => void }[] = [
         { icone: "add-circle", texto: "Nova consulta", cor: cores.primaria, acao: atalhos.novaConsulta },
         { icone: "alert-circle", texto: "Atrasadas", cor: cores.atrasado, acao: atalhos.atrasadas },
@@ -29,14 +29,14 @@ export default function Home() {
         <SafeAreaView style={styles.container} edges={["top"]}>
             <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
 
-                {/* saudação num card com degradê */}
+                {/* saudação */}
                 <LinearGradient
                     colors={[cores.primaria, cores.primariaForte]}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 1 }}
                     style={styles.saudacao}
                 >
-                    {/* bolhas de enfeite */}
+                    {/* enfeites */}
                     <View style={styles.bolha1} />
                     <View style={styles.bolha2} />
 
@@ -50,11 +50,7 @@ export default function Home() {
                         </View>
                     </View>
 
-                    <Text style={styles.textoResumo}>
-                        {proximas.length > 0
-                            ? `Você tem ${proximas.length} ${proximas.length === 1 ? "consulta agendada" : "consultas agendadas"} pela frente.`
-                            : "Nenhuma consulta agendada por enquanto."}
-                    </Text>
+                    <Text style={styles.textoResumo}>{resumo}</Text>
                 </LinearGradient>
 
                 {/* atalhos */}
@@ -101,7 +97,7 @@ export default function Home() {
                     />
                 )}
 
-                {/* mapa: onde estão os pacientes, consultas atrasadas e possíveis surtos */}
+                {/* mapa */}
                 <View style={styles.containerTitulo}>
                     <Text style={styles.tituloSecao}>{mapa?.titulo ?? "Mapa"}</Text>
                     {mapa?.possui_surto && (

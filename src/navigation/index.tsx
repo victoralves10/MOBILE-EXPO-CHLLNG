@@ -23,11 +23,11 @@ import SobreApp from "../screens/SobreApp/Index";
 
 const Stack = createNativeStackNavigator();
 
-// referência da navegação, pra conseguir abrir uma tela de fora dela (ex: ao tocar na notificação)
+// referência da navegação
 const navegacao = createNavigationContainerRef<any>();
 const Tab = createBottomTabNavigator();
 
-// abre o detalhe da consulta; se a navegação ainda não montou (app acabou de abrir), tenta de novo
+// abre o detalhe da consulta
 function abrirConsulta(idConsulta: number, tentativas = 20) {
     if (navegacao.isReady()) {
         navegacao.navigate("DetalheConsulta", { id_consulta: idConsulta });
@@ -38,7 +38,7 @@ function abrirConsulta(idConsulta: number, tentativas = 20) {
 
 type NomeIcone = keyof typeof Ionicons.glyphMap;
 
-// ícone de cada aba: cheio quando está ativa, contorno quando não está
+// ícone de cada aba
 const ICONES_ABAS: Record<string, { ativo: NomeIcone; inativo: NomeIcone }> = {
     Home: { ativo: "home", inativo: "home-outline" },
     Consultas: { ativo: "calendar", inativo: "calendar-outline" },
@@ -50,7 +50,7 @@ const ICONES_ABAS: Record<string, { ativo: NomeIcone; inativo: NomeIcone }> = {
 function TabRoutes() {
     const { cores } = useTema();
 
-    // espaço dos botões do sistema (Android) ou da barrinha do iPhone embaixo da tela
+    // espaço da barra do sistema
     const { bottom } = useSafeAreaInsets();
 
     return (
@@ -67,7 +67,7 @@ function TabRoutes() {
                 tabBarInactiveTintColor: cores.textoSuave,
                 tabBarLabelStyle: { fontSize: 11, fontWeight: "700", marginTop: 2 },
                 tabBarIconStyle: { width: 56, height: 30 },
-                // altura = ícone + texto + o espaço dos botões do sistema, pra nada ficar embaixo deles
+                // altura da barra de abas
                 tabBarStyle: {
                     height: 66 + bottom,
                     paddingTop: 6,
@@ -81,7 +81,7 @@ function TabRoutes() {
                     shadowRadius: 12,
                 },
 
-                // ícone dentro de uma "pílula" colorida quando a aba está ativa
+                // ícone da aba
                 tabBarIcon: ({ focused, color }) => (
                     <View
                         style={{
@@ -102,7 +102,7 @@ function TabRoutes() {
                 ),
             })}
         >
-            {/* a Home desenha o próprio cabeçalho (saudação colorida) */}
+            {/* Home sem cabeçalho */}
             <Tab.Screen name="Home" component={Home} options={{ title: "Início", headerShown: false }} />
             <Tab.Screen name="Consultas" component={Consulta} options={{ title: "Consultas" }} />
             <Tab.Screen name="Pacientes" component={Paciente} options={{ title: "Pacientes" }} />
@@ -111,21 +111,21 @@ function TabRoutes() {
     );
 }
 
-// rotas do app: as telas internas só existem quando o usuário está logado
+// rotas do app
 export default function Routes() {
     const { logado, carregando } = useAuth();
     const { cores, escuro } = useTema();
 
-    // logado: mantém os lembretes do celular em dia com o backend
+    // lembretes
     useSincronizarLembretes(logado);
 
-    // tocou na notificação: abre o detalhe daquela consulta
+    // toque na notificação
     useEffect(() => {
         if (!logado) return;
         return aoTocarNotificacao((idConsulta) => abrirConsulta(idConsulta));
     }, [logado]);
 
-    // tema da navegação acompanhando o nosso (fundo das telas, cabeçalhos, animações)
+    // tema da navegação
     const base = escuro ? DarkTheme : DefaultTheme;
     const temaNavegacao: Theme = {
         ...base,
@@ -140,7 +140,7 @@ export default function Routes() {
         },
     };
 
-    // estilo dos cabeçalhos das telas de detalhe
+    // cabeçalho das telas de detalhe
     const cabecalhoDetalhe = {
         headerShown: true,
         headerShadowVisible: false,

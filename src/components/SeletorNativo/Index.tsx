@@ -6,13 +6,13 @@ import { useTema } from "../../theme/TemaContext";
 
 interface Props {
     titulo: string;
-    valor: string; // HH:MM
+    valor: string;
     onChange: (valor: string) => void;
 }
 
 const doisDigitos = (n: number) => String(n).padStart(2, "0");
 
-// transforma o "HH:MM" guardado em Date pro relógio abrir no horário certo
+// "HH:MM" para Date
 function paraDate(valor: string): Date {
     const data = new Date();
     if (valor) {
@@ -22,12 +22,12 @@ function paraDate(valor: string): Date {
     return data;
 }
 
-// campo que abre o relógio do próprio celular pra escolher o horário
+// campo de horário com o relógio do celular
 export default function SeletorNativo({ titulo, valor, onChange }: Props) {
     const [aberto, setAberto] = useState(false);
     const { escuro } = useTema();
 
-    // usuário confirmou: guarda no formato HH:MM, que é o que o backend recebe
+    // horário escolhido
     function aoEscolher(evento: DateTimePickerEvent, data?: Date) {
         setAberto(false);
         if (evento.type !== "set" || !data) return;

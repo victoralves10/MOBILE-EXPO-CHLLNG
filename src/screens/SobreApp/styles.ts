@@ -22,7 +22,6 @@ export const criarEstilos = (c: Cores) =>
             paddingHorizontal: 20,
         },
 
-        // quadrado branco com a patinha
         logo: {
             width: 76,
             height: 76,
@@ -50,7 +49,6 @@ export const criarEstilos = (c: Cores) =>
             marginTop: 2,
         },
 
-        // pílula com versão e commit
         seloVersao: {
             flexDirection: "row",
             alignItems: "center",
@@ -68,7 +66,6 @@ export const criarEstilos = (c: Cores) =>
             color: c.textoSobreCor,
         },
 
-        // título cinza em cima de cada grupo
         tituloGrupo: {
             fontSize: 13,
             fontWeight: "800",

@@ -6,8 +6,7 @@ import { useEstilos } from "../../theme/useEstilos";
 import { useTema } from "../../theme/TemaContext";
 import { FiltroTabsProps } from "./types";
 
-// abas tipo "pílula" (ex: Agendadas / Atrasadas / Concluídas), sempre com uma ativa
-// a ativa ganha a cor dela; as outras ficam neutras
+// abas de filtro
 export default function FiltroTabs<T extends string>({ opcoes, valorSelecionado, onSelecionar }: FiltroTabsProps<T>) {
     const styles = useEstilos(criarEstilos);
     const { cores } = useTema();

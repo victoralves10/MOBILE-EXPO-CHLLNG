@@ -1,6 +1,6 @@
 import { ConsultaResumo } from "../../models/Consulta";
 
-// o card só precisa da consulta (que já vem com o animal) e do clique
+// props do card de consulta
 export interface ConsultaCardProps {
     consulta: ConsultaResumo;
     onPress: () => void;

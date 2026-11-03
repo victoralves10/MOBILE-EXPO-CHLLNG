@@ -8,25 +8,29 @@ import { reagendarConsulta, cancelarLembrete } from "../services/notificacoes";
 import { DadosConsulta } from "../models/Consulta";
 import { toastErro, toastSucesso } from "../utils/toast";
 
-// lógica da tela de detalhe da consulta: mostrar, editar e remover
+const FORM_VAZIO: DadosConsulta = {
+    historico_consulta: "",
+    dt_consulta: "",
+    hr_consulta: "",
+    st_consulta: "Agendado",
+    ds_doenca: null,
+};
+
+// lógica do detalhe da consulta
 export function useDetalheConsulta() {
     const navigation = useNavigation<any>();
     const route = useRoute<any>();
     const queryClient = useQueryClient();
-
     const { id_consulta } = route.params;
 
-    // tudo numa requisição só: consulta + animal + responsável, já formatados
     const consultaQuery = useQuery({
         queryKey: ["consultas", "detalhe", id_consulta],
         queryFn: () => consultaService.buscarDetalhe(id_consulta),
     });
+    const doencasQuery = useQuery({ queryKey: ["catalogo", "doencas"], queryFn: catalogoService.doencas, staleTime: Infinity });
     const consulta = consultaQuery.data ?? null;
 
-    // lista de doenças do backend pro campo de diagnóstico (carrega uma vez só)
-    const doencasQuery = useQuery({ queryKey: ["catalogo", "doencas"], queryFn: catalogoService.doencas, staleTime: Infinity });
-
-    // depois de editar ou remover, recarrega as listas que mostram essa consulta
+    // recarrega as listas que mostram a consulta
     function recarregarListas() {
         queryClient.invalidateQueries({ queryKey: ["consultas"] });
         queryClient.invalidateQueries({ queryKey: ["pacientes"] });
@@ -35,45 +39,27 @@ export function useDetalheConsulta() {
     // ---------- editar ----------
 
     const [modalEditarAberto, setModalEditarAberto] = useState(false);
-    const [form, setForm] = useState<DadosConsulta>({
-        historico_consulta: "",
-        dt_consulta: "",
-        hr_consulta: "",
-        st_consulta: "Agendado",
-        ds_doenca: null,
-    });
+    const [form, setForm] = useState<DadosConsulta>(FORM_VAZIO);
 
-    // atalho pra atualizar um campo: mudar("hr_consulta")("09:30")
     function mudar<C extends keyof DadosConsulta>(campo: C) {
         return (valor: DadosConsulta[C]) => setForm((atual) => ({ ...atual, [campo]: valor }));
     }
 
-    // abre o modal já preenchido com o que veio do backend
-    // atrasada aparece como "Agendar": se a data continuar no passado, o backend marca atrasada de novo
     function abrirModalEditar() {
         if (!consulta) return;
-        setForm({
-            historico_consulta: consulta.historico_consulta,
-            dt_consulta: consulta.dt_consulta,
-            hr_consulta: consulta.hr_consulta,
-            st_consulta: consulta.st_consulta === "Concluido" ? "Concluido" : "Agendado",
-            ds_doenca: consulta.ds_doenca,
-        });
+        setForm(consulta.formulario);
         setModalEditarAberto(true);
     }
 
-    // salva e já coloca na tela a consulta que o backend devolveu
     const mutationAtualizar = useMutation({
         mutationFn: () => consultaService.atualizar(id_consulta, form),
         onSuccess: (resposta) => {
             toastSucesso(resposta.mensagem);
             queryClient.setQueryData(["consultas", "detalhe", id_consulta], resposta.consulta);
-            // troca os avisos pelos do horário novo (lista vazia = cancela, ex: virou concluída)
             reagendarConsulta(id_consulta, resposta.lembretes);
             recarregarListas();
             setModalEditarAberto(false);
         },
-        // deu erro: mostra a mensagem do backend e deixa o modal aberto pra corrigir
         onError: (erro) => toastErro(mensagemDeErro(erro)),
     });
 
@@ -81,7 +67,6 @@ export function useDetalheConsulta() {
 
     const [confirmarRemoverAberto, setConfirmarRemoverAberto] = useState(false);
 
-    // remove e volta pra tela anterior
     const mutationRemover = useMutation({
         mutationFn: () => consultaService.remover(id_consulta),
         onSuccess: (resposta) => {
@@ -98,7 +83,6 @@ export function useDetalheConsulta() {
         mutationRemover.mutate();
     }
 
-    // abre a ficha do paciente dessa consulta
     function abrirFichaPaciente() {
         if (consulta) navigation.navigate("DetalhePaciente", { id_animal: consulta.animal.id_animal });
     }

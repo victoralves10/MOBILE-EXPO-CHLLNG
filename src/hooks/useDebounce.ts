@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 
-// espera o usuário parar de digitar antes de devolver o valor
-// assim a busca não vai pro backend a cada letra
-export function useDebounce<T>(valor: T, atraso = 250): T {
+// espera o usuário parar de digitar
+export function useDebounce<T>(valor: T, atraso = 500): T {
     const [valorAtrasado, setValorAtrasado] = useState(valor);
 
     useEffect(() => {

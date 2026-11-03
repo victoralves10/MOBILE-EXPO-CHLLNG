@@ -3,14 +3,12 @@ import { Cores } from "../../theme/paletas";
 
 export const criarEstilos = (c: Cores) =>
     StyleSheet.create({
-        // agrupa ícone + nome + subtítulo
         containerLogo: {
             alignItems: "center",
             marginBottom: 28,
             gap: 6,
         },
 
-        // quadrado arredondado com degradê e sombra colorida
         circuloLogo: {
             width: 92,
             height: 92,
@@ -32,7 +30,6 @@ export const criarEstilos = (c: Cores) =>
             letterSpacing: 0.5,
         },
 
-        // "ELLV" na cor da marca
         textoMarcaDestaque: {
             fontWeight: "900",
             color: c.primaria,

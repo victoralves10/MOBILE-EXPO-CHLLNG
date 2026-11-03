@@ -11,7 +11,7 @@ interface Props {
     onPress: () => void;
 }
 
-// botão quadradinho colorido com ícone e texto embaixo (ações rápidas das telas de detalhe)
+// botão de ação rápida
 export default function BotaoAcao({ icone, texto, cor, onPress }: Props) {
     const { cores } = useTema();
 

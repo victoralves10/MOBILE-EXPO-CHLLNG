@@ -1,5 +1,4 @@
 import { StyleSheet } from "react-native";
-// (mesmo visual do login; arquivo separado pra cada tela poder mudar sozinha)
 import { Cores, transparente } from "../../theme/paletas";
 
 export const criarEstilos = (c: Cores) =>
@@ -9,7 +8,6 @@ export const criarEstilos = (c: Cores) =>
             backgroundColor: c.fundo,
         },
 
-        // bolhas coloridas de enfeite no fundo
         bolhaRoxa: {
             position: "absolute",
             width: 320,
@@ -37,7 +35,6 @@ export const criarEstilos = (c: Cores) =>
             paddingVertical: 32,
         },
 
-        // card do formulário
         containerFormulario: {
             backgroundColor: c.superficie,
             borderRadius: 28,
@@ -69,18 +66,6 @@ export const criarEstilos = (c: Cores) =>
 
         containerInputs: {
             marginBottom: 8,
-        },
-
-        botaoEsqueceuSenha: {
-            alignSelf: "flex-end",
-            marginTop: -6,
-            marginBottom: 14,
-        },
-
-        textoEsqueceuSenha: {
-            fontSize: 13,
-            fontWeight: "700",
-            color: c.primaria,
         },
 
         botaoCadastro: {

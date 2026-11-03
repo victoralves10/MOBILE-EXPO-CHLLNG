@@ -1,28 +1,28 @@
 import { useEffect, useState } from "react";
 import { consultaService } from "../services/consultaService";
 import {
+    cancelarTodos,
     contarAgendados,
     definirLembretesAtivos,
     enviarTeste,
     lembretesAtivos,
     sincronizarLembretes,
-    cancelarTodos,
 } from "../services/notificacoes";
 import { toastErro, toastSucesso } from "../utils/toast";
 
-// lógica do modal de notificações do Perfil: ligar/desligar, ver quantos avisos tem e testar
+// lógica do modal de notificações do Perfil
 export function useConfigNotificacoes(aberto: boolean) {
     const [ativos, setAtivos] = useState(true);
     const [agendados, setAgendados] = useState(0);
 
-    // toda vez que o modal abre, lê como está agora
+    // lê a situação ao abrir o modal
     useEffect(() => {
         if (!aberto) return;
         lembretesAtivos().then(setAtivos);
         contarAgendados().then(setAgendados).catch(() => {});
     }, [aberto]);
 
-    // liga: busca os lembretes no backend e agenda; desliga: cancela tudo
+    // liga ou desliga os lembretes
     async function alternar(ligar: boolean) {
         setAtivos(ligar);
         await definirLembretesAtivos(ligar);
@@ -40,7 +40,6 @@ export function useConfigNotificacoes(aberto: boolean) {
         setAgendados(await contarAgendados().catch(() => 0));
     }
 
-    // manda uma notificação de exemplo em 5 segundos
     async function testar() {
         const ok = await enviarTeste();
         if (ok) toastSucesso("Notificação de teste chega em 5 segundos.");

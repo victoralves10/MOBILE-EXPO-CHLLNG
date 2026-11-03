@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { View, Text, FlatList, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { criarEstilos } from "./styles";
@@ -12,35 +12,21 @@ import TelaCarregando from "../../components/TelaCarregando/Index";
 import { useConsultas } from "../../hooks/useConsultas";
 import { AbaConsulta } from "../../models/Consulta";
 
-// tela de consultas: busca, abas, lista e o botão de nova consulta
+// tela de consultas
 export default function ConsultaTela() {
     const styles = useEstilos(criarEstilos);
     const { cores } = useTema();
     const c = useConsultas();
 
-    // as 3 abas, cada uma com cor e ícone
     const abas: { valor: AbaConsulta; label: string; cor: string; icone: keyof typeof Ionicons.glyphMap }[] = [
         { valor: "agendadas", label: "Agendadas", cor: cores.agendado, icone: "time" },
         { valor: "atrasadas", label: "Atrasadas", cor: cores.atrasado, icone: "alert-circle" },
         { valor: "concluidas", label: "Concluídas", cor: cores.concluido, icone: "checkmark-circle" },
     ];
 
-    // modal de nova consulta aberto ou fechado (a lógica dele fica no próprio modal)
-    const [modalAberto, setModalAberto] = useState(false);
-
-    // se a Home pediu, já abre o modal
-    useEffect(() => {
-        if (c.novaConsultaPedida) {
-            setModalAberto(true);
-            c.limparPedidoNovaConsulta();
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [c.novaConsultaPedida]);
-
     return (
         <View style={styles.container}>
-
-            {/* busca + abas */}
+            {/* busca e abas */}
             <View style={styles.containerBusca}>
                 <CustomTextInput
                     placeholder="Buscar pelo nome do animal..."
@@ -52,7 +38,7 @@ export default function ConsultaTela() {
                 <FiltroTabs opcoes={abas} valorSelecionado={c.aba} onSelecionar={c.setAba} />
             </View>
 
-            {/* lista da aba escolhida, num painel tipo lista de contatos */}
+            {/* lista */}
             <View style={styles.containerLista}>
                 {c.carregando ? (
                     <TelaCarregando telaCheia />
@@ -78,12 +64,12 @@ export default function ConsultaTela() {
                 )}
             </View>
 
-            {/* botão "+" flutuante */}
-            <TouchableOpacity style={styles.botaoAdicionar} onPress={() => setModalAberto(true)} activeOpacity={0.85}>
+            {/* botão de nova consulta */}
+            <TouchableOpacity style={styles.botaoAdicionar} onPress={c.abrirModal} activeOpacity={0.85}>
                 <Ionicons name="add" size={30} color={cores.textoSobreCor} />
             </TouchableOpacity>
 
-            <ModalNovaConsulta visivel={modalAberto} onFechar={() => setModalAberto(false)} />
+            <ModalNovaConsulta visivel={c.modalAberto} onFechar={c.fecharModal} />
         </View>
     );
 }

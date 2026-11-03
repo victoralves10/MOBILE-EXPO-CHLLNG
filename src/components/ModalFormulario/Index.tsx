@@ -23,12 +23,11 @@ interface Props {
     onSalvar: () => void;
     carregando?: boolean;
     labelSalvar?: string;
-    perigoso?: boolean; // botão salvar vermelho (ex: apagar conta)
+    perigoso?: boolean;
     children: ReactNode;
 }
 
-// modal de formulário genérico: sobe do fundo da tela, com barra de arrasto,
-// teclado nunca cobre os campos, e tocar fora fecha
+// modal de formulário
 export default function ModalFormulario({
     visivel,
     titulo,
@@ -46,16 +45,14 @@ export default function ModalFormulario({
         <Modal visible={visivel} transparent animationType="slide" onRequestClose={onFechar}>
             <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
                 <View style={styles.fundo}>
-                    {/* área escura atrás do card: tocar nela fecha o modal.
-                        fica do lado do card (e não em volta dele) pra não roubar o
-                        toque do ScrollView, senão a lista não rola com o dedo */}
+                    {/* fundo: tocar fecha */}
                     <Pressable style={styles.areaFora} onPress={onFechar} />
 
                     <View style={styles.card}>
-                        {/* barra de arrasto, só visual */}
+                        {/* barra de arrasto */}
                         <View style={styles.barraArrasto} />
 
-                        {/* título com o X pra fechar */}
+                        {/* título */}
                         <View style={styles.cabecalho}>
                             <Text style={styles.titulo}>{titulo}</Text>
                             <TouchableOpacity style={styles.botaoFechar} onPress={onFechar}>
@@ -95,8 +92,7 @@ export default function ModalFormulario({
                 </View>
             </KeyboardAvoidingView>
 
-            {/* o Modal fica por cima de tudo, até do Toast do App.tsx.
-                com um Toast aqui dentro, as mensagens de erro aparecem por cima do formulário */}
+            {/* toast por cima do modal */}
             <ToastTema />
         </Modal>
     );

@@ -1,28 +1,26 @@
-// todas as cores do app moram aqui
-// as duas paletas têm os mesmos nomes; os estilos usam o nome ("superficie", "texto"...)
-// e a cor certa entra sozinha quando o tema muda
+// cores do app
 
 export interface Cores {
     // fundos
-    fundo: string; // fundo das telas
-    superficie: string; // cards, modais, barra de abas
-    superficieAlt: string; // campos de texto, chips, trilhas
+    fundo: string;
+    superficie: string;
+    superficieAlt: string;
     borda: string;
     sombra: string;
-    fundoModal: string; // escurecido atrás dos modais
+    fundoModal: string;
 
     // textos
     texto: string;
     textoSecundario: string;
     textoSuave: string;
-    textoSobreCor: string; // texto em cima de botão colorido
+    textoSobreCor: string;
 
     // marca
     primaria: string;
-    primariaForte: string; // fim do degradê e botão pressionado
+    primariaForte: string;
     secundaria: string;
 
-    // cores de apoio, cada uma com um papel fixo
+    // cores de apoio
     agendado: string;
     concluido: string;
     atrasado: string;
@@ -34,7 +32,7 @@ export interface Cores {
     laranja: string;
 }
 
-// tema claro: fundo levemente lilás, cards brancos e cores vivas
+// tema claro
 export const paletaClara: Cores = {
     fundo: "#F4F4FB",
     superficie: "#FFFFFF",
@@ -63,7 +61,7 @@ export const paletaClara: Cores = {
     laranja: "#F97316",
 };
 
-// tema escuro: azul-noite em vez de preto puro e cores um tom mais suaves pra não cansar a vista
+// tema escuro
 export const paletaEscura: Cores = {
     fundo: "#0E0F1E",
     superficie: "#181A2E",
@@ -92,12 +90,12 @@ export const paletaEscura: Cores = {
     laranja: "#FB923C",
 };
 
-// cor de cada status de consulta (o status em si vem do backend)
+// cor de cada status de consulta
 export function corDoStatus(c: Cores, status: "Agendado" | "Atrasado" | "Concluido") {
     return { Agendado: c.agendado, Atrasado: c.atrasado, Concluido: c.concluido }[status];
 }
 
-// deixa uma cor transparente pra usar de fundo de ícone/selo (ex: transparente(c.primaria, 0.12))
+// cor com transparência
 export function transparente(hex: string, opacidade: number) {
     const alfa = Math.round(opacidade * 255).toString(16).padStart(2, "0");
     return hex + alfa;

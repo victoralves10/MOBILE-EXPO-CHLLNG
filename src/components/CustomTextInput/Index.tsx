@@ -6,7 +6,7 @@ import { useEstilos } from "../../theme/useEstilos";
 import { useTema } from "../../theme/TemaContext";
 import type { CustomTextInputProps } from "./types";
 
-// campo de texto do app: título em cima, ícones opcionais e borda colorida quando está em foco
+// campo de texto
 const CustomTextInput: React.FC<CustomTextInputProps> = ({
     title,
     placeholder = "",
@@ -21,17 +21,17 @@ const CustomTextInput: React.FC<CustomTextInputProps> = ({
     style,
     onFocus,
     onBlur,
-    ...inputProps // pega todas as outras props do TextInput (value, onChangeText, etc)
+    ...inputProps
 }) => {
     const styles = useEstilos(criarEstilos);
     const { cores, escuro } = useTema();
 
-    // guarda se o campo está selecionado, pra pintar a borda
+    // campo em foco
     const [focado, setFocado] = useState(false);
 
     return (
         <View style={[styles.container, containerStyle]}>
-            {/* título acima do input, só aparece se for passado */}
+            {/* título */}
             {title && <Text style={[styles.title, titleStyle]}>{title}</Text>}
 
             <View style={[styles.inputContainer, focado && styles.inputFocado]}>
@@ -62,7 +62,7 @@ const CustomTextInput: React.FC<CustomTextInputProps> = ({
                     {...inputProps}
                 />
 
-                {/* ícone da direita: pode ser só enfeite ou um botão (ex: olho da senha) */}
+                {/* ícone da direita */}
                 {rightIconName && (
                     <TouchableOpacity
                         onPress={rightIconType === "button" ? onRightIconPress : undefined}

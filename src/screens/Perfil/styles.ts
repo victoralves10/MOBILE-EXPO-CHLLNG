@@ -15,7 +15,6 @@ export const criarEstilos = (c: Cores) =>
 
         // ---------- cabeçalho ----------
 
-        // card com a faixa colorida em cima e o avatar "saindo" dela
         cabecalho: {
             backgroundColor: c.superficie,
             borderRadius: 28,
@@ -79,7 +78,6 @@ export const criarEstilos = (c: Cores) =>
             color: c.primaria,
         },
 
-        // título cinza em cima de cada grupo
         tituloGrupo: {
             fontSize: 13,
             fontWeight: "800",
@@ -188,7 +186,6 @@ export const criarEstilos = (c: Cores) =>
             overflow: "hidden",
         },
 
-        // largura = porcentagem que vem do backend
         barra: {
             height: 10,
             borderRadius: 5,
@@ -219,7 +216,6 @@ export const criarEstilos = (c: Cores) =>
             marginRight: 16,
         },
 
-        // área transparente que cobre a tela pra fechar ao tocar fora
         fundoMenu: {
             position: "absolute",
             top: 0,
@@ -228,7 +224,6 @@ export const criarEstilos = (c: Cores) =>
             left: 0,
         },
 
-        // caixinha com sombra no canto de cima
         caixaMenu: {
             position: "absolute",
             top: 6,
@@ -336,7 +331,6 @@ export const criarEstilos = (c: Cores) =>
             marginTop: 1,
         },
 
-        // botão de notificação de teste
         botaoTeste: {
             flexDirection: "row",
             alignItems: "center",

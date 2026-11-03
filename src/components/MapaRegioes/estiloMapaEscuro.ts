@@ -1,5 +1,4 @@
-// visual do Google Maps no tema escuro (cores do próprio Google "Night mode")
-// só muda a aparência; os dados do mapa continuam os mesmos
+// mapa no tema escuro
 export const estiloMapaEscuro = [
     { elementType: "geometry", stylers: [{ color: "#1d2033" }] },
     { elementType: "labels.text.fill", stylers: [{ color: "#8b8fb0" }] },
@@ -13,7 +12,7 @@ export const estiloMapaEscuro = [
     { featureType: "water", elementType: "geometry", stylers: [{ color: "#111427" }] },
 ];
 
-// no tema claro só esconde os pontos comerciais, pra destacar as regiões
+// mapa no tema claro
 export const estiloMapaClaro = [
     { featureType: "poi", stylers: [{ visibility: "off" }] },
     { featureType: "transit", stylers: [{ visibility: "off" }] },

@@ -8,7 +8,7 @@ export const criarEstilos = (c: Cores) =>
             backgroundColor: c.fundo,
         },
 
-        // ──────────────────────── LISTA ────────────────────────
+        // ---------- lista ----------
 
         containerBusca: {
             paddingHorizontal: 16,
@@ -21,7 +21,6 @@ export const criarEstilos = (c: Cores) =>
             paddingHorizontal: 16,
         },
 
-        // painel com cantos arredondados onde ficam as linhas da lista
         painelLista: {
             flex: 1,
             backgroundColor: c.superficie,
@@ -52,7 +51,6 @@ export const criarEstilos = (c: Cores) =>
             paddingHorizontal: 24,
         },
 
-        // botão "+" flutuante no canto
         botaoAdicionar: {
             position: "absolute",
             right: 20,
@@ -70,14 +68,13 @@ export const criarEstilos = (c: Cores) =>
             shadowRadius: 12,
         },
 
-        // ──────────────────────── DETALHE ────────────────────────
+        // ---------- detalhe ----------
 
         scroll: {
             padding: 16,
             paddingBottom: 40,
         },
 
-        // card do topo com o animal e o status
         destaque: {
             backgroundColor: c.superficie,
             borderRadius: 28,
@@ -128,14 +125,12 @@ export const criarEstilos = (c: Cores) =>
             fontWeight: "800",
         },
 
-        // linha com os 3 botões de ação
         linhaAcoes: {
             flexDirection: "row",
             gap: 10,
             marginTop: 14,
         },
 
-        // card de cada seção
         secao: {
             backgroundColor: c.superficie,
             borderRadius: 24,
@@ -152,7 +147,6 @@ export const criarEstilos = (c: Cores) =>
             color: c.texto,
         },
 
-        // editar e remover lado a lado
         containerBotoes: {
             flexDirection: "row",
             gap: 12,
@@ -191,19 +185,5 @@ export const criarEstilos = (c: Cores) =>
             color: c.atrasado,
             fontWeight: "800",
             fontSize: 15,
-        },
-
-        // ──────────────────────── MODAL DE EDIÇÃO ────────────────────────
-
-        labelStatus: {
-            fontSize: 13,
-            fontWeight: "700",
-            color: c.textoSecundario,
-            marginBottom: 8,
-            marginLeft: 2,
-        },
-
-        containerAbasModal: {
-            marginBottom: 16,
         },
     });

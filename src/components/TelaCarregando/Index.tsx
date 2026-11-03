@@ -3,10 +3,10 @@ import { View, ActivityIndicator } from "react-native";
 import { useTema } from "../../theme/TemaContext";
 
 interface Props {
-    telaCheia?: boolean; // ocupa a tela inteira se true; senão, só um espaço menor
+    telaCheia?: boolean;
 }
 
-// spinner de carregamento, usado sempre que uma tela/seção está buscando dados
+// carregando
 export default function TelaCarregando({ telaCheia = false }: Props) {
     const { cores } = useTema();
 

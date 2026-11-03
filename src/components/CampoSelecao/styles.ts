@@ -16,7 +16,6 @@ export const criarEstilos = (c: Cores) =>
             marginLeft: 2,
         },
 
-        // mesmo visual do CustomTextInput
         campo: {
             flexDirection: "row",
             alignItems: "center",

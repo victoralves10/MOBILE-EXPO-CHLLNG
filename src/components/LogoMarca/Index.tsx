@@ -6,14 +6,14 @@ import { criarEstilos } from "./styles";
 import { useEstilos } from "../../theme/useEstilos";
 import { useTema } from "../../theme/TemaContext";
 
-// logo Clyvo ELLV, usado no Login e Cadastro
+// logo do app
 export default function LogoMarca() {
     const styles = useEstilos(criarEstilos);
     const { cores } = useTema();
 
     return (
         <View style={styles.containerLogo}>
-            {/* quadrado com degradê e a patinha */}
+            {/* ícone */}
             <LinearGradient
                 colors={[cores.primaria, cores.secundaria]}
                 start={{ x: 0, y: 0 }}

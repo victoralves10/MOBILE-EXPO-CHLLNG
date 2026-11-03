@@ -7,7 +7,7 @@ import { useEstilos } from "../../theme/useEstilos";
 import { useTema } from "../../theme/TemaContext";
 import { Ionicons } from "@expo/vector-icons";
 
-// um resultado da busca, já do jeito que vai aparecer
+// resultado da busca
 export interface ResultadoBusca {
     id: number;
     inicial: string;
@@ -27,7 +27,7 @@ interface Props {
     onTrocar: () => void;
 }
 
-// campo de busca com a lista de resultados embaixo; escolheu um, mostra ele com o botão "Trocar"
+// campo de busca com resultados
 export default function CampoBusca({
     titulo,
     placeholder,
@@ -42,7 +42,7 @@ export default function CampoBusca({
     const styles = useEstilos(criarEstilos);
     const { cores } = useTema();
 
-    // já escolheu: mostra o escolhido e a opção de trocar
+    // item escolhido
     if (selecionado) {
         return (
             <View style={styles.container}>
@@ -61,7 +61,7 @@ export default function CampoBusca({
         );
     }
 
-    // ainda não escolheu: campo de busca + resultados
+    // busca
     return (
         <View style={styles.container}>
             <CustomTextInput

@@ -5,7 +5,7 @@ import { useTema } from "../../theme/TemaContext";
 import { corDoStatus } from "../../theme/paletas";
 import { ConsultaCardProps } from "./types";
 
-// card de consulta: usa o ItemLista e só encaixa os dados que o backend mandou prontos
+// card de consulta
 export default function ConsultaCard({ consulta, onPress, variante = "lista" }: ConsultaCardProps) {
     const { cores } = useTema();
     const { animal } = consulta;
@@ -18,7 +18,7 @@ export default function ConsultaCard({ consulta, onPress, variante = "lista" }: 
             textoDireita={consulta.data_hora_exibicao}
             subtitulo={consulta.historico_consulta}
             selo={consulta.st_consulta_rotulo}
-            detalhe={`${animal.especie_animal} • ${animal.raca_animal_exibicao}`}
+            detalhe={animal.especie_raca_exibicao}
             acao={{
                 icone: "videocam",
                 cor: cores.primaria,

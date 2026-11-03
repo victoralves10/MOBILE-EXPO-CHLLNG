@@ -1,4 +1,4 @@
-// números do consultório que aparecem no Perfil, todos calculados pelo backend
+// números do consultório
 export interface Dashboard {
     consultas_realizadas_mes: number;
     consultas_agendadas: number;
@@ -8,31 +8,31 @@ export interface Dashboard {
     taxa_retorno_percentual: number;
     taxa_retorno_exibicao: string;
     taxa_retorno_descricao: string;
+    resumo_home: string;
     possui_atrasadas: boolean;
     aviso_atrasadas: string | null;
 }
 
-// aviso que o backend deixou esperando o celular (ex: "📅 Sua próxima consulta é em 1 mês")
+// aviso que aparece na hora
 export interface Aviso {
     id_aviso: string;
     titulo: string;
     mensagem: string;
-    id_consulta: number | null; // tocar na notificação abre essa consulta
+    id_consulta: number | null;
 }
 
 // ---------- mapa da Home ----------
 
-// cor de cada região, decidida pelo backend
 export type NivelRegiao = "normal" | "atencao" | "surto";
 
 export interface DoencaRegiao {
     ds_doenca: string;
     total: number;
     possivel_surto: boolean;
-    descricao: string; // ex: "Cinomose: 6 casos (possível surto)"
+    descricao: string;
 }
 
-// uma região no mapa, com os textos já prontos
+// região no mapa
 export interface RegiaoMapa {
     id_regiao: number;
     nm_regiao: string;
@@ -45,15 +45,15 @@ export interface RegiaoMapa {
     total_casos: number;
     possivel_surto: boolean;
     nivel: NivelRegiao;
-    rotulo_nivel: string; // "Possível surto", "Atenção", "Tudo em dia"
+    rotulo_nivel: string;
     raio_metros: number;
-    resumo: string; // "8 consultas · 5 pacientes"
+    resumo: string;
     aviso_atrasadas: string | null;
     resumo_doencas: string | null;
     doencas: DoencaRegiao[];
 }
 
-// tudo que o mapa desenha (GET /mapa/ocorrencias)
+// mapa
 export interface Mapa {
     centro: { latitude: number; longitude: number; latitude_delta: number; longitude_delta: number };
     titulo: string;

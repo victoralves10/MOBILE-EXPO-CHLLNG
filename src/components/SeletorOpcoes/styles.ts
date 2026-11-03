@@ -15,7 +15,6 @@ export const criarEstilos = (c: Cores) =>
             marginLeft: 2,
         },
 
-        // etiquetas quebram linha sozinhas
         linha: {
             flexDirection: "row",
             flexWrap: "wrap",

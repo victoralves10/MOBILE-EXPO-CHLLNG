@@ -19,7 +19,7 @@ const INTEGRANTES = [
     { rm: "RM561833", nome: "Victor Alves Lopes", turma: "2TDSPI" },
 ];
 
-// o que usamos pra construir
+// tecnologias
 const TECNOLOGIAS: { nome: string; icone: NomeIcone }[] = [
     { nome: "React Native", icone: "logo-react" },
     { nome: "Expo", icone: "rocket" },
@@ -29,18 +29,18 @@ const TECNOLOGIAS: { nome: string; icone: NomeIcone }[] = [
     { nome: "TanStack Query", icone: "sync" },
 ];
 
-// tela "Sobre o App": versão, commit do build e a equipe
+// tela Sobre o App
 export default function SobreApp() {
     const styles = useEstilos(criarEstilos);
     const { cores } = useTema();
 
-    // essas informações vêm do app.config.ts, preenchidas na hora do build
+    // versão e commit do build
     const versao = Constants.expoConfig?.version ?? "1.0.0";
     const extra = Constants.expoConfig?.extra ?? {};
     const commit: string = extra.commit ?? "sem commit";
     const dataBuild: string = extra.dataBuild ?? "—";
 
-    // rodando pelo Expo Go ou instalado pelo APK do Firebase
+    // Expo Go ou APK
     const ambiente = Constants.executionEnvironment === "storeClient" ? "Expo Go (desenvolvimento)" : "APK instalado";
 
     const coresAvatar = [cores.primaria, cores.ceu, cores.rosa, cores.laranja];
@@ -48,7 +48,7 @@ export default function SobreApp() {
     return (
         <ScrollView style={styles.container} contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
 
-            {/* ---------- topo colorido com o logo ---------- */}
+            {/* ---------- topo ---------- */}
             <LinearGradient
                 colors={[cores.primaria, cores.secundaria]}
                 start={{ x: 0, y: 0 }}
@@ -67,7 +67,7 @@ export default function SobreApp() {
                 </View>
             </LinearGradient>
 
-            {/* ---------- informações do build ---------- */}
+            {/* ---------- versão ---------- */}
             <Text style={styles.tituloGrupo}>Versão instalada</Text>
             <View style={styles.cartao}>
                 <LinhaInfo icone="pricetag" cor={cores.primaria} rotulo="Versão do app" valor={versao} />
@@ -76,7 +76,7 @@ export default function SobreApp() {
                 <LinhaInfo icone="phone-portrait" cor={cores.concluido} rotulo="Rodando em" valor={ambiente} />
             </View>
 
-            {/* ---------- sobre o projeto ---------- */}
+            {/* ---------- projeto ---------- */}
             <Text style={styles.tituloGrupo}>O projeto</Text>
             <View style={styles.cartao}>
                 <Text style={styles.texto}>

@@ -15,7 +15,6 @@ export const criarEstilos = (c: Cores) =>
             marginLeft: 2,
         },
 
-        // resultados numa caixa com borda
         resultados: {
             borderRadius: 16,
             overflow: "hidden",
@@ -30,7 +29,6 @@ export const criarEstilos = (c: Cores) =>
             marginLeft: 2,
         },
 
-        // caixinha colorida com o item escolhido
         escolhido: {
             flexDirection: "row",
             alignItems: "center",

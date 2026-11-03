@@ -5,7 +5,6 @@ const TAMANHO_AVATAR = 50;
 
 export const criarEstilos = (c: Cores) =>
     StyleSheet.create({
-        // linha da lista, estilo lista de contatos
         linha: {
             flexDirection: "row",
             alignItems: "center",
@@ -14,7 +13,6 @@ export const criarEstilos = (c: Cores) =>
             backgroundColor: c.superficie,
         },
 
-        // versão card, usada no carrossel da Home
         cartao: {
             borderRadius: 20,
             borderWidth: 1,
@@ -26,7 +24,6 @@ export const criarEstilos = (c: Cores) =>
             shadowRadius: 10,
         },
 
-        // bolinha com a inicial
         avatar: {
             width: TAMANHO_AVATAR,
             height: TAMANHO_AVATAR,
@@ -41,7 +38,6 @@ export const criarEstilos = (c: Cores) =>
             fontWeight: "800",
         },
 
-        // pontinho de status no canto da bolinha, tipo o "online" do WhatsApp
         ponto: {
             position: "absolute",
             right: 1,
@@ -87,7 +83,6 @@ export const criarEstilos = (c: Cores) =>
             color: c.textoSuave,
         },
 
-        // etiqueta colorida do status
         selo: {
             paddingHorizontal: 9,
             paddingVertical: 3,
@@ -99,7 +94,6 @@ export const criarEstilos = (c: Cores) =>
             fontWeight: "800",
         },
 
-        // botão redondo da direita (câmera, WhatsApp...)
         botaoAcao: {
             width: 40,
             height: 40,
@@ -109,7 +103,6 @@ export const criarEstilos = (c: Cores) =>
             marginLeft: 10,
         },
 
-        // divisória fina que começa depois da bolinha, igual no WhatsApp
         divisoria: {
             position: "absolute",
             bottom: 0,

@@ -5,10 +5,10 @@ import { pacienteService } from "../services/pacienteService";
 import { catalogoService } from "../services/catalogoService";
 import { mensagemDeErro } from "../services/api";
 import { cancelarLembrete } from "../services/notificacoes";
+import { FormularioPaciente } from "../models/Paciente";
 import { toastErro, toastSucesso } from "../utils/toast";
 
-// todos os campos do modal de edição num objeto só
-const FORM_VAZIO = {
+const FORM_VAZIO: FormularioPaciente = {
     nm_animal: "",
     especie_animal: "",
     raca_animal: "",
@@ -19,30 +19,24 @@ const FORM_VAZIO = {
     nm_responsavel: "",
     cpf_responsavel: "",
     nr_telefone_responsavel: "",
-    id_regiao: null as number | null,
+    id_regiao: null,
 };
 
-type Formulario = typeof FORM_VAZIO;
-
-// lógica da ficha do paciente: mostrar, editar e remover
+// lógica da ficha do paciente
 export function useDetalhePaciente() {
     const navigation = useNavigation<any>();
     const route = useRoute<any>();
     const queryClient = useQueryClient();
-
     const { id_animal } = route.params;
 
-    // tudo numa requisição só: animal + responsável + histórico de consultas
     const fichaQuery = useQuery({
         queryKey: ["pacientes", "ficha", id_animal],
         queryFn: () => pacienteService.buscarFicha(id_animal),
     });
+    const regioesQuery = useQuery({ queryKey: ["catalogo", "regioes"], queryFn: catalogoService.regioes, staleTime: Infinity });
     const ficha = fichaQuery.data ?? null;
 
-    // regiões pro seletor do responsável (carrega uma vez só)
-    const regioesQuery = useQuery({ queryKey: ["catalogo", "regioes"], queryFn: catalogoService.regioes, staleTime: Infinity });
-
-    // depois de editar ou remover, recarrega as listas que mostram esse paciente
+    // recarrega as listas que mostram o paciente
     function recarregarListas() {
         queryClient.invalidateQueries({ queryKey: ["pacientes"] });
         queryClient.invalidateQueries({ queryKey: ["consultas"] });
@@ -51,34 +45,18 @@ export function useDetalhePaciente() {
     // ---------- editar ----------
 
     const [modalEditarAberto, setModalEditarAberto] = useState(false);
-    const [form, setForm] = useState<Formulario>(FORM_VAZIO);
+    const [form, setForm] = useState<FormularioPaciente>(FORM_VAZIO);
 
-    // atalho pra atualizar um campo: mudar("nm_animal")("Rex")
-    function mudar<C extends keyof Formulario>(campo: C) {
-        return (valor: Formulario[C]) => setForm((atual) => ({ ...atual, [campo]: valor }));
+    function mudar<C extends keyof FormularioPaciente>(campo: C) {
+        return (valor: FormularioPaciente[C]) => setForm((atual) => ({ ...atual, [campo]: valor }));
     }
 
-    // abre o modal já preenchido com o que veio do backend
     function abrirModalEditar() {
         if (!ficha) return;
-        const { animal, responsavel } = ficha;
-        setForm({
-            nm_animal: animal.nm_animal,
-            especie_animal: animal.especie_animal,
-            raca_animal: animal.raca_animal ?? "",
-            dt_nascimento_animal: animal.dt_nascimento_animal ?? "",
-            peso_animal: animal.peso_animal === null ? "" : String(animal.peso_animal).replace(".", ","),
-            rg_animal: animal.rg_animal ?? "",
-            nr_microchip_animal: animal.nr_microchip_animal ?? "",
-            nm_responsavel: responsavel.nm_responsavel,
-            cpf_responsavel: responsavel.cpf_responsavel_exibicao,
-            nr_telefone_responsavel: responsavel.nr_telefone_responsavel_exibicao,
-            id_regiao: responsavel.id_regiao,
-        });
+        setForm(ficha.formulario);
         setModalEditarAberto(true);
     }
 
-    // manda animal e responsável juntos; o backend salva os dois de uma vez
     const mutationAtualizar = useMutation({
         mutationFn: () =>
             pacienteService.atualizar(id_animal, {
@@ -104,7 +82,6 @@ export function useDetalhePaciente() {
             recarregarListas();
             setModalEditarAberto(false);
         },
-        // deu erro (ex: CPF de outro responsável): mostra a mensagem e deixa o modal aberto
         onError: (erro) => toastErro(mensagemDeErro(erro)),
     });
 
@@ -112,12 +89,10 @@ export function useDetalhePaciente() {
 
     const [confirmarRemoverAberto, setConfirmarRemoverAberto] = useState(false);
 
-    // remove e volta pra lista
     const mutationRemover = useMutation({
         mutationFn: () => pacienteService.remover(id_animal),
         onSuccess: (resposta) => {
             toastSucesso(resposta.mensagem);
-            // as consultas dele foram apagadas: cancela os avisos delas
             resposta.consultas_removidas.forEach(cancelarLembrete);
             recarregarListas();
             navigation.goBack();
@@ -130,15 +105,11 @@ export function useDetalhePaciente() {
         mutationRemover.mutate();
     }
 
-    function abrirDetalheConsulta(id_consulta: number) {
-        navigation.navigate("DetalheConsulta", { id_consulta });
-    }
-
     return {
         ficha,
         carregando: fichaQuery.isLoading,
         erro: fichaQuery.isError ? mensagemDeErro(fichaQuery.error) : null,
-        abrirDetalheConsulta,
+        abrirDetalheConsulta: (id_consulta: number) => navigation.navigate("DetalheConsulta", { id_consulta }),
 
         modalEditarAberto,
         abrirModalEditar,

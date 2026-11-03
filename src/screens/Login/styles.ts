@@ -8,7 +8,6 @@ export const criarEstilos = (c: Cores) =>
             backgroundColor: c.fundo,
         },
 
-        // bolhas coloridas de enfeite no fundo
         bolhaRoxa: {
             position: "absolute",
             width: 320,
@@ -36,7 +35,6 @@ export const criarEstilos = (c: Cores) =>
             paddingVertical: 32,
         },
 
-        // card do formulário
         containerFormulario: {
             backgroundColor: c.superficie,
             borderRadius: 28,

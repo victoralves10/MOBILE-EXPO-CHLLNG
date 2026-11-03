@@ -3,7 +3,6 @@ import { Cores } from "../../theme/paletas";
 
 export const criarEstilos = (c: Cores) =>
     StyleSheet.create({
-        // caixa em volta do calendário
         caixa: {
             marginTop: -6,
             marginBottom: 16,
@@ -14,7 +13,6 @@ export const criarEstilos = (c: Cores) =>
             borderColor: c.borda,
         },
 
-        // linha de cima com o ano e as setas
         linhaAno: {
             flexDirection: "row",
             alignItems: "center",

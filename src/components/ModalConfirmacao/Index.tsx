@@ -12,14 +12,13 @@ interface Props {
     mensagem: string;
     labelConfirmar?: string;
     labelCancelar?: string;
-    perigoso?: boolean; // botão confirmar fica vermelho
+    perigoso?: boolean;
     icone?: keyof typeof Ionicons.glyphMap;
     onConfirmar: () => void;
     onCancelar: () => void;
 }
 
-// modal de confirmação, usado antes de ações destrutivas ou importantes
-// tocar fora do card (na área escura) fecha, igual tocar em "Cancelar"
+// modal de confirmação
 export default function ModalConfirmacao({
     visivel,
     titulo,
@@ -38,11 +37,11 @@ export default function ModalConfirmacao({
     return (
         <Modal visible={visivel} transparent animationType="fade" onRequestClose={onCancelar}>
             <View style={styles.fundo}>
-                {/* área escura: tocar nela cancela */}
+                {/* fundo: tocar cancela */}
                 <Pressable style={styles.areaFora} onPress={onCancelar} />
 
                 <View style={styles.card}>
-                    {/* ícone grande no topo */}
+                    {/* ícone */}
                     <View style={[styles.circuloIcone, { backgroundColor: transparente(cor, 0.14) }]}>
                         <Ionicons name={icone ?? (perigoso ? "warning" : "help-circle")} size={30} color={cor} />
                     </View>

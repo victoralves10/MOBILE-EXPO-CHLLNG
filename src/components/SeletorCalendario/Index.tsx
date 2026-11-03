@@ -8,7 +8,7 @@ import { useEstilos } from "../../theme/useEstilos";
 import { useTema } from "../../theme/TemaContext";
 import { dataParaTela } from "../../utils/mascaras";
 
-// deixa o calendário em português
+// calendário em português
 LocaleConfig.locales["pt-br"] = {
     monthNames: ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"],
     monthNamesShort: ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"],
@@ -20,25 +20,24 @@ LocaleConfig.defaultLocale = "pt-br";
 
 interface Props {
     titulo: string;
-    valor: string; // AAAA-MM-DD, do jeito que o backend recebe
+    valor: string;
     onChange: (valor: string) => void;
 }
 
-// mês atual no formato AAAA-MM-01, só pra saber em qual mês o calendário abre
+// mês atual (AAAA-MM-01)
 function mesAtual() {
     const d = new Date();
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-01`;
 }
 
-// campo de data que abre um calendário em português embaixo dele
-// tem botões pra pular de ano em ano (ajuda muito na data de nascimento)
+// campo de data com calendário
 export default function SeletorCalendario({ titulo, valor, onChange }: Props) {
     const styles = useEstilos(criarEstilos);
     const { cores, escuro } = useTema();
     const [aberto, setAberto] = useState(false);
     const [mesVisivel, setMesVisivel] = useState(valor || mesAtual());
 
-    // pula um ano pra frente ou pra trás, mantendo o mês
+    // avança ou volta um ano
     function mudarAno(quanto: number) {
         const [ano, mes] = mesVisivel.split("-");
         setMesVisivel(`${Number(ano) + quanto}-${mes}-01`);
@@ -68,7 +67,7 @@ export default function SeletorCalendario({ titulo, valor, onChange }: Props) {
                         </TouchableOpacity>
                     </View>
 
-                    {/* key faz o calendário ir pro mês certo e trocar de cor junto com o tema */}
+                    {/* calendário */}
                     <Calendar
                         key={`${mesVisivel}-${escuro}`}
                         current={mesVisivel}

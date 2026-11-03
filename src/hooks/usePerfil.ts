@@ -10,46 +10,25 @@ import { useSenhaVisivel } from "./useSenhaVisivel";
 import { AbaConsulta } from "../models/Consulta";
 import { toastErro, toastSucesso } from "../utils/toast";
 
-// qual modal está aberto (só um por vez)
 type ModalPerfil = "dados" | "senha" | "apagar" | null;
 
-// lógica da tela de perfil: dados do usuário, números do consultório e ações da conta
+// lógica da tela de perfil
 export function usePerfil() {
     const navigation = useNavigation<any>();
     const queryClient = useQueryClient();
     const { encerrarSessao } = useAuth();
 
-    // dados do usuário logado
-    const usuarioQuery = useQuery({
-        queryKey: ["usuario"],
-        queryFn: () => authService.perfil(),
-    });
+    const usuarioQuery = useQuery({ queryKey: ["usuario"], queryFn: authService.perfil });
+    const dashboardQuery = useQuery({ queryKey: ["consultas", "dashboard"], queryFn: painelService.dashboard });
+    const usuario = usuarioQuery.data ?? null;
 
-    // números do consultório, todos calculados pelo backend
-    const dashboardQuery = useQuery({
-        queryKey: ["dashboard"],
-        queryFn: () => painelService.dashboard(),
-    });
-
-    // sempre que volta pro Perfil, atualiza os números
+    // recarrega ao voltar pro Perfil
     useFocusEffect(
         useCallback(() => {
             dashboardQuery.refetch();
             // eslint-disable-next-line react-hooks/exhaustive-deps
         }, [])
     );
-
-    const usuario = usuarioQuery.data ?? null;
-
-    // ---------- atalhos (cada número leva pra tela certa) ----------
-
-    function abrirConsultas(aba: AbaConsulta) {
-        navigation.navigate("Consultas", { aba });
-    }
-
-    function abrirPacientes() {
-        navigation.navigate("Pacientes");
-    }
 
     // ---------- modais ----------
 
@@ -59,7 +38,6 @@ export function usePerfil() {
     const [senha, setSenha] = useState("");
     const senhaVisivel = useSenhaVisivel();
 
-    // abre um modal já com os campos certos preenchidos
     function abrirModal(qual: Exclude<ModalPerfil, null>) {
         setNome(usuario?.nm_usuario ?? "");
         setEmail(usuario?.email_usuario ?? "");
@@ -72,19 +50,18 @@ export function usePerfil() {
         setSenha("");
     }
 
-    // editar dados e alterar senha usam o mesmo endpoint (PUT /auth/perfil)
+    // editar dados ou senha
     const mutationEditar = useMutation({
-        mutationFn: () => usuarioService.editar(nome.trim(), email.trim(), modal === "senha" ? senha : undefined),
+        mutationFn: () => usuarioService.editar(nome, email, modal === "senha" ? senha : undefined),
         onSuccess: (resposta) => {
             toastSucesso(resposta.mensagem);
             queryClient.setQueryData(["usuario"], resposta.usuario);
             fecharModal();
         },
-        // erro do backend (e-mail em uso, senha fraca...): mostra e deixa o modal aberto
         onError: (erro) => toastErro(mensagemDeErro(erro)),
     });
 
-    // apagar conta: senha certa sai do app, senha errada só mostra o aviso
+    // apagar conta
     const mutationApagar = useMutation({
         mutationFn: () => usuarioService.remover(senha),
         onSuccess: async (resposta) => {
@@ -99,8 +76,9 @@ export function usePerfil() {
         usuario,
         dashboard: dashboardQuery.data ?? null,
         carregandoDashboard: dashboardQuery.isLoading,
-        abrirConsultas,
-        abrirPacientes,
+        abrirConsultas: (aba: AbaConsulta) => navigation.navigate("Consultas", { aba }),
+        abrirPacientes: () => navigation.navigate("Pacientes"),
+        abrirSobre: () => navigation.navigate("SobreApp"),
 
         modal,
         abrirModal,
@@ -116,8 +94,6 @@ export function usePerfil() {
         salvando: mutationEditar.isPending,
         apagarConta: () => mutationApagar.mutate(),
         apagando: mutationApagar.isPending,
-
-        // sair é direto, sem modal de confirmação
         sair: encerrarSessao,
     };
 }

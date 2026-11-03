@@ -3,7 +3,6 @@ import { Cores } from "../../theme/paletas";
 
 export const criarEstilos = (c: Cores) =>
     StyleSheet.create({
-        // trilho cinza em volta das abas
         container: {
             flexDirection: "row",
             backgroundColor: c.superficieAlt,

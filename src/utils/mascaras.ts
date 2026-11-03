@@ -1,6 +1,3 @@
-// máscaras que vão aparecendo enquanto o usuário digita
-// o backend aceita com ou sem máscara, então manda do jeito que está
-
 const somenteDigitos = (valor: string) => valor.replace(/\D/g, "");
 
 // 12345678909 → 123.456.789-09
@@ -21,12 +18,12 @@ export function mascararTelefone(valor: string) {
         .replace(new RegExp(`(\\d{${meio}})(\\d)`), "$1-$2");
 }
 
-// deixa só número e uma vírgula (ex: 12,5)
+// 12.5 → 12,5
 export function mascararPeso(valor: string) {
     return valor.replace(".", ",").replace(/[^\d,]/g, "").replace(/,(?=.*,)/g, "");
 }
 
-// só pra mostrar a data que o próprio usuário escolheu: 2026-12-10 → 10/12/2026
+// 2026-12-10 → 10/12/2026
 export function dataParaTela(iso: string) {
     return iso ? iso.split("-").reverse().join("/") : "";
 }

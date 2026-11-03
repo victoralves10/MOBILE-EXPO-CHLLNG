@@ -12,7 +12,7 @@ interface Props {
     style?: ViewStyle;
 }
 
-// botão principal com degradê da marca (entrar, criar conta...)
+// botão principal
 export default function BotaoGradiente({ texto, icone, onPress, carregando = false, style }: Props) {
     const { cores } = useTema();
 

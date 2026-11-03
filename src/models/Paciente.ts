@@ -1,12 +1,13 @@
 import type { ConsultaResumo } from "./Consulta";
 
-// paciente na lista e na busca (animal + responsável resumidos)
+// paciente na lista e na busca
 export interface PacienteItem {
     id_animal: number;
     nm_animal: string;
     inicial_animal: string;
     especie_animal: string;
     raca_animal_exibicao: string;
+    descricao_busca: string;
     nm_responsavel: string;
     nr_telefone_responsavel_exibicao: string;
     link_whatsapp: string;
@@ -20,20 +21,20 @@ export interface ResponsavelItem {
     cpf_responsavel_exibicao: string;
     nr_telefone_responsavel_exibicao: string;
     nm_regiao_exibicao: string;
+    descricao_busca: string;
 }
 
-// região atendida (usada no cadastro do responsável e no mapa)
 export interface Regiao {
     id_regiao: number;
     nm_regiao: string;
 }
 
-// animal completo (detalhe da consulta e ficha), já com os textos de tela prontos
 export interface AnimalCompleto {
     id_animal: number;
     nm_animal: string;
     inicial_animal: string;
     especie_animal: string;
+    especie_raca_exibicao: string;
     raca_animal: string | null;
     raca_animal_exibicao: string;
     dt_nascimento_animal: string | null;
@@ -46,7 +47,6 @@ export interface AnimalCompleto {
     nr_microchip_animal_exibicao: string;
 }
 
-// responsável completo, com o link do WhatsApp já montado pelo backend
 export interface ResponsavelCompleto {
     id_responsavel: number;
     nm_responsavel: string;
@@ -60,21 +60,37 @@ export interface ResponsavelCompleto {
     link_whatsapp: string;
 }
 
-// consulta no histórico da ficha (igual ao card, só que sem repetir o animal)
 export type ConsultaHistorico = Omit<ConsultaResumo, "animal">;
 
-// ficha completa do paciente, tudo numa resposta só
+// campos do modal de edição do paciente
+export interface FormularioPaciente {
+    nm_animal: string;
+    especie_animal: string;
+    raca_animal: string;
+    dt_nascimento_animal: string;
+    peso_animal: string;
+    rg_animal: string;
+    nr_microchip_animal: string;
+    nm_responsavel: string;
+    cpf_responsavel: string;
+    nr_telefone_responsavel: string;
+    id_regiao: number | null;
+}
+
+// ficha completa do paciente
 export interface Ficha {
     animal: AnimalCompleto;
     responsavel: ResponsavelCompleto & {
         outros_pacientes: number;
-        aviso_edicao: string | null; // aviso pronto do backend quando o responsável tem outros pacientes
+        aviso_edicao: string | null;
     };
     consultas: ConsultaHistorico[];
     total_consultas: number;
+    total_consultas_exibicao: string;
+    formulario: FormularioPaciente;
 }
 
-// o que o app manda no PUT /pacientes/:id
+// corpo do PUT /pacientes/:id
 export interface DadosPaciente {
     animal: {
         nm_animal: string;

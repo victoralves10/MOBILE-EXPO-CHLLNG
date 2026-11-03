@@ -6,53 +6,45 @@ import { mensagemDeErro } from "../services/api";
 import { useDebounce } from "./useDebounce";
 import { AbaConsulta } from "../models/Consulta";
 
-// lógica da lista de consultas: aba escolhida + busca, o resto o backend resolve
+// lógica da lista de consultas
 export function useConsultas() {
     const navigation = useNavigation<any>();
-
     const route = useRoute<any>();
 
     const [aba, setAba] = useState<AbaConsulta>("agendadas");
     const [busca, setBusca] = useState("");
+    const [modalAberto, setModalAberto] = useState(false);
 
-    // quando outra tela manda abrir uma aba (ex: Perfil → "Atrasadas"), troca pra ela
-    // e limpa o pedido, pra funcionar de novo da próxima vez
+    // pedidos vindos de outras telas
     const abaPedida: AbaConsulta | undefined = route.params?.aba;
+    const novaConsultaPedida: boolean = route.params?.novaConsulta === true;
+
     useEffect(() => {
         if (abaPedida) {
             setAba(abaPedida);
             navigation.setParams({ aba: undefined });
         }
-    }, [abaPedida, navigation]);
+        if (novaConsultaPedida) {
+            setModalAberto(true);
+            navigation.setParams({ novaConsulta: undefined });
+        }
+    }, [abaPedida, novaConsultaPedida, navigation]);
 
-    // a Home pode pedir pra já abrir o modal de nova consulta
-    const novaConsultaPedida: boolean = route.params?.novaConsulta === true;
-    function limparPedidoNovaConsulta() {
-        navigation.setParams({ novaConsulta: undefined });
-    }
+    const buscaDebounced = useDebounce(busca.trim());
 
-    // só manda a busca pro backend quando o usuário para de digitar
-    const buscaDebounced = useDebounce(busca.trim(), 500);
-
-    // cada aba chama o seu endpoint (/consultas/agendadas, /atrasadas, /concluidas)
-    // keepPreviousData deixa a lista antiga na tela enquanto a nova carrega, sem piscar
     const consultasQuery = useQuery({
         queryKey: ["consultas", aba, buscaDebounced],
         queryFn: () => consultaService.listarPorAba(aba, buscaDebounced),
         placeholderData: keepPreviousData,
     });
 
-    // toda vez que volta pra essa tela, recarrega (uma consulta pode ter virado atrasada)
+    // recarrega ao voltar pra tela
     useFocusEffect(
         useCallback(() => {
             consultasQuery.refetch();
             // eslint-disable-next-line react-hooks/exhaustive-deps
         }, [])
     );
-
-    function abrirDetalheConsulta(id_consulta: number) {
-        navigation.navigate("DetalheConsulta", { id_consulta });
-    }
 
     return {
         aba,
@@ -62,8 +54,9 @@ export function useConsultas() {
         consultas: consultasQuery.data ?? [],
         carregando: consultasQuery.isLoading,
         erro: consultasQuery.isError ? mensagemDeErro(consultasQuery.error) : null,
-        abrirDetalheConsulta,
-        novaConsultaPedida,
-        limparPedidoNovaConsulta,
+        abrirDetalheConsulta: (id_consulta: number) => navigation.navigate("DetalheConsulta", { id_consulta }),
+        modalAberto,
+        abrirModal: () => setModalAberto(true),
+        fecharModal: () => setModalAberto(false),
     };
 }

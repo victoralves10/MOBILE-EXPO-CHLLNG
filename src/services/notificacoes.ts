@@ -4,17 +4,12 @@ import { Lembrete } from "../models/Consulta";
 import { Aviso } from "../models/Painel";
 import { log } from "../utils/log";
 
-// tudo que mexe com as notificações do celular fica aqui
-// o backend diz QUANDO avisar e O QUE escrever; aqui só agenda, cancela e abre
-
 const CHAVE_ATIVOS = "@clyvovet:lembretes-ativos";
 
-// cada consulta tem até 2 avisos ("antes" e "inicio"); o id de cada um vem pronto do backend
-// aqui só montamos os mesmos ids pra conseguir cancelar os dois de uma consulta
+// ids dos dois lembretes de uma consulta
 const idsDaConsulta = (idConsulta: number) => [`consulta-${idConsulta}-antes`, `consulta-${idConsulta}-inicio`];
 
-// configura como a notificação aparece quando chega com o app aberto
-// (igual à aula 44: só o setNotificationHandler, sem canal extra no Android)
+// configura as notificações
 export function configurarNotificacoes() {
     Notifications.setNotificationHandler({
         handleNotification: async () => ({
@@ -26,7 +21,7 @@ export function configurarNotificacoes() {
     });
 }
 
-// pede permissão pro usuário (só pergunta na primeira vez)
+// pede permissão de notificação
 export async function pedirPermissao(): Promise<boolean> {
     const atual = await Notifications.getPermissionsAsync();
     if (atual.granted) return true;
@@ -34,7 +29,7 @@ export async function pedirPermissao(): Promise<boolean> {
     return pedido.granted;
 }
 
-// o usuário pode desligar os lembretes no Perfil (vem ligado por padrão)
+// lembretes ligados ou desligados
 export async function lembretesAtivos(): Promise<boolean> {
     try {
         return (await AsyncStorage.getItem(CHAVE_ATIVOS)) !== "nao";
@@ -47,7 +42,7 @@ export async function definirLembretesAtivos(ativos: boolean) {
     await AsyncStorage.setItem(CHAVE_ATIVOS, ativos ? "sim" : "nao");
 }
 
-// agenda (ou reagenda) um aviso no horário que o backend mandou
+// agenda um lembrete
 export async function agendarLembrete(lembrete: Lembrete) {
     if (!(await lembretesAtivos())) return;
     if (!(await pedirPermissao())) return;
@@ -68,34 +63,34 @@ export async function agendarLembrete(lembrete: Lembrete) {
     log.notificacao(`agendado (${lembrete.tipo}): consulta ${lembrete.id_consulta} em ${lembrete.disparar_em}`);
 }
 
-// troca os avisos de uma consulta pelos que o backend mandou (lista vazia = só cancela)
+// troca os lembretes de uma consulta
 export async function reagendarConsulta(idConsulta: number, lembretes: Lembrete[]) {
     await cancelarLembrete(idConsulta);
     for (const lembrete of lembretes) await agendarLembrete(lembrete);
 }
 
-// cancela os avisos de uma consulta (editada pra concluída, removida...)
+// cancela os lembretes de uma consulta
 export async function cancelarLembrete(idConsulta: number) {
     for (const id of idsDaConsulta(idConsulta)) {
         await Notifications.cancelScheduledNotificationAsync(id).catch(() => {});
     }
 }
 
-// cancela tudo (logout ou lembretes desligados)
+// cancela todos os lembretes
 export async function cancelarTodos() {
     await Notifications.cancelAllScheduledNotificationsAsync().catch(() => {});
     log.notificacao("todos os lembretes cancelados");
 }
 
-// apaga o que estava agendado e agenda de novo a lista que veio do backend
+// sincroniza com o backend
 export async function sincronizarLembretes(lembretes: Lembrete[]) {
     await Notifications.cancelAllScheduledNotificationsAsync().catch(() => {});
     if (!(await lembretesAtivos()) || !(await pedirPermissao())) return;
     for (const lembrete of lembretes) await agendarLembrete(lembrete);
-    log.notificacao(`${lembretes.length} lembrete(s) sincronizado(s) com o backend`);
+    log.notificacao(`${lembretes.length} lembrete(s) sincronizado(s)`);
 }
 
-// mostra um aviso do backend na hora (sem agendar pra depois)
+// mostra um aviso na hora
 export async function mostrarAgora(aviso: Aviso) {
     if (!(await pedirPermissao())) return;
     await Notifications.scheduleNotificationAsync({
@@ -106,18 +101,18 @@ export async function mostrarAgora(aviso: Aviso) {
             data: aviso.id_consulta ? { id_consulta: aviso.id_consulta } : {},
             sound: true,
         },
-        trigger: null, // null = aparece agora
+        trigger: null,
     });
     log.notificacao(`aviso mostrado: ${aviso.titulo}`);
 }
 
-// quantos avisos estão agendados neste celular (aparece no Perfil)
+// total de lembretes agendados
 export async function contarAgendados(): Promise<number> {
     const agendados = await Notifications.getAllScheduledNotificationsAsync();
     return agendados.length;
 }
 
-// notificação de teste daqui a 5 segundos, pra conferir se está tudo funcionando
+// notificação de teste em 5 segundos
 export async function enviarTeste(): Promise<boolean> {
     if (!(await pedirPermissao())) return false;
     await Notifications.scheduleNotificationAsync({
@@ -131,22 +126,19 @@ export async function enviarTeste(): Promise<boolean> {
     return true;
 }
 
-// quando o usuário toca numa notificação, devolve o id da consulta (se tiver)
+// toque na notificação
 export function aoTocarNotificacao(callback: (idConsulta: number) => void) {
     const tratar = (resposta: Notifications.NotificationResponse | null) => {
         if (!resposta) return;
         const dados = resposta.notification.request.content.data;
-        log.notificacao(`tocou: ${resposta.notification.request.content.title} | dados: ${JSON.stringify(dados)}`);
-
-        // limpa pra essa mesma notificação não abrir de novo quando o app voltar
+        log.notificacao(`tocou: ${resposta.notification.request.content.title}`);
         Notifications.clearLastNotificationResponse();
 
-        // às vezes o id volta como texto, então converte pra número
         const id = Number(dados?.id_consulta);
-        if (Number.isFinite(id) && id > 0) callback(id);
+        if (id > 0) callback(id);
     };
 
-    // app estava fechado e foi aberto pela notificação
+    // app aberto pela notificação
     tratar(Notifications.getLastNotificationResponse());
 
     // app aberto ou em segundo plano

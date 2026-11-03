@@ -11,7 +11,7 @@ import { Cores, transparente } from "../../theme/paletas";
 import { Mapa, NivelRegiao } from "../../models/Painel";
 import { toastAviso } from "../../utils/toast";
 
-// cor de cada nível que o backend manda (só visual)
+// cor de cada nível
 const corDoNivel = (c: Cores, nivel: NivelRegiao) =>
     nivel === "surto" ? c.atrasado : nivel === "atencao" ? c.aviso : c.primaria;
 
@@ -19,8 +19,7 @@ interface Props {
     mapa: Mapa;
 }
 
-// mapa da Home: cada região é um círculo com a quantidade de consultas
-// tocar numa região mostra os detalhes logo abaixo do mapa
+// mapa das regiões
 export default function MapaRegioes({ mapa }: Props) {
     const styles = useEstilos(criarEstilos);
     const { cores, escuro } = useTema();
@@ -32,7 +31,7 @@ export default function MapaRegioes({ mapa }: Props) {
 
     const selecionada = mapa.regioes.find((r) => r.id_regiao === idSelecionada) ?? null;
 
-    // região inicial: o centro que o backend calculou
+    // região inicial
     const regiaoInicial = {
         latitude: mapa.centro.latitude,
         longitude: mapa.centro.longitude,
@@ -40,7 +39,7 @@ export default function MapaRegioes({ mapa }: Props) {
         longitudeDelta: mapa.centro.longitude_delta,
     };
 
-    // tocou numa região: seleciona e aproxima a câmera nela
+    // seleciona uma região
     function selecionar(id: number) {
         const regiao = mapa.regioes.find((r) => r.id_regiao === id);
         if (!regiao) return;
@@ -51,12 +50,12 @@ export default function MapaRegioes({ mapa }: Props) {
         );
     }
 
-    // volta pra visão com todas as regiões
+    // mostra todas as regiões
     function verTodas() {
         mapaRef.current?.animateToRegion(regiaoInicial, 500);
     }
 
-    // igual à aula: pede permissão, pega a posição do celular e leva o mapa até ela
+    // vai até a localização do celular
     async function irParaMinhaPosicao() {
         setLocalizando(true);
         try {
@@ -83,7 +82,7 @@ export default function MapaRegioes({ mapa }: Props) {
                 <MapView
                     ref={mapaRef}
                     style={styles.mapa}
-                    // no Android usa o Google Maps (o tema escuro do mapa só funciona nele)
+                    // Google Maps no Android
                     provider={Platform.OS === "android" ? PROVIDER_GOOGLE : undefined}
                     customMapStyle={escuro ? estiloMapaEscuro : estiloMapaClaro}
                     initialRegion={regiaoInicial}
@@ -95,7 +94,7 @@ export default function MapaRegioes({ mapa }: Props) {
                         const ativa = regiao.id_regiao === idSelecionada;
                         return (
                             <React.Fragment key={regiao.id_regiao}>
-                                {/* área da região: maior quanto mais consultas/casos */}
+                                {/* círculo da região */}
                                 <Circle
                                     center={{ latitude: regiao.latitude, longitude: regiao.longitude }}
                                     radius={regiao.raio_metros}
@@ -103,7 +102,7 @@ export default function MapaRegioes({ mapa }: Props) {
                                     strokeColor={cor}
                                     strokeWidth={ativa ? 2.5 : 1.5}
                                 />
-                                {/* bolinha com o número de consultas */}
+                                {/* número de consultas */}
                                 <Marker
                                     coordinate={{ latitude: regiao.latitude, longitude: regiao.longitude }}
                                     onPress={() => selecionar(regiao.id_regiao)}
@@ -121,11 +120,11 @@ export default function MapaRegioes({ mapa }: Props) {
                         );
                     })}
 
-                    {/* onde o veterinário está (depois de tocar no botão de localização) */}
+                    {/* minha localização */}
                     {minhaPosicao && <Marker coordinate={minhaPosicao} title="Você está aqui" pinColor={cores.ceu} />}
                 </MapView>
 
-                {/* botões flutuantes no canto do mapa */}
+                {/* botões do mapa */}
                 <View style={styles.botoesFlutuantes}>
                     <TouchableOpacity style={styles.botaoFlutuante} onPress={irParaMinhaPosicao} disabled={localizando}>
                         {localizando ? (
@@ -139,7 +138,7 @@ export default function MapaRegioes({ mapa }: Props) {
                     </TouchableOpacity>
                 </View>
 
-                {/* sem nenhuma região ainda */}
+                {/* sem regiões */}
                 {mapa.mensagem_vazio && (
                     <View style={styles.avisoVazio}>
                         <Ionicons name="map-outline" size={18} color={cores.textoSecundario} />
@@ -158,7 +157,7 @@ export default function MapaRegioes({ mapa }: Props) {
                 ))}
             </View>
 
-            {/* ---------- detalhes da região tocada ---------- */}
+            {/* ---------- região selecionada ---------- */}
             {selecionada && (
                 <View style={styles.cartaoRegiao}>
                     <View style={styles.cabecalhoRegiao}>
@@ -183,7 +182,7 @@ export default function MapaRegioes({ mapa }: Props) {
                         </View>
                     )}
 
-                    {/* doenças registradas na região (vêm do diagnóstico das consultas) */}
+                    {/* doenças */}
                     {selecionada.doencas.map((doenca) => (
                         <View key={doenca.ds_doenca} style={styles.linhaDetalhe}>
                             <Ionicons

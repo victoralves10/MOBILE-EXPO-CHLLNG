@@ -8,31 +8,24 @@ import { corDoStatus, transparente } from "../../theme/paletas";
 import BotaoAcao from "../../components/BotaoAcao/Index";
 import LinhaInfo from "../../components/LinhaInfo/Index";
 import CustomTextInput from "../../components/CustomTextInput/Index";
-import FiltroTabs from "../../components/FiltroTabs/Index";
 import ModalFormulario from "../../components/ModalFormulario/Index";
 import ModalConfirmacao from "../../components/ModalConfirmacao/Index";
 import SeletorCalendario from "../../components/SeletorCalendario/Index";
 import SeletorNativo from "../../components/SeletorNativo/Index";
 import SeletorOpcoes from "../../components/SeletorOpcoes/Index";
+import SeletorSituacao from "../../components/SeletorSituacao/Index";
 import TelaCarregando from "../../components/TelaCarregando/Index";
 import { useDetalheConsulta } from "../../hooks/useDetalheConsulta";
-import { StatusConsulta } from "../../models/Consulta";
 
-// ícone de cada status, só visual
+// ícone de cada status
 const ICONE_STATUS = { Agendado: "time", Atrasado: "alert-circle", Concluido: "checkmark-circle" } as const;
 
-// tela de detalhe da consulta: tudo já vem formatado do backend, a tela só mostra
+// detalhe da consulta
 export default function DetalheConsulta() {
     const styles = useEstilos(criarEstilos);
     const { cores } = useTema();
     const d = useDetalheConsulta();
     const { consulta } = d;
-
-    // opções da situação no modal de edição
-    const opcoesStatus: { valor: StatusConsulta; label: string; cor: string; icone: keyof typeof Ionicons.glyphMap }[] = [
-        { valor: "Agendado", label: "Agendar", cor: cores.agendado, icone: "calendar" },
-        { valor: "Concluido", label: "Já realizada", cor: cores.concluido, icone: "checkmark-done" },
-    ];
 
     if (d.carregando) return <TelaCarregando telaCheia />;
     if (!consulta) return <Text style={styles.textoVazio}>{d.erro ?? "Consulta não encontrada."}</Text>;
@@ -44,7 +37,7 @@ export default function DetalheConsulta() {
         <View style={styles.container}>
             <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
 
-                {/* card do topo: animal, data e status */}
+                {/* topo */}
                 <View style={styles.destaque}>
                     <View style={[styles.avatarGrande, { backgroundColor: transparente(cor, 0.15) }]}>
                         <Text style={[styles.textoAvatarGrande, { color: cor }]}>{animal.inicial_animal}</Text>
@@ -58,7 +51,7 @@ export default function DetalheConsulta() {
                     </View>
                 </View>
 
-                {/* ações rápidas: links prontos que vêm do backend */}
+                {/* ações rápidas */}
                 <View style={styles.linhaAcoes}>
                     <BotaoAcao
                         icone="videocam"
@@ -80,7 +73,7 @@ export default function DetalheConsulta() {
                     <Text style={styles.tituloSecao}>Consulta</Text>
                     <LinhaInfo icone="document-text" cor={cores.primaria} rotulo="Motivo" valor={consulta.historico_consulta} />
                     <LinhaInfo icone="calendar" cor={cores.ceu} rotulo="Data e horário" valor={consulta.data_hora_exibicao} />
-                    {/* só aparece quando tem diagnóstico registrado */}
+                    {/* diagnóstico */}
                     {consulta.ds_doenca && (
                         <LinhaInfo icone="medkit" cor={cores.atrasado} rotulo="Diagnóstico / suspeita" valor={consulta.ds_doenca_exibicao} />
                     )}
@@ -93,7 +86,7 @@ export default function DetalheConsulta() {
                         icone="paw"
                         cor={cores.pacientes}
                         rotulo="Espécie e raça"
-                        valor={`${animal.especie_animal} • ${animal.raca_animal_exibicao}`}
+                        valor={animal.especie_raca_exibicao}
                     />
                     <LinhaInfo icone="gift" cor={cores.rosa} rotulo="Nascimento" valor={animal.dt_nascimento_animal_exibicao} />
                     <LinhaInfo icone="barbell" cor={cores.laranja} rotulo="Peso" valor={animal.peso_animal_exibicao} />
@@ -145,12 +138,9 @@ export default function DetalheConsulta() {
                 <SeletorCalendario titulo="Data *" valor={d.form.dt_consulta} onChange={d.mudar("dt_consulta")} />
                 <SeletorNativo titulo="Horário *" valor={d.form.hr_consulta} onChange={d.mudar("hr_consulta")} />
 
-                <Text style={styles.labelStatus}>Situação</Text>
-                <View style={styles.containerAbasModal}>
-                    <FiltroTabs opcoes={opcoesStatus} valorSelecionado={d.form.st_consulta} onSelecionar={d.mudar("st_consulta")} />
-                </View>
+                <SeletorSituacao valor={d.form.st_consulta} onChange={d.mudar("st_consulta")} />
 
-                {/* opcional: o que o animal tem; entra no mapa de ocorrências da Home */}
+                {/* diagnóstico */}
                 <SeletorOpcoes
                     titulo="Diagnóstico / suspeita (opcional)"
                     opcoes={d.doencas.map((doenca) => ({ valor: doenca, rotulo: doenca }))}
@@ -159,7 +149,7 @@ export default function DetalheConsulta() {
                 />
             </ModalFormulario>
 
-            {/* confirmação antes de remover */}
+            {/* confirmar remoção */}
             <ModalConfirmacao
                 visivel={d.confirmarRemoverAberto}
                 titulo="Remover consulta?"

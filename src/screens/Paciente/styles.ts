@@ -8,7 +8,7 @@ export const criarEstilos = (c: Cores) =>
             backgroundColor: c.fundo,
         },
 
-        // ──────────────────────── LISTA ────────────────────────
+        // ---------- lista ----------
 
         containerBusca: {
             paddingHorizontal: 16,
@@ -21,7 +21,6 @@ export const criarEstilos = (c: Cores) =>
             paddingHorizontal: 16,
         },
 
-        // painel com cantos arredondados onde ficam as linhas da lista
         painelLista: {
             flex: 1,
             backgroundColor: c.superficie,
@@ -53,14 +52,13 @@ export const criarEstilos = (c: Cores) =>
             paddingHorizontal: 24,
         },
 
-        // ──────────────────────── FICHA ────────────────────────
+        // ---------- ficha ----------
 
         scroll: {
             padding: 16,
             paddingBottom: 40,
         },
 
-        // card do topo com o animal
         destaque: {
             backgroundColor: c.superficie,
             borderRadius: 28,
@@ -98,7 +96,6 @@ export const criarEstilos = (c: Cores) =>
             marginTop: 2,
         },
 
-        // contador de consultas embaixo do nome
         seloConsultas: {
             flexDirection: "row",
             alignItems: "center",
@@ -143,7 +140,6 @@ export const criarEstilos = (c: Cores) =>
             color: c.textoSecundario,
         },
 
-        // histórico dentro da seção (o ItemLista já tem padding próprio)
         listaHistorico: {
             marginHorizontal: -18,
             marginBottom: -18,
@@ -192,31 +188,8 @@ export const criarEstilos = (c: Cores) =>
             fontSize: 15,
         },
 
-        // ──────────────────────── MODAL DE EDIÇÃO ────────────────────────
+        // ---------- modal de edição ----------
 
-        secaoModal: {
-            flexDirection: "row",
-            alignItems: "center",
-            gap: 10,
-            marginTop: 8,
-            marginBottom: 14,
-        },
-
-        iconeSecaoModal: {
-            width: 30,
-            height: 30,
-            borderRadius: 10,
-            alignItems: "center",
-            justifyContent: "center",
-        },
-
-        textoSecaoModal: {
-            fontSize: 17,
-            fontWeight: "800",
-            color: c.texto,
-        },
-
-        // caixinha amarela com o aviso do backend
         avisoModal: {
             flexDirection: "row",
             gap: 10,

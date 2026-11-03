@@ -7,11 +7,11 @@ import { transparente } from "../../theme/paletas";
 interface Props {
     icone: keyof typeof Ionicons.glyphMap;
     cor: string;
-    rotulo: string; // texto pequeno em cima (ex: "Peso")
-    valor: string; // texto grande embaixo (ex: "4,2 kg"), já formatado pelo backend
+    rotulo: string;
+    valor: string;
 }
 
-// linha de informação das telas de detalhe: ícone colorido, rótulo e valor
+// linha de informação com ícone
 export default function LinhaInfo({ icone, cor, rotulo, valor }: Props) {
     const { cores } = useTema();
 

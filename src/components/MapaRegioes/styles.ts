@@ -10,7 +10,6 @@ export const criarEstilos = (c: Cores) =>
 
         // ---------- mapa ----------
 
-        // borda arredondada: o mapa fica "recortado" dentro dessa caixa
         caixaMapa: {
             height: 280,
             borderRadius: 24,
@@ -24,7 +23,6 @@ export const criarEstilos = (c: Cores) =>
             flex: 1,
         },
 
-        // bolinha colorida com o número de consultas
         bolha: {
             minWidth: 30,
             height: 30,

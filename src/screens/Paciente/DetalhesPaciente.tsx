@@ -4,7 +4,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { criarEstilos } from "./styles";
 import { useEstilos } from "../../theme/useEstilos";
 import { useTema } from "../../theme/TemaContext";
-import { corDoStatus, transparente } from "../../theme/paletas";
+import { corDoStatus } from "../../theme/paletas";
 import BotaoAcao from "../../components/BotaoAcao/Index";
 import LinhaInfo from "../../components/LinhaInfo/Index";
 import CustomTextInput from "../../components/CustomTextInput/Index";
@@ -14,10 +14,11 @@ import ModalConfirmacao from "../../components/ModalConfirmacao/Index";
 import SeletorCalendario from "../../components/SeletorCalendario/Index";
 import SeletorOpcoes from "../../components/SeletorOpcoes/Index";
 import TelaCarregando from "../../components/TelaCarregando/Index";
+import TituloSecao from "../../components/TituloSecao/Index";
 import { useDetalhePaciente } from "../../hooks/useDetalhePaciente";
 import { mascararCpf, mascararPeso, mascararTelefone } from "../../utils/mascaras";
 
-// ficha do paciente: tudo já vem formatado do backend, a tela só mostra
+// ficha do paciente
 export default function DetalhePaciente() {
     const styles = useEstilos(criarEstilos);
     const { cores } = useTema();
@@ -29,40 +30,24 @@ export default function DetalhePaciente() {
 
     const { animal, responsavel, consultas } = ficha;
 
-    // título de cada parte do modal, com ícone colorido
-    function SecaoModal({ icone, cor, texto }: { icone: keyof typeof Ionicons.glyphMap; cor: string; texto: string }) {
-        return (
-            <View style={styles.secaoModal}>
-                <View style={[styles.iconeSecaoModal, { backgroundColor: transparente(cor, 0.15) }]}>
-                    <Ionicons name={icone} size={16} color={cor} />
-                </View>
-                <Text style={styles.textoSecaoModal}>{texto}</Text>
-            </View>
-        );
-    }
-
     return (
         <View style={styles.container}>
             <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
 
-                {/* card do topo com o animal */}
+                {/* topo */}
                 <View style={styles.destaque}>
                     <View style={styles.avatarGrande}>
                         <Text style={styles.textoAvatarGrande}>{animal.inicial_animal}</Text>
                     </View>
                     <Text style={styles.nomeDestaque}>{animal.nm_animal}</Text>
-                    <Text style={styles.subtituloDestaque}>
-                        {animal.especie_animal} • {animal.raca_animal_exibicao}
-                    </Text>
+                    <Text style={styles.subtituloDestaque}>{animal.especie_raca_exibicao}</Text>
                     <View style={styles.seloConsultas}>
                         <Ionicons name="calendar" size={14} color={cores.primaria} />
-                        <Text style={styles.textoSeloConsultas}>
-                            {ficha.total_consultas} {ficha.total_consultas === 1 ? "consulta" : "consultas"}
-                        </Text>
+                        <Text style={styles.textoSeloConsultas}>{ficha.total_consultas_exibicao}</Text>
                     </View>
                 </View>
 
-                {/* ações rápidas: links prontos que vêm do backend */}
+                {/* ações rápidas */}
                 <View style={styles.linhaAcoes}>
                     <BotaoAcao
                         icone="logo-whatsapp"
@@ -91,7 +76,7 @@ export default function DetalhePaciente() {
                     <LinhaInfo icone="location" cor={cores.laranja} rotulo="Região" valor={responsavel.nm_regiao_exibicao} />
                 </View>
 
-                {/* histórico de consultas, mesmo visual das listas */}
+                {/* histórico */}
                 <View style={styles.secao}>
                     <Text style={styles.tituloSecao}>Histórico de consultas</Text>
                     {consultas.length === 0 ? (
@@ -130,7 +115,7 @@ export default function DetalhePaciente() {
                 </View>
             </ScrollView>
 
-            {/* modal de edição do animal e do responsável */}
+            {/* modal de edição */}
             <ModalFormulario
                 visivel={d.modalEditarAberto}
                 titulo="Editar paciente"
@@ -138,7 +123,7 @@ export default function DetalhePaciente() {
                 onSalvar={d.salvar}
                 carregando={d.salvando}
             >
-                <SecaoModal icone="paw" cor={cores.pacientes} texto="Animal" />
+                <TituloSecao icone="paw" cor={cores.pacientes} texto="Animal" />
                 <CustomTextInput title="Nome do animal *" placeholder="Ex: Rex" value={form.nm_animal} onChangeText={mudar("nm_animal")} />
                 <CustomTextInput title="Espécie *" placeholder="Ex: Cão, Gato" value={form.especie_animal} onChangeText={mudar("especie_animal")} />
                 <CustomTextInput title="Raça" placeholder="Ex: Labrador" value={form.raca_animal} onChangeText={mudar("raca_animal")} />
@@ -159,9 +144,9 @@ export default function DetalhePaciente() {
                     onChangeText={mudar("nr_microchip_animal")}
                 />
 
-                <SecaoModal icone="person" cor={cores.rosa} texto="Responsável" />
+                <TituloSecao icone="person" cor={cores.rosa} texto="Responsável" />
 
-                {/* aviso pronto do backend quando o responsável tem outros pacientes */}
+                {/* aviso de outros pacientes */}
                 {responsavel.aviso_edicao && (
                     <View style={styles.avisoModal}>
                         <Ionicons name="information-circle" size={20} color={cores.aviso} />
@@ -192,7 +177,7 @@ export default function DetalhePaciente() {
                 />
             </ModalFormulario>
 
-            {/* confirmação antes de remover */}
+            {/* confirmar remoção */}
             <ModalConfirmacao
                 visivel={d.confirmarRemoverAberto}
                 titulo="Remover paciente?"

@@ -23,7 +23,6 @@ export const criarEstilos = (c: Cores) =>
             overflow: "hidden",
         },
 
-        // bolhas translúcidas de enfeite dentro do card
         bolha1: {
             position: "absolute",
             width: 180,
@@ -111,7 +110,6 @@ export const criarEstilos = (c: Cores) =>
 
         // ---------- seções ----------
 
-        // título + bolinha com o contador
         containerTitulo: {
             flexDirection: "row",
             alignItems: "center",
@@ -166,7 +164,6 @@ export const criarEstilos = (c: Cores) =>
             color: c.textoSecundario,
         },
 
-        // linha cinza embaixo do título do mapa
         subtituloSecao: {
             fontSize: 13,
             color: c.textoSecundario,
