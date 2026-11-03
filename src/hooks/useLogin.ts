@@ -9,8 +9,8 @@ import { toastErro, toastSucesso } from "../utils/toast";
 
 // lógica da tela de login
 export function useLogin() {
-    const [email, setEmail] = useState("dev@clyvovet.dev");
-    const [senha, setSenha] = useState("dev123456");
+    const [email, setEmail] = useState("");
+    const [senha, setSenha] = useState("");
 
     const senhaVisivel = useSenhaVisivel();
     const navigation = useNavigation<any>();
