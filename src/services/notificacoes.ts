@@ -1,3 +1,4 @@
+import { Platform } from "react-native";
 import * as Notifications from "expo-notifications";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Lembrete } from "../models/Consulta";
@@ -27,6 +28,25 @@ export async function pedirPermissao(): Promise<boolean> {
     if (atual.granted) return true;
     const pedido = await Notifications.requestPermissionsAsync();
     return pedido.granted;
+}
+
+// alarme no horário exato (Android 12+)
+export async function horarioExatoLiberado(): Promise<boolean> {
+    if (Platform.OS !== "android") return true;
+    try {
+        return (await Notifications.getExactAlarmPermissionsAsync()).granted;
+    } catch {
+        return true;
+    }
+}
+
+// abre a tela do Android para liberar o horário exato
+export async function liberarHorarioExato(): Promise<boolean> {
+    try {
+        return (await Notifications.requestExactAlarmPermissionsAsync()).granted;
+    } catch {
+        return false;
+    }
 }
 
 // lembretes ligados ou desligados

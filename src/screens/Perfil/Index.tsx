@@ -254,6 +254,16 @@ export default function Perfil() {
                             </View>
                         </View>
 
+                        {/* horário exato */}
+                        {!notif.horarioExato && (
+                            <TouchableOpacity style={styles.caixaPerigo} onPress={notif.liberarExato}>
+                                <Ionicons name="time" size={20} color={cores.atrasado} />
+                                <Text style={styles.textoPerigo}>
+                                    O Android está atrasando os lembretes. Toque aqui e permita "Alarmes e lembretes".
+                                </Text>
+                            </TouchableOpacity>
+                        )}
+
                         {/* teste */}
                         <TouchableOpacity style={styles.botaoTeste} onPress={notif.testar}>
                             <Ionicons name="paper-plane" size={18} color={cores.textoSobreCor} />
