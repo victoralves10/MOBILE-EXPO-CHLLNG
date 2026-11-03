@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "clyvo-mobile",
+    "name": "Clyvo ELLV",
     "slug": "clyvo-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -10,6 +10,7 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "br.com.fiap.clyvoellv",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -39,6 +40,14 @@
         }
       ],
       "@react-native-community/datetimepicker"
-    ]
+    ],
+    "extra": {
+      "commit": "317f1b4",
+      "dataBuild": "03/11/2026 12:17",
+      "eas": {
+        "projectId": "14c32c24-6b19-4a1f-aefd-ab45801ff07a"
+      }
+    },
+    "owner": "victoralves10s-team"
   }
 }
