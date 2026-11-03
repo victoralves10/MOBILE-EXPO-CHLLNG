@@ -3,7 +3,7 @@ import * as tokenStorage from "../storage/tokenStorage";
 import { log } from "../utils/log";
 
 // endereço do backend
-const API_URL = "http://192.168.1.2:3000";
+const API_URL = "https://api-clyvo-node.onrender.com";
 
 const api = axios.create({ baseURL: API_URL, timeout: 15000 });
 
